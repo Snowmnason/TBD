@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -162,9 +163,11 @@ fun ProgressBar(
             targetValue = (questionIndex) / totalQuestionCount.toFloat(), label = ""
         )
         LinearProgressIndicator(
+            progress = {
+                progress
+            },
             modifier = Modifier.fillMaxWidth()
                 .height(6.dp),
-            progress = progress
         )
     }
 }
@@ -216,7 +219,7 @@ fun RadioButtonGroup(
     options: List<String>,
     selectedIndex: Int,
     onSelectionChange: (Int) -> Unit,
-    style: TextStyle
+    style: TextStyle,
 ) {
     Column {
         options.forEachIndexed { index, text ->
@@ -229,7 +232,11 @@ fun RadioButtonGroup(
             ) {
                 RadioButton(
                     selected = index == selectedIndex,
-                    onClick = null // onClick handled by Row
+                    onClick = null, // onClick handled by Row
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = AppTheme.colorScheme.primary,
+                        unselectedColor = AppTheme.colorScheme.onBackground
+                    )
                 )
                 Text(
                     text = text,

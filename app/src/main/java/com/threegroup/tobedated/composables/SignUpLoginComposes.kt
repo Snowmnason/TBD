@@ -1,6 +1,7 @@
 package com.threegroup.tobedated.composables
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,17 +11,21 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -30,14 +35,20 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.shadowWithOpacity
@@ -61,13 +72,18 @@ fun getCustomTextStyle(): TextStyle {
 }
 
 @Composable
-fun getCustomTextStyleLabel(): TextStyle {
+fun getCustomTextStyleLabel(
+    opacity:Float = .5F,
+    fontSize:TextUnit = 26.sp,
+
+): TextStyle {
+    val colorWithOpacity = AppTheme.colorScheme.onBackground.copy(alpha = opacity)
     return TextStyle(
-        color = AppTheme.colorScheme.onBackground,
+        color = colorWithOpacity,
         fontFamily = JoseFinSans,
         fontWeight = FontWeight.Normal,
         fontStyle = FontStyle.Italic,
-        fontSize = 26.sp,
+        fontSize = fontSize,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
         shadow = Shadow(
@@ -183,12 +199,13 @@ fun BodyText(
 }
 @Composable
 fun LabelText(
-    label: String
+    label: String,
+    color: Color = AppTheme.colorScheme.onBackground
 ){
     Text(
         text = label,
         style = AppTheme.typography.labelMedium,
-        color = AppTheme.colorScheme.onBackground
+        color = color
     )
 }
 
@@ -228,7 +245,7 @@ fun BioQuestion(
     val maxLength = 500
     val remainingChars = maxLength - input.length
     val customTextStyle = getCustomTextStyle()
-    val customTextStyleLabel = getCustomTextStyleLabel()
+    val customTextStyleLabel = getCustomTextStyleLabel( opacity = 1F)
     Column(modifier = Modifier.fillMaxWidth()) {
 
         // MultiAutoCompleteTextView
@@ -238,10 +255,10 @@ fun BioQuestion(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 5.dp)
-                .height(250.dp),
+                .height(200.dp),
             textStyle = customTextStyle,
             maxLines = 10,
-            placeholder = { Text(text = "Bio", style = customTextStyleLabel) },
+            label = { Text(text = "Bio", style = customTextStyleLabel) },
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = AppTheme.colorScheme.primary, // Set cursor color
                 focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
@@ -258,16 +275,13 @@ fun BioQuestion(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
             LabelText(
                 label = "Tell us about yourself",
             )
             // Character count
-            Text(
-                text = "$remainingChars/$maxLength",
-                modifier = Modifier
-                    //.align(Alignment.End)
-                    .padding(end = 8.dp, bottom = 0.dp),
-                style = customTextStyleLabel,
+            LabelText(
+                label = "$remainingChars/$maxLength",
                 color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
             )
         }
@@ -281,6 +295,15 @@ fun PersonalityTest(
     question: String,
 ) {
     val opts = listOf("", "", "", "", "", "", "")
+    val agreeColors:RadioButtonColors = RadioButtonDefaults.colors(
+            selectedColor = Color(0xFF86FE6E),
+            unselectedColor =  Color(0xFF86FE6E))
+    val naturalColors:RadioButtonColors =RadioButtonDefaults.colors(
+            selectedColor = Color.Gray,
+            unselectedColor = Color.Gray)
+    val disagreeColors:RadioButtonColors = RadioButtonDefaults.colors(
+            selectedColor = Color(0xFFFE6E86),
+            unselectedColor = Color(0xFFFE6E86))
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -298,13 +321,20 @@ fun PersonalityTest(
                     .padding(30.dp,0.dp,30.dp,0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 opts.forEachIndexed { index, text ->
                     val scaleFactor:Float = when (index) {
                         0, 6 -> 2.0F
                         1, 5 -> 1.5F
                         2, 4 -> 1.0F
-                        3 -> .6F
+                        3 -> 1.0F
                         else -> 0F
+                    }
+                    val color:RadioButtonColors = when (index) {
+                        0, 1, 2 -> agreeColors
+                        3 -> naturalColors
+                        4, 5, 6 -> disagreeColors
+                        else -> naturalColors
                     }
                     Column(
                         modifier = Modifier
@@ -316,6 +346,7 @@ fun PersonalityTest(
                             selected = index == selectedIndex,
                             onClick = null, // onClick handled by Column
                             modifier = Modifier.scale(scaleFactor),
+                            colors = color
                         )
                         Text(
                             text = text,
@@ -352,11 +383,11 @@ fun BirthdateQuestion(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val customTextStyle = getCustomTextStyle()
-        val customTextStyleLabel = getCustomTextStyleLabel()
+        val customTextStyleLabel = getCustomTextStyleLabel( fontSize = 20.sp)
 
         // Month EditText
         TextField(
@@ -376,19 +407,19 @@ fun BirthdateQuestion(
             maxLines = 1,
             singleLine = true
         )
-        Spacer(modifier = Modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(2.dp))
         Text(
             text = "/",
             style = customTextStyle,
             modifier = Modifier.padding(horizontal = 5.dp)
         )
-        Spacer(modifier = Modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(2.dp))
         // Day EditText
         TextField(
             value = dayValue,
             onValueChange = onDayChanged,
             modifier = Modifier
-                .width(90.dp)
+                .width(80.dp)
                 .height(IntrinsicSize.Min)
                 .padding(start = 5.dp),
             textStyle = customTextStyle,
@@ -414,7 +445,7 @@ fun BirthdateQuestion(
             value = yearValue,
             onValueChange = onYearChanged,
             modifier = Modifier
-                .width(160.dp)
+                .width(150.dp)
                 .height(IntrinsicSize.Min)
                 .padding(start = 10.dp),
             textStyle = customTextStyle,
@@ -430,8 +461,79 @@ fun BirthdateQuestion(
         )
     }
 }
+@Composable
+fun PhotoQuestion(
+    photo1: Painter = painterResource(id = R.drawable.photoholder),
+    photo2: Painter = painterResource(id = R.drawable.photoholder),
+    photo3: Painter = painterResource(id = R.drawable.photoholder),
+    photo4: Painter = painterResource(id = R.drawable.photoholder),
+    onClick1: () -> Unit,
+    onClick2: () -> Unit,
+    onClick3: () -> Unit,
+    onClick4: () -> Unit,
+    isEnabled2:Boolean,
+    isEnabled3:Boolean,
+    isEnabled4:Boolean,
+) {
+    Box(
+        modifier = Modifier
+            .size(525.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Row(
+                modifier = Modifier.weight(1f)
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PFPPhotoButton(photo1, onClick1)
+                Spacer(modifier = Modifier.height(2.dp))
+                PFPPhotoButton(photo2, onClick2, isEnabled2)
+            }
+            Spacer(modifier = Modifier.width(2.dp))
+            Row(
+                modifier = Modifier.weight(1f)
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PFPPhotoButton(photo3, onClick3, isEnabled3)
+                Spacer(modifier = Modifier.height(2.dp))
+                PFPPhotoButton(photo4, onClick4, isEnabled4)
+            }
+        }
+    }
+}
 
+@Composable
+fun PFPPhotoButton(
+    photo: Painter,
+    onClick: () -> Unit,
+    isEnabled:Boolean = true
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .aspectRatio(9f / 16f)
+            .padding(0.dp)
+            .fillMaxSize(),
+        shape = RectangleShape,
+        colors= ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor  = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
 
-
-
-
+        ),
+        contentPadding = PaddingValues(2.dp),
+        enabled = isEnabled,
+        content = {
+            Image(
+                painter = photo,
+                contentDescription = "Your profile photo",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+        }
+    )
+}

@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Offset
@@ -264,7 +263,7 @@ fun LoginMainScreen(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var phoneNumber by remember { mutableStateOf("") }
@@ -398,7 +397,6 @@ fun LoginScreen(navController: NavHostController) {
         }
         return formatted
     }
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun VerificationCodeView(navController: NavHostController) {
 

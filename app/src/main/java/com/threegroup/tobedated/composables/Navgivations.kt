@@ -27,6 +27,7 @@ import com.threegroup.tobedated.SexScreen
 import com.threegroup.tobedated.SignUp
 import com.threegroup.tobedated.SignUpActivity
 import com.threegroup.tobedated.WelcomeScreen
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, indexArray:Array<Int>) {
@@ -35,9 +36,15 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
     var showDialog by remember { mutableStateOf(false) }
-    var questionIndex by remember { mutableIntStateOf(-1) }
+    var questionIndex by remember { mutableIntStateOf(0) }
     val onNameChanged: (String, Int) -> Unit = { newAnswer, index -> userInfoArray[index] = newAnswer }
+    val onPhotoChanged: (String, String, String, String) -> Unit = { newAnswer1, newAnswer2, newAnswer3, newAnswer4 ->
+        userInfoArray[10] = newAnswer1
+        userInfoArray[11] = newAnswer2
+        userInfoArray[12] = newAnswer3
+        userInfoArray[13] = newAnswer4}
     val onIndexChange: (Int, Int) -> Unit = { newAnswer, index -> indexArray[index] = newAnswer }
+    var isButtonEnabled by remember { mutableStateOf(false) }
     BackButton(onClick = {
         if(isFirstScreen){
             showDialog = true
@@ -61,6 +68,12 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
             totalQuestionCount = 10,
         )
     }
+    val updateButtonState: (String) -> Unit = { input ->
+        isButtonEnabled = checkButtonState(input)
+    }
+    val updateButtonStateBio: (String) -> Unit = { input ->
+        isButtonEnabled = checkButtonStateBio(input)
+    }
     NavHost(navController = navController, startDestination = SignUp.WelcomeScreen.name,
         enterTransition = { slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(durationMillis = 150)) },
         exitTransition = { slideOutHorizontally(targetOffsetX  = { -1000 }, animationSpec = tween(durationMillis = 150)) },
@@ -70,37 +83,37 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
             WelcomeScreen()
         }
         composable(route = SignUp.NameScreen.name) {
-            NameScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            NameScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
         composable(route = SignUp.BirthScreen.name) {
-            BirthScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            BirthScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
         composable(route = SignUp.PronounScreen.name) {
-            PronounScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange)
+            PronounScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
         composable(route = SignUp.GenderScreen.name) {
-            GenderScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange)
+            GenderScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
         composable(route = SignUp.SexOriScreen.name) {
-            SexOriScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange)
+            SexOriScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
         composable(route = SignUp.SearchScreen.name) {
-            SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange)
+            SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
         composable(route = SignUp.SexScreen.name) {
-            SexScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange)
+            SexScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
         composable(route = SignUp.MbtiScreen.name) {
-            MbtiScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            MbtiScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
         composable(route = SignUp.OurTestScreen.name) {
-            OurTestScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            OurTestScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
         composable(route = SignUp.BioScreen.name) {
-            BioScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            BioScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonStateBio)
         }
         composable(route = SignUp.PhotoScreen.name) {
-            PhotoScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged)
+            PhotoScreen(userInfo = userInfoArray, onAnswerChanged = onPhotoChanged, updateButtonState)
         }
 
     }
@@ -111,10 +124,18 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     if(isLastScreen){
         buttonText = "Finish"
     }
+
+
+
+    if(isFirstScreen){
+        isButtonEnabled = true
+    }
     BigButton(
         text = buttonText,
         onClick = {
-            questionIndex++
+            if(!isFirstScreen){
+                questionIndex++
+            }
             val nextDestination = when (navController.currentDestination?.route) {
                 SignUp.WelcomeScreen.name -> SignUp.NameScreen.name
                 SignUp.NameScreen.name -> SignUp.BirthScreen.name
@@ -130,16 +151,20 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                 else -> null // Handle unknown destinations or end of flow
             }
             if(buttonText == "Finish"){
-//                runBlocking {//TODO
-//                    signUpActivity.storeData()
-//                    signUpActivity.goNextScreen()
-//                }
-                println(userInfoArray.joinToString(separator = ", "))
+                runBlocking {
+                    signUpActivity.storeData()
+                    signUpActivity.goNextScreen()
+                }
             }
-
+            //println(userInfoArray.joinToString(separator = ", "))
             nextDestination?.let { navController.navigate(it) }
-            //println(userInfoArray[0])
         },
-        isUse = true //TODO Add null checker
+        isUse = isButtonEnabled
     )
+}
+fun checkButtonState(index:String): Boolean {
+    return index != ""
+}
+fun checkButtonStateBio(index:String): Boolean {
+    return index.length >= 15
 }

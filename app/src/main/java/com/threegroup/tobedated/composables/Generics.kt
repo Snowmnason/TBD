@@ -30,6 +30,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -124,36 +125,41 @@ fun DialogWithImage( //TODO maybe make a second one, being a little more specifi
                 .padding(4.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Surface(
+                color = AppTheme.colorScheme.surface,
+                shape = RoundedCornerShape(10.dp)
             ) {
-                Image(
-                    painter = painter,
-                    contentDescription = imageDescription,
-                    contentScale = ContentScale.Fit,
+                Column(
                     modifier = Modifier
-                        .height(240.dp)
-                )
-                Text(
-                    text = body,
-                    style = AppTheme.typography.bodySmall,
-                    color = AppTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(8.dp),
-                    textAlign = TextAlign.Center
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextButton(
-                        onClick = { onDismissRequest() },
+                    Image(
+                        painter = painter,
+                        contentDescription = imageDescription,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .height(240.dp)
+                    )
+                    Text(
+                        text = body,
+                        style = AppTheme.typography.bodySmall,
+                        color = AppTheme.colorScheme.secondary,
                         modifier = Modifier.padding(8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
                     ) {
-                        Text(text = "Confirm", color = AppTheme.colorScheme.secondary)
+                        TextButton(
+                            onClick = { onDismissRequest() },
+                            modifier = Modifier.padding(8.dp),
+                        ) {
+                            Text(text = "Confirm", color = AppTheme.colorScheme.secondary)
+                        }
                     }
                 }
             }
@@ -176,7 +182,8 @@ fun ProgressBar(
             progress = {
                 progress
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(6.dp),
         )
     }

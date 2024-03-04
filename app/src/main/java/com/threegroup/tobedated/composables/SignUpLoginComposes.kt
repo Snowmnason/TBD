@@ -3,6 +3,7 @@ package com.threegroup.tobedated.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,6 +28,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -155,27 +158,38 @@ fun SignUpFormat(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(25.dp, 20.dp, 25.dp, 0.dp)
-
+            .padding(0.dp, 65.dp, 0.dp, 0.dp)
     ) {
-        Column(
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                //.background(AppTheme.colorScheme.surface)
+                .padding(25.dp, 0.dp, 25.dp, 0.dp),
+                color = AppTheme.colorScheme.surface,
+                shape = RoundedCornerShape(10.dp)
         ) {
-            Spacer(modifier = Modifier.height(50.dp))
-            // Title
-            TitleText(
-                title = title
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            //Enter Field
-            enterField()
-            //Fun Label
-            Spacer(modifier = Modifier.height(12.dp))
-            LabelText(
-                label = label,
-            )
+            Column(
+                modifier = Modifier
+                .padding(15.dp, 15.dp, 15.dp, 15.dp)
+
+            ) {
+                // Title
+                TitleText(
+                    title = title
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                //Enter Field   Maybe add scroll thing
+                /*val state = rememberScrollState()
+                LaunchedEffect(Unit) { state.animateScrollTo(100) }
+                Column(
+                    Modifier.fillMaxSize()
+                        .verticalScroll(state)
+                ){}*/
+                enterField()
+                //Fun Label
+                Spacer(modifier = Modifier.height(12.dp))
+                LabelText(
+                    label = label,
+                )
+            }
         }
     }
 }
@@ -247,7 +261,7 @@ fun BioQuestion(
     val maxLength = 500
     val remainingChars = maxLength - input.length
     val customTextStyle = getCustomTextStyle()
-    val customTextStyleLabel = getCustomTextStyleLabel( opacity = 1F)
+    val customTextStyleLabel = getCustomTextStyleLabel( fontSize = 10.sp, opacity = 1F)
     Column(modifier = Modifier.fillMaxWidth()) {
 
         // MultiAutoCompleteTextView
@@ -310,14 +324,16 @@ fun PersonalityTest(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(50.dp, 150.dp)
-            .padding(0.dp,15.dp,0.dp,0.dp)
+            .padding(0.dp,8.dp,0.dp,0.dp)
     ){
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .border(2.dp, Color(0xFFB39DB7), shape = RoundedCornerShape(8.dp))
+                .padding(2.dp,6.dp,2.dp,2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BodyText(label = question)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth()
                     .padding(30.dp,0.dp,30.dp,0.dp),
@@ -358,7 +374,7 @@ fun PersonalityTest(
             }
             Row(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(20.dp,15.dp,25.dp,5.dp),
+                    .padding(20.dp,5.dp,25.dp,5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 LabelText(
@@ -389,17 +405,17 @@ fun BirthdateQuestion(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val customTextStyle = getCustomTextStyle()
-        val customTextStyleLabel = getCustomTextStyleLabel( fontSize = 20.sp)
+        val customTextStyleLabel = getCustomTextStyleLabel( fontSize = 10.sp, opacity = 1F)
 
         // Month EditText
         TextField(
             value = monthValue,
             onValueChange = onMonthChanged,
             modifier = Modifier
-                .width(90.dp)
+                .width(80.dp)
                 .height(IntrinsicSize.Min),
             textStyle = customTextStyle,
-            placeholder = { Text(text = "M M", style = customTextStyleLabel) },
+            label = { Text(text = "Month", style = customTextStyleLabel) },
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = AppTheme.colorScheme.primary, // Set cursor color
                 focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
@@ -425,7 +441,7 @@ fun BirthdateQuestion(
                 .height(IntrinsicSize.Min)
                 .padding(start = 5.dp),
             textStyle = customTextStyle,
-            placeholder = { Text(text = "D D", style = customTextStyleLabel) },
+            label = { Text(text = "Day", style = customTextStyleLabel) },
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = AppTheme.colorScheme.primary, // Set cursor color
                 focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
@@ -447,11 +463,11 @@ fun BirthdateQuestion(
             value = yearValue,
             onValueChange = onYearChanged,
             modifier = Modifier
-                .width(150.dp)
+                .width(120.dp)
                 .height(IntrinsicSize.Min)
                 .padding(start = 10.dp),
             textStyle = customTextStyle,
-            placeholder = { Text(text = "Y Y Y Y", style = customTextStyleLabel) },
+            label = { Text(text = "Year", style = customTextStyleLabel) },
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = AppTheme.colorScheme.primary, // Set cursor color
                 focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color

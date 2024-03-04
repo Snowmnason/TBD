@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,7 +37,7 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
     var showDialog by remember { mutableStateOf(false) }
-    var questionIndex by remember { mutableIntStateOf(0) }
+    var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     val onNameChanged: (String, Int) -> Unit = { newAnswer, index -> userInfoArray[index] = newAnswer }
     val onPhotoChanged: (String, String, String, String) -> Unit = { newAnswer1, newAnswer2, newAnswer3, newAnswer4 ->
         userInfoArray[10] = newAnswer1
@@ -44,7 +45,7 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
         userInfoArray[12] = newAnswer3
         userInfoArray[13] = newAnswer4}
     val onIndexChange: (Int, Int) -> Unit = { newAnswer, index -> indexArray[index] = newAnswer }
-    var isButtonEnabled by remember { mutableStateOf(false) }
+    var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
     BackButton(onClick = {
         if(isFirstScreen){
             showDialog = true

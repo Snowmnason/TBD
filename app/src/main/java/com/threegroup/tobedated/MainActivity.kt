@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -34,9 +33,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme{
-                PolkaDotCanvas()
-                    val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
-                    SplashScreen(photo)
+                    PolkaDotCanvas()
+                    SplashScreen()
                 }
         }
         lifecycleScope.launch {
@@ -51,8 +49,8 @@ class MainActivity : ComponentActivity() {
     private fun checkLogin(check:Boolean){
         if (check){
             //Change this to main activity
-            val intent = Intent(this,SignUpActivity::class.java)
-            //val intent = Intent(this,DatingActivity::class.java)
+            //val intent = Intent(this,SignUpActivity::class.java)
+            val intent = Intent(this,DatingActivity::class.java)
             startActivity(intent)
             finish()
         }else{
@@ -66,7 +64,8 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun SplashScreen(photo:Painter) {
+fun SplashScreen() {
+    val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
     Box(
         modifier = Modifier
             .fillMaxSize()

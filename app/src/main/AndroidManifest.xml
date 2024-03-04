@@ -22,22 +22,35 @@
         android:theme="@style/Theme.ToBeDated"
         tools:targetApi="31">
         <activity
+            android:name=".DatingActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+        <activity
+            android:name=".FriendsActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+        <activity
             android:name=".SignUpActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
             android:name=".LoginActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"/>
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ToBeDated"
-            tools:ignore="LockedOrientationActivity">
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

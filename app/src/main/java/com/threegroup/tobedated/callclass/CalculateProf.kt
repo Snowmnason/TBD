@@ -56,18 +56,18 @@ fun checkYear(year:Int, day:Int, month:Int):Int{
 }
 fun checkMonth(day:Int, year:Int):IntArray{
     if(day <= 28){
-        return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12)
+        return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
     }
     else if((year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))){
-        return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12)
+        return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
     }
     else if(day <= 30){
-        return intArrayOf(1, 3, 4, 5, 6, 7, 8, 9, 11, 12)
+        return intArrayOf(1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
     }
     else if(day <= 31){
         return intArrayOf(1, 3, 5, 7, 8, 10, 12)
     }
-    return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12)
+    return intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 }
 fun checkBirthDate(year: Int, month: Int, day: Int): Boolean {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)

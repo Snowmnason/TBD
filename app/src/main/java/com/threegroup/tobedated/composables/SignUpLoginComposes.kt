@@ -156,10 +156,12 @@ fun SignUpFormat(
         modifier = Modifier
             .fillMaxSize()
             .padding(25.dp, 20.dp, 25.dp, 0.dp)
+
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                //.background(AppTheme.colorScheme.surface)
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             // Title
@@ -331,9 +333,9 @@ fun PersonalityTest(
                         else -> 0F
                     }
                     val color:RadioButtonColors = when (index) {
-                        0, 1, 2 -> agreeColors
+                        0, 1, 2 -> disagreeColors
                         3 -> naturalColors
-                        4, 5, 6 -> disagreeColors
+                        4, 5, 6 -> agreeColors
                         else -> naturalColors
                     }
                     Column(

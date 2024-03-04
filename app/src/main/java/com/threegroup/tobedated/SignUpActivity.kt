@@ -74,10 +74,10 @@ class SignUpActivity : ComponentActivity() {
         finish()
     }
 
-    fun goNextScreen() {//TODO
-//        val Intent = Intent(this, ProfileActivity::class.java)
-//        startActivity(Intent)
-//        finish()
+    fun goNextScreen() {
+        val intent = Intent(this, DatingActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     fun storeData() {
@@ -379,7 +379,7 @@ fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Strin
     }
     SignUpFormat(
         title = "Your sex",
-        label = "What search category will you be in?\nYes please", //TODO
+        label = "What search category will you be in?",
         enterField = {
             val opts = listOf("Male", "Female", "Other")
             RadioButtonGroup(

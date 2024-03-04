@@ -22,16 +22,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.AppTheme.colorScheme
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -41,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     SplashScreen(photo)
                 }
         }
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
             val userToken = sharedPreferences.getString("firebase_user_token", null)
             delay(100)
@@ -54,7 +52,7 @@ class MainActivity : ComponentActivity() {
         if (check){
             //Change this to main activity
             val intent = Intent(this,SignUpActivity::class.java)
-            //            val intent = Intent(this,DatingFragment::class.java)
+            //val intent = Intent(this,DatingActivity::class.java)
             startActivity(intent)
             finish()
         }else{

@@ -1,5 +1,6 @@
 package com.threegroup.tobedated
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -96,11 +97,8 @@ class LoginActivity : ComponentActivity() {
             AppTheme{
                 PolkaDotCanvas()
                 Nav()
-                //val navController = rememberNavController()
-                //VerificationCodeView(navController)
             }
         }
-
     }
     private fun sendOtp(number: String) {
         userPhoneNumber = number
@@ -158,12 +156,12 @@ class LoginActivity : ComponentActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    /*TODO I think this is what we need for auto login
+                    /*TODO I think this is what we need for auto login*/
                     val user = FirebaseAuth.getInstance().currentUser
                     user?.getIdToken(true)
-                        ?.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val idToken = task.result?.token
+                        ?.addOnCompleteListener { task2 ->
+                            if (task2.isSuccessful) {
+                                val idToken = task2.result?.token
                                 val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
                                 val editor = sharedPreferences.edit()
                                 editor.putString("firebase_user_token", idToken)
@@ -171,7 +169,7 @@ class LoginActivity : ComponentActivity() {
                             } else {
                                 // Handle error getting user token
                             }
-                        }*/
+                        }
                     checkUserExist()
                 }else{
                     Toast.makeText(this, "Incorrect code", Toast.LENGTH_SHORT).show()
@@ -198,9 +196,9 @@ class LoginActivity : ComponentActivity() {
 
     private fun switchAct(exists:Int) {
         if (exists == 1) {
-//            val intent = Intent(this, DatingFragment::class.java) TODO
-//            startActivity(intent)
-//            finish()
+            val intent = Intent(this, DatingActivity::class.java)
+            startActivity(intent)
+            finish()
         } else {
             val i = Intent(this, SignUpActivity::class.java)
             i.putExtra("userPhone", userPhoneNumber)
@@ -542,7 +540,6 @@ fun VerificationCodeView(navController: NavHostController) {
     BigButton(
         text = "Enter",
         onClick = {
-            //sendOtp(phoneNumber)
             controller?.hide()
             if (codeString == "694200") { // Correct verification code
                 checkUserExist()//TODO

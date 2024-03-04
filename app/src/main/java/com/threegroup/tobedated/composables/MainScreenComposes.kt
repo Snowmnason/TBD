@@ -132,7 +132,7 @@ fun TypicallyDisplay(
                     .fillMaxSize()
                     .verticalScroll(state)
                 ){
-                    currentScreen()
+                    currentScreen() //All 5 screens go here
                 }
         }
     }

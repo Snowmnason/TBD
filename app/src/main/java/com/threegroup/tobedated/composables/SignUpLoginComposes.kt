@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -32,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -177,13 +180,14 @@ fun SignUpFormat(
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 //Enter Field   Maybe add scroll thing
-                /*val state = rememberScrollState()
+                val state = rememberScrollState()
                 LaunchedEffect(Unit) { state.animateScrollTo(100) }
                 Column(
                     Modifier.fillMaxSize()
                         .verticalScroll(state)
-                ){}*/
-                enterField()
+                ){
+                    enterField()
+                }
                 //Fun Label
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelText(

@@ -7,9 +7,11 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +21,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -35,24 +41,41 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlin.math.ceil
 
 @Composable
@@ -307,3 +330,127 @@ fun PolkaDotCanvas() {
         }
     }
 }
+@Composable
+fun BasicPicker(
+    values:List<String>,// (1..99).map { it.toString() } }
+    valuesPickerState: PickerState,
+    style: TextStyle = AppTheme.typography.titleSmall,
+    start:Int = 0,
+    visible:Int = 3,
+) {
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Picker(
+                    state = valuesPickerState,
+                    items = values,
+                    visibleItemsCount = visible,
+                    modifier = Modifier.weight(0.3f),
+                    startIndex = start,
+                    textModifier = Modifier.padding(8.dp),
+                    textStyle = style
+                )
+            }
+
+        }
+    }
+}
+@Composable
+fun rememberPickerState() = remember { PickerState() }
+
+class PickerState {
+    var selectedItem by mutableStateOf("")
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Picker(
+    modifier: Modifier = Modifier,
+    items: List<String>,
+    state: PickerState = rememberPickerState(),
+    startIndex: Int = 0,
+    visibleItemsCount: Int = 3,
+    textModifier: Modifier = Modifier,
+    textStyle: TextStyle = AppTheme.typography.titleMedium,
+    dividerColor: Color = AppTheme.colorScheme.primary,
+) {
+
+    val visibleItemsMiddle = visibleItemsCount / 2
+    val listScrollCount = items.size+2
+    val listScrollMiddle = listScrollCount / 2
+    val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+
+    fun getItem(index: Int) = items[index % items.size]
+
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    val itemHeightPixels = remember { mutableIntStateOf(0) }
+    val itemHeightDp = pixelsToDp(itemHeightPixels.intValue)
+
+    val fadingEdgeGradient = remember {
+        Brush.verticalGradient(
+            0f to Color.Transparent,
+            0.5f to Color.Black,
+            1f to Color.Transparent
+        )
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .map { index -> getItem(index + visibleItemsMiddle) }
+            .distinctUntilChanged()
+            .collect { item -> state.selectedItem = item }
+    }
+
+    Box(modifier = modifier) {
+
+        LazyColumn(
+            state = listState,
+            flingBehavior = flingBehavior,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeightDp * visibleItemsCount)
+                .fadingEdge(fadingEdgeGradient)
+        ) {
+            items(listScrollCount) { index ->
+                Text(
+                    text = getItem(index),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = textStyle,
+                    modifier = Modifier
+                        .onSizeChanged { size -> itemHeightPixels.intValue = size.height }
+                        .then(textModifier)
+                )
+            }
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
+            color = dividerColor
+        )
+
+        HorizontalDivider(
+            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
+            color = dividerColor
+        )
+
+    }
+
+}
+
+private fun Modifier.fadingEdge(brush: Brush) = this
+    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+    .drawWithContent {
+        drawContent()
+        drawRect(brush = brush, blendMode = BlendMode.DstIn)
+    }
+
+@Composable
+private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }

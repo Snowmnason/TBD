@@ -6,6 +6,7 @@ data class UserModel(
     val pronoun : String? = "", // How do you go by?
     val gender : String? = "", // identify as?
     val sexOrientation :String? = "", // sexual preference
+    val hieght: String? = "",
     val seeking : String? = "", // looking for?
     val sex : String? = "", // What search category will you be in?
     val testResultsMbti : String? = "", // MBTI test

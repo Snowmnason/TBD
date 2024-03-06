@@ -31,10 +31,15 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -161,7 +166,7 @@ fun SignUpFormat(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(0.dp, 65.dp, 0.dp, 0.dp)
+            .padding(0.dp, 65.dp, 0.dp, 65.dp)
     ) {
         Surface(
             modifier = Modifier
@@ -169,25 +174,19 @@ fun SignUpFormat(
                 color = AppTheme.colorScheme.surface,
                 shape = RoundedCornerShape(10.dp)
         ) {
+            val state = rememberScrollState()
+            LaunchedEffect(Unit) { state.animateScrollTo(0) }
             Column(
                 modifier = Modifier
-                .padding(15.dp, 15.dp, 15.dp, 15.dp)
+                    .padding(15.dp)
+                    .verticalScroll(state)
+                    .fillMaxSize()
 
             ) {
                 // Title
-                TitleText(
-                    title = title
-                )
+                TitleText(title = title)
                 Spacer(modifier = Modifier.height(5.dp))
-                //Enter Field   Maybe add scroll thing
-                val state = rememberScrollState()
-                LaunchedEffect(Unit) { state.animateScrollTo(100) }
-                Column(
-                    Modifier.fillMaxSize()
-                        .verticalScroll(state)
-                ){
-                    enterField()
-                }
+                enterField()
                 //Fun Label
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelText(
@@ -328,19 +327,21 @@ fun PersonalityTest(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(50.dp, 150.dp)
-            .padding(0.dp,8.dp,0.dp,0.dp)
+            .padding(0.dp, 8.dp, 0.dp, 0.dp)
     ){
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .border(2.dp, Color(0xFFB39DB7), shape = RoundedCornerShape(8.dp))
-                .padding(2.dp,6.dp,2.dp,2.dp),
+                .padding(2.dp, 6.dp, 2.dp, 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BodyText(label = question)
             Spacer(modifier = Modifier.height(12.dp))
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(30.dp,0.dp,30.dp,0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(30.dp, 0.dp, 30.dp, 0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
@@ -377,8 +378,9 @@ fun PersonalityTest(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(20.dp,5.dp,25.dp,5.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp, 5.dp, 25.dp, 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 LabelText(
@@ -506,7 +508,8 @@ fun PhotoQuestion(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Row(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -516,7 +519,8 @@ fun PhotoQuestion(
             }
             Spacer(modifier = Modifier.width(2.dp))
             Row(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -558,4 +562,50 @@ fun PFPPhotoButton(
             )
         }
     )
+}
+@Composable
+fun HeightQuestion(
+    feet:List<String>,
+    cm:List<String>,
+    pickedState:PickerState
+) {
+    Column {
+        var checked by remember { mutableStateOf(false) }
+        Box(Modifier.height(275.dp)) {
+            if (!checked) {
+                BasicPicker(
+                    values = feet,
+                    valuesPickerState = pickedState,
+                    style = AppTheme.typography.titleMedium,
+                    start = feet.size / 2,
+                    visible = 5
+                )
+            } else {
+                BasicPicker(
+                    values = cm,
+                    valuesPickerState = pickedState,
+                    style = AppTheme.typography.titleMedium,
+                    start = cm.size / 2,
+                    visible = 5
+                )
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Ft",
+                style = AppTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            Switch(
+                checked = checked,
+                onCheckedChange = { checked = it },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            Text(
+                text = "Cm",
+                style = AppTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+    }
 }

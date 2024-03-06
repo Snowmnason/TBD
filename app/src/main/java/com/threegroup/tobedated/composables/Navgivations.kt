@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.threegroup.tobedated.BioScreen
 import com.threegroup.tobedated.BirthScreen
 import com.threegroup.tobedated.GenderScreen
+import com.threegroup.tobedated.HeightScreen
 import com.threegroup.tobedated.MbtiScreen
 import com.threegroup.tobedated.NameScreen
 import com.threegroup.tobedated.OurTestScreen
@@ -98,6 +99,9 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
         composable(route = SignUp.SexOriScreen.name) {
             SexOriScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
+        composable(route = SignUp.HieghtScreen.name) {
+            HeightScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+        }
         composable(route = SignUp.SearchScreen.name) {
             SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
@@ -143,7 +147,8 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                 SignUp.BirthScreen.name -> SignUp.PronounScreen.name
                 SignUp.PronounScreen.name -> SignUp.GenderScreen.name
                 SignUp.GenderScreen.name -> SignUp.SexOriScreen.name
-                SignUp.SexOriScreen.name -> SignUp.SearchScreen.name
+                SignUp.SexOriScreen.name -> SignUp.HieghtScreen.name
+                SignUp.HieghtScreen.name -> SignUp.SearchScreen.name
                 SignUp.SearchScreen.name -> SignUp.SexScreen.name
                 SignUp.SexScreen.name -> SignUp.MbtiScreen.name
                 SignUp.MbtiScreen.name -> SignUp.OurTestScreen.name
@@ -157,7 +162,7 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                     signUpActivity.goNextScreen()
                 }
             }
-            //println(userInfoArray.joinToString(separator = ", "))
+            println(userInfoArray.joinToString(separator = ", "))
             nextDestination?.let { navController.navigate(it) }
         },
         isUse = isButtonEnabled

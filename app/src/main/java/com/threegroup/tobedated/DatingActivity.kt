@@ -25,8 +25,6 @@ class DatingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                //PolkaDotCanvas()
-                //TypicallyDisplay()
                 SearchingScreen()
             }
         }

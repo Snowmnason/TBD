@@ -1,6 +1,7 @@
 package com.threegroup.tobedated.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -133,7 +135,8 @@ fun TopAndBotBars(
             containerColor = Color.Transparent,
             bottomBar = {
                 NavigationBar(
-                    containerColor = AppTheme.colorScheme.background,
+                    containerColor = AppTheme.colorScheme.onTertiary,
+                    modifier = Modifier.height(46.dp)
                 ) {
                     items.forEachIndexed { index, item ->
                         NavigationBarItem(
@@ -148,7 +151,7 @@ fun TopAndBotBars(
                             ),
                             selected = selectedItemIndex == index,
                             onClick = { selectedItemIndex = index },//HANDLE NAVIGATION
-                            label = { Text(text = item.title) },
+                            label = {  },
                             alwaysShowLabel = false,
                             icon = {
                                 BadgedBox(
@@ -176,8 +179,9 @@ fun TopAndBotBars(
             },
             topBar = {
                 CenterAlignedTopAppBar(
+                    modifier = Modifier.height(46.dp),
                     colors = TopAppBarColors(
-                        containerColor = AppTheme.colorScheme.background,
+                        containerColor = AppTheme.colorScheme.onTertiary,
                         navigationIconContentColor = AppTheme.colorScheme.primary,
                         titleContentColor = AppTheme.colorScheme.secondary,
                         actionIconContentColor = AppTheme.colorScheme.primary,
@@ -208,10 +212,12 @@ fun TopAndBotBars(
             LaunchedEffect(Unit) { state.animateScrollTo(0) }
             Column(
                 Modifier
+                    .background(AppTheme.colorScheme.background)
                     .padding(paddingValues)
                     .verticalScroll(state)
                     .fillMaxSize()
             ){
+                Spacer(modifier = Modifier.height(24.dp))
                     currentScreen() //All 5 screens go here
             }
         }
@@ -225,7 +231,7 @@ fun TopBarText(
 ){
     if(isPhoto){
         val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
-        Box(modifier = Modifier.height(30.dp)){
+        Box(modifier = Modifier.height(30.dp).offset(y = (6).dp)){
             Image(painter = photo, contentDescription = "Logo")
         }
     }else{
@@ -244,8 +250,8 @@ fun SimpleBox(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, Color(0xFFB39DB7), shape = RoundedCornerShape(4.dp)),
-        color = AppTheme.colorScheme.surface,
-        contentColor = AppTheme.colorScheme.onSurface,
+        color = AppTheme.colorScheme.background,
+        contentColor = AppTheme.colorScheme.onBackground,
         shape = RoundedCornerShape(4.dp)
     ){
         Box(modifier = Modifier.padding(4.dp, 8.dp)){
@@ -286,11 +292,12 @@ fun UserInfo(
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ) {
+        //Name
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
                 Text(text = name, style = AppTheme.typography.titleMedium)
             }
-        })
+        })//Age, Pronouns, Gender
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
@@ -299,6 +306,9 @@ fun UserInfo(
                 Text(text = pronouns, style = AppTheme.typography.titleLarge)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Text(text = gender, style = AppTheme.typography.titleLarge)
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.height), contentDescription = "Height", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = height, style = AppTheme.typography.titleSmall)
             }
         })
         Spacer(modifier = Modifier.height(12.dp))
@@ -338,7 +348,7 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ1, style = AppTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(text = promptQ1, style = AppTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = promptA1, style = AppTheme.typography.bodySmall)
             }
@@ -354,7 +364,7 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ2, style = AppTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(text = promptQ2, style = AppTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = promptA2, style = AppTheme.typography.bodySmall)
             }
@@ -362,20 +372,20 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.smoking), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.smoking), contentDescription = "Weeds", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = smokes, style = AppTheme.typography.titleLarge)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.drinking), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.drinking), contentDescription = "Weeds", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = drinks, style = AppTheme.typography.titleLarge)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.weeds), contentDescription = "Weeds", Modifier.size(25.dp))
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.weeds), contentDescription = "Weeds", Modifier.size(20.dp), tint = AppTheme.colorScheme.primary)
                 Text(text = weeds, style = AppTheme.typography.titleLarge)
             }
         })
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ3, style = AppTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(text = promptQ3, style = AppTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = promptA3, style = AppTheme.typography.bodySmall)
             }
@@ -383,13 +393,13 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.work), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.work), contentDescription = "work", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = work, style = AppTheme.typography.titleSmall)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.school), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.school), contentDescription = "School", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = school, style = AppTheme.typography.titleSmall)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.children), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.children), contentDescription = "Children", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = kids, style = AppTheme.typography.titleSmall)
             }
         })
@@ -399,11 +409,9 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.exercise), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.exercise), contentDescription = "Exercise", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = exercise, style = AppTheme.typography.titleSmall)
-                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.height), contentDescription = "Weeds")
-                Text(text = height, style = AppTheme.typography.titleSmall)
+
             }
         })
         /*
@@ -412,10 +420,10 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.politics), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.politics), contentDescription = "Politics", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = politics, style = AppTheme.typography.titleSmall)
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.religion), contentDescription = "Weeds")
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.religion), contentDescription = "Religion", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
                 Text(text = religion, style = AppTheme.typography.titleSmall)
             }
         })

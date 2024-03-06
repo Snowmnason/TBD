@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.TopAndBotBars
 import com.threegroup.tobedated.composables.UserInfo
 import com.threegroup.tobedated.ui.theme.AppTheme
@@ -26,9 +25,9 @@ class DatingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                PolkaDotCanvas()
+                //PolkaDotCanvas()
                 //TypicallyDisplay()
-                ProfileScreen()
+                SearchingScreen()
             }
         }
     }
@@ -54,7 +53,7 @@ ISTP ISFP ESTP ESFP 71531e
 
 */
 @Composable
-fun ProfileScreen(){
+fun SearchingScreen(){
     val profileEdit by remember { mutableStateOf("Profile")}
     TopAndBotBars(
         notifiChat = notifiChat,
@@ -68,7 +67,7 @@ fun ProfileScreen(){
                 bio = "WORDS WORDS \n WORDS WORDS WORDS",
                 age = "24",
                 pronouns = "They/Them",
-                gender = "Other",
+                gender = "Non-Binary",
                 sign = "i",
                 mbti = "ISTP-T",
                 promptQ1 = "Do you even?",
@@ -95,7 +94,7 @@ fun ProfileScreen(){
     )
 }
 @Composable
-fun SearchingScreen(){
+fun ProfileScreen(){
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,

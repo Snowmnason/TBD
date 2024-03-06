@@ -4,12 +4,9 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -27,7 +24,7 @@ val darkColorScheme = AppColorScheme(
     onSurface = onSurDark,
     onPrimary = onLight,
     onSecondary = onLight,
-    onTertiary = onLight
+    onTertiary = barDark
 )
 
 val lightColorScheme = AppColorScheme(
@@ -40,7 +37,7 @@ val lightColorScheme = AppColorScheme(
     onSurface = onSurLight,
     onPrimary = onLight,
     onSecondary = onLight,
-    onTertiary = onLight
+    onTertiary = barLight
 )
 
 

@@ -452,7 +452,7 @@ fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, 
     val questionNumber = 8
     var mbti by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     updateButtonState("mbti")//Don'tWork??
-    val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3")
+    val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3", "MBTI TEST QUESTION 4", "MBTI QUESTION 5", "MBTI 6")
     DisposableEffect(mbti) {
         onDispose {
             onAnswerChanged(mbti, questionNumber)

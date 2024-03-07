@@ -16,7 +16,8 @@ val barDark = Color(0xFF121113)
 
 val prim = Color(0xFFe66efe)
 val sec = Color(0xFF9e6efe)
+//val prim = Color(0xFF904fb4)
+//val sec = Color(0xFFb44fa6)
 val tri = Color(0xFFfe6ece)
 
-val shadow = Color(0xFFe66efe)
-val shadowWithOpacity = shadow.copy(alpha = 0.75f)
+val shadowWithOpacity = prim.copy(alpha = 0.75f)

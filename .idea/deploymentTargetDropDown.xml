@@ -15,14 +15,23 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-04T04:24:15.313127100Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-03-07T00:11:29.480712600Z" />
           <targetsSelectedWithDialog>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\tvguy\.android\avd\FastPHone_API_34.avd" />
+                  <value value="C:\Users\tvguy\.android\avd\Pixel_7a_API_34.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\tvguy\.android\avd\Pixel_7a_Dark.avd" />
                 </Key>
               </deviceKey>
             </Target>

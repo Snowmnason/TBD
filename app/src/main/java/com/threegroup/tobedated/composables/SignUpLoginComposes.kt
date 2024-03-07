@@ -326,7 +326,7 @@ fun PersonalityTest(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(50.dp, 150.dp)
+            .heightIn(50.dp, 130.dp)
             .padding(0.dp, 8.dp, 0.dp, 0.dp)
     ){
         Column(
@@ -471,7 +471,7 @@ fun BirthdateQuestion(
             modifier = Modifier
                 .width(120.dp)
                 .height(IntrinsicSize.Min)
-                .padding(start = 10.dp),
+                .padding(start = 2.dp),
             textStyle = customTextStyle,
             label = { Text(text = "Year", style = customTextStyleLabel) },
             colors = OutlinedTextFieldDefaults.colors(

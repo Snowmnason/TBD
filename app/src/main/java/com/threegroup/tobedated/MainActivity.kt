@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
     private fun checkLogin(check:Boolean){
         if (check){
             //Change this to main activity
-            val intent = Intent(this,SignUpActivity::class.java)
+            val intent = Intent(this,SignUpActivity::class.java)//This is for testing
             //val intent = Intent(this,DatingActivity::class.java)
             startActivity(intent)
             finish()

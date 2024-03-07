@@ -19,32 +19,42 @@ import androidx.navigation.compose.rememberNavController
 import com.threegroup.tobedated.BioScreen
 import com.threegroup.tobedated.BirthScreen
 import com.threegroup.tobedated.ChatsScreen
+import com.threegroup.tobedated.ChildrenScreen
 import com.threegroup.tobedated.Dating
+import com.threegroup.tobedated.DrinkScreen
+import com.threegroup.tobedated.EducationScreen
 import com.threegroup.tobedated.EthnicityScreen
+import com.threegroup.tobedated.FamilyScreen
 import com.threegroup.tobedated.GenderScreen
 import com.threegroup.tobedated.GroupsScreen
 import com.threegroup.tobedated.HeightScreen
+import com.threegroup.tobedated.IntentionsScreen
 import com.threegroup.tobedated.MbtiScreen
 import com.threegroup.tobedated.MessagerScreen
 import com.threegroup.tobedated.NameScreen
 import com.threegroup.tobedated.OurTestScreen
 import com.threegroup.tobedated.PhotoScreen
+import com.threegroup.tobedated.PoliticsScreen
 import com.threegroup.tobedated.ProfileScreen
 import com.threegroup.tobedated.PronounScreen
+import com.threegroup.tobedated.RelationshipScreen
+import com.threegroup.tobedated.ReligiousScreen
 import com.threegroup.tobedated.SearchScreen
 import com.threegroup.tobedated.SearchingScreen
 import com.threegroup.tobedated.SexOriScreen
 import com.threegroup.tobedated.SexScreen
 import com.threegroup.tobedated.SignUp
 import com.threegroup.tobedated.SignUpActivity
+import com.threegroup.tobedated.SmokeScreen
 import com.threegroup.tobedated.SomeScreen
 import com.threegroup.tobedated.StarScreen
+import com.threegroup.tobedated.WeedScreen
 import com.threegroup.tobedated.WelcomeScreen
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, indexArray:Array<Int>) {
-    val photoQuestion = 13
+    val photoQuestion = 23
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
@@ -132,6 +142,40 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
         composable(route = SignUp.OurTestScreen.name) {
             OurTestScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
+        composable(route = SignUp.ChildrenScreen.name) {
+            ChildrenScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.FamilyScreen.name) {
+            FamilyScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.EducationScreen.name) {
+            EducationScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.SexScreen.name) {
+            SexScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.ReligiousScreen.name) {
+            ReligiousScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.PoliticsScreen.name) {
+            PoliticsScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.RelationshipScreen.name) {
+            RelationshipScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.IntentionsScreen.name) {
+            IntentionsScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.DrinkScreen.name) {
+            DrinkScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.SmokeScreen.name) {
+            SmokeScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+        composable(route = SignUp.WeedScreen.name) {
+            WeedScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
+
         composable(route = SignUp.BioScreen.name) {
             BioScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonStateBio)
         }
@@ -167,12 +211,22 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                 SignUp.GenderScreen.name -> SignUp.HieghtScreen.name
                 SignUp.HieghtScreen.name -> SignUp.EthnicityScreen.name
                 SignUp.EthnicityScreen.name -> SignUp.StarScreen.name
-                SignUp.StarScreen.name -> SignUp.SexOriScreen.name
+                SignUp.StarScreen.name ->  SignUp.SexOriScreen.name
                 SignUp.SexOriScreen.name -> SignUp.SearchScreen.name
                 SignUp.SearchScreen.name -> SignUp.SexScreen.name
                 SignUp.SexScreen.name -> SignUp.MbtiScreen.name
                 SignUp.MbtiScreen.name -> SignUp.OurTestScreen.name
-                SignUp.OurTestScreen.name -> SignUp.BioScreen.name
+                SignUp.OurTestScreen.name -> SignUp.ChildrenScreen.name
+                SignUp.ChildrenScreen.name -> SignUp.FamilyScreen.name
+                SignUp.FamilyScreen.name -> SignUp.EducationScreen.name
+                SignUp.EducationScreen.name -> SignUp.ReligiousScreen.name
+                SignUp.ReligiousScreen.name -> SignUp.PoliticsScreen.name
+                SignUp.PoliticsScreen.name -> SignUp.RelationshipScreen.name
+                SignUp.RelationshipScreen.name -> SignUp.IntentionsScreen.name
+                SignUp.IntentionsScreen.name -> SignUp.DrinkScreen.name
+                SignUp.DrinkScreen.name -> SignUp.SmokeScreen.name
+                SignUp.SmokeScreen.name -> SignUp.WeedScreen.name
+                SignUp.WeedScreen.name -> SignUp.BioScreen.name
                 SignUp.BioScreen.name -> SignUp.PhotoScreen.name
                 else -> null // Handle unknown destinations or end of flow
             }

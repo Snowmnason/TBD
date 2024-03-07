@@ -13,6 +13,16 @@ data class UserModel(
     val sex : String? = "", // What search category will you be in?
     val testResultsMbti : String? = "", // MBTI test
     val testResultTbd : String? = "", // our test
+    val children: String? = "",
+    val family: String? = "",
+    val education: String? = "",
+    val religious: String? = "",
+    val politics: String? = "",
+    val relationship: String? = "",
+    val intentions: String? = "",
+    val drink: String? = "",
+    val smoke: String? = "",
+    val weed: String? = "",
     val bio : String? = "", // Tell us about yourself
     val image1 : String? = "", // 1st image
     val image2 : String? = "", // 2nd image

@@ -38,12 +38,13 @@ import com.threegroup.tobedated.SexScreen
 import com.threegroup.tobedated.SignUp
 import com.threegroup.tobedated.SignUpActivity
 import com.threegroup.tobedated.SomeScreen
+import com.threegroup.tobedated.StarScreen
 import com.threegroup.tobedated.WelcomeScreen
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, indexArray:Array<Int>) {
-    val photoQuestion = 12
+    val photoQuestion = 13
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
@@ -116,6 +117,9 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
         composable(route = SignUp.EthnicityScreen.name) {
             EthnicityScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
+        composable(route = SignUp.StarScreen.name) {
+            StarScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
         composable(route = SignUp.SearchScreen.name) {
             SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
@@ -162,8 +166,8 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                 SignUp.PronounScreen.name -> SignUp.GenderScreen.name
                 SignUp.GenderScreen.name -> SignUp.HieghtScreen.name
                 SignUp.HieghtScreen.name -> SignUp.EthnicityScreen.name
-                SignUp.EthnicityScreen.name -> SignUp.SexOriScreen.name
-
+                SignUp.EthnicityScreen.name -> SignUp.StarScreen.name
+                SignUp.StarScreen.name -> SignUp.SexOriScreen.name
                 SignUp.SexOriScreen.name -> SignUp.SearchScreen.name
                 SignUp.SearchScreen.name -> SignUp.SexScreen.name
                 SignUp.SexScreen.name -> SignUp.MbtiScreen.name

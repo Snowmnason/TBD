@@ -5,8 +5,9 @@ data class UserModel(
     val birthday : String? = "", // use to calculate age later
     val pronoun : String? = "", // How do you go by?
     val gender : String? = "", // identify as?
-    val ethnicity: String? = "",
     val hieght: String? = "",
+    val ethnicity: String? = "",
+    val star: String? = "",
     val sexOrientation :String? = "", // sexual preference
     val seeking : String? = "", // looking for?
     val sex : String? = "", // What search category will you be in?

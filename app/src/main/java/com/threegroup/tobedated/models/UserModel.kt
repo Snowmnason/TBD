@@ -5,8 +5,9 @@ data class UserModel(
     val birthday : String? = "", // use to calculate age later
     val pronoun : String? = "", // How do you go by?
     val gender : String? = "", // identify as?
-    val sexOrientation :String? = "", // sexual preference
+    val ethnicity: String? = "",
     val hieght: String? = "",
+    val sexOrientation :String? = "", // sexual preference
     val seeking : String? = "", // looking for?
     val sex : String? = "", // What search category will you be in?
     val testResultsMbti : String? = "", // MBTI test
@@ -18,5 +19,6 @@ data class UserModel(
     val image4 : String? = "", // 4th image
     val age : String? = "", // need to calculate from birthday
     val location : String? = "", // use GPS location
-    val status : String? = "" // online/active status could remove
+    val status : String? = "", // online/active status could remove
+    val number:String = ""
 )

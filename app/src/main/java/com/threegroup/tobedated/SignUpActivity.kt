@@ -57,8 +57,8 @@ import com.threegroup.tobedated.ui.theme.AppTheme
 import java.util.Calendar
 
 class SignUpActivity : ComponentActivity() {
-    private val indexArray = Array(5) { -1 }
-    private val userInfoArray = Array(15) { "" }
+    private val indexArray = Array(6) { -1 }
+    private val userInfoArray = Array(16) { "" }
     private var userLoginInfo: String = "" //This is the users phone number
     override fun onCreate(savedInstanceState: Bundle?) {
         userLoginInfo = intent.getStringExtra("userPhone").toString()
@@ -90,20 +90,22 @@ class SignUpActivity : ComponentActivity() {
             birthday = userInfoArray[1],
             pronoun = userInfoArray[2],
             gender = userInfoArray[3],
-            sexOrientation = userInfoArray[4],
-            hieght = userInfoArray [5],
-            seeking = userInfoArray[6],
-            sex = userInfoArray[7],
-            testResultsMbti = userInfoArray[8],
-            testResultTbd = userInfoArray[9],
-            bio = userInfoArray[10],
+            hieght = userInfoArray [4],
+            ethnicity = userInfoArray[5],
+            sexOrientation = userInfoArray[6],
+            seeking = userInfoArray[7],
+            sex = userInfoArray[8],
+            testResultsMbti = userInfoArray[9],
+            testResultTbd = userInfoArray[10],
+            bio = userInfoArray[11],
             image1 = userInfoArray[12],
             image2 = userInfoArray[13],
             image3 = userInfoArray[14],
             image4 = userInfoArray[15],
             age = calcAge(userInfoArray[1].split("/")),
             location = getCurrentLocation(),
-            status = "Active"
+            status = "Active",
+            number = userLoginInfo,
         )
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null && currentUser.phoneNumber != null) {
@@ -323,39 +325,10 @@ fun GenderScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
             ) },
     )
 }
-@Composable
-fun SexOriScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 4
-    val radioQuestionNumber = 2
-    var sexOri by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(sexOri)
-    DisposableEffect(sexOri, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(sexOri, questionNumber)
-        }
-    }
-    SignUpFormat(
-        title = "Sexual Orientation",
-        label = "Who do you like?",
-        enterField = {
-            val opts = listOf("Androsexual", "Asexual", "Bisexual", "Demisexuality", "Gynesexual", "HeteroSexual", "Pansexual", "Queer", "Questioning", "Ask Me")
-            RadioButtonGroup(
-                options = opts,
-                selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    sexOri = opts[selectedOptionIndex]
-                },
-                style = AppTheme.typography.titleMedium
-            )
-        },
-    )
-}
 
 @Composable
 fun HeightScreen(userInfo: Array<String>,  onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 5
+    val questionNumber = 4
     var height by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     updateButtonState(height)
     DisposableEffect(height) {
@@ -390,9 +363,68 @@ fun HeightScreen(userInfo: Array<String>,  onAnswerChanged: (String, Int) -> Uni
         })
 }
 @Composable
-fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
+fun EthnicityScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
+    val questionNumber = 5
+    val radioQuestionNumber = 2
+    var search by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
+    updateButtonState(search)
+    DisposableEffect(search, selectedOptionIndex) {
+        onDispose {
+            onIndexChange(selectedOptionIndex, radioQuestionNumber)
+            onAnswerChanged(search, questionNumber)
+        }
+    }
+    SignUpFormat(
+        title = "Ethnicity",
+        label = "We curious on where you are from!",
+        enterField = {
+            val opts = listOf("Black/African Descent", "East Asian", "Hispanic/Latino",
+                "Middle Eastern",  "Native American", "Pacific Islander", "South Asian",  "Southeast Asian",  "White/Caucasian",  "Other",  "Ask me",)
+            RadioButtonGroup(
+                options = opts,
+                selectedIndex = selectedOptionIndex,
+                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                    search = opts[selectedOptionIndex]
+                },
+                style = AppTheme.typography.titleMedium
+            )
+        },
+    )
+}
+@Composable
+fun SexOriScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
     val questionNumber = 6
     val radioQuestionNumber = 3
+    var sexOri by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
+    updateButtonState(sexOri)
+    DisposableEffect(sexOri, selectedOptionIndex) {
+        onDispose {
+            onIndexChange(selectedOptionIndex, radioQuestionNumber)
+            onAnswerChanged(sexOri, questionNumber)
+        }
+    }
+    SignUpFormat(
+        title = "Sexual Orientation",
+        label = "Who do you like?",
+        enterField = {
+            val opts = listOf("Androsexual", "Asexual", "Bisexual", "Demisexuality", "Gynesexual", "HeteroSexual", "Pansexual", "Queer", "Questioning", "Ask Me")
+            RadioButtonGroup(
+                options = opts,
+                selectedIndex = selectedOptionIndex,
+                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                    sexOri = opts[selectedOptionIndex]
+                },
+                style = AppTheme.typography.titleMedium
+            )
+        },
+    )
+}
+@Composable
+fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
+    val questionNumber = 7
+    val radioQuestionNumber = 4
     var search by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
     updateButtonState(search)
@@ -420,8 +452,8 @@ fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
 }
 @Composable
 fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 7
-    val radioQuestionNumber = 4
+    val questionNumber = 8
+    val radioQuestionNumber = 5
     var sex by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
     updateButtonState(sex)
@@ -447,9 +479,11 @@ fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Strin
         },
     )
 }
+
+
 @Composable
 fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 8
+    val questionNumber = 9
     var mbti by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     updateButtonState("mbti")//Don'tWork??
     val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3", "MBTI TEST QUESTION 4", "MBTI QUESTION 5", "MBTI 6")
@@ -486,7 +520,7 @@ fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, 
 }
 @Composable
 fun OurTestScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 9
+    val questionNumber = 10
     var our by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     updateButtonState("our")//Don't Work???
     DisposableEffect(our) {
@@ -525,7 +559,7 @@ fun OurTestScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Uni
 }
 @Composable
 fun BioScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 10
+    val questionNumber = 11
     var bio by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     updateButtonState(bio) //Make it work so its only 15 characters allowed
     DisposableEffect(bio) {
@@ -547,7 +581,7 @@ fun BioScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, u
 }
 @Composable
 fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, String, String) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 11
+    val questionNumber = 12
     var photo1 by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
     var photo2 by rememberSaveable { mutableStateOf(userInfo[questionNumber+1]) }
     var photo3 by rememberSaveable { mutableStateOf(userInfo[questionNumber+2]) }
@@ -622,6 +656,7 @@ enum class SignUp {
     GenderScreen,
     SexOriScreen,
     HieghtScreen,
+    EthnicityScreen,
     SearchScreen,
     SexScreen,
     MbtiScreen,

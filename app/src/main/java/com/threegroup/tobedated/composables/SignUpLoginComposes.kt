@@ -166,7 +166,7 @@ fun SignUpFormat(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(0.dp, 65.dp, 0.dp, 65.dp)
+            .padding(0.dp, 65.dp, 0.dp, 145.dp)
     ) {
         Surface(
             modifier = Modifier

@@ -1,5 +1,7 @@
 package com.threegroup.tobedated.composables
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -16,23 +18,32 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.threegroup.tobedated.BioScreen
 import com.threegroup.tobedated.BirthScreen
+import com.threegroup.tobedated.ChatsScreen
+import com.threegroup.tobedated.Dating
+import com.threegroup.tobedated.EthnicityScreen
 import com.threegroup.tobedated.GenderScreen
+import com.threegroup.tobedated.GroupsScreen
 import com.threegroup.tobedated.HeightScreen
 import com.threegroup.tobedated.MbtiScreen
+import com.threegroup.tobedated.MessagerScreen
 import com.threegroup.tobedated.NameScreen
 import com.threegroup.tobedated.OurTestScreen
 import com.threegroup.tobedated.PhotoScreen
+import com.threegroup.tobedated.ProfileScreen
 import com.threegroup.tobedated.PronounScreen
 import com.threegroup.tobedated.SearchScreen
+import com.threegroup.tobedated.SearchingScreen
 import com.threegroup.tobedated.SexOriScreen
 import com.threegroup.tobedated.SexScreen
 import com.threegroup.tobedated.SignUp
 import com.threegroup.tobedated.SignUpActivity
+import com.threegroup.tobedated.SomeScreen
 import com.threegroup.tobedated.WelcomeScreen
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, indexArray:Array<Int>) {
+    val photoQuestion = 12
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
@@ -41,10 +52,10 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     val onNameChanged: (String, Int) -> Unit = { newAnswer, index -> userInfoArray[index] = newAnswer }
     val onPhotoChanged: (String, String, String, String) -> Unit = { newAnswer1, newAnswer2, newAnswer3, newAnswer4 ->
-        userInfoArray[10] = newAnswer1
-        userInfoArray[11] = newAnswer2
-        userInfoArray[12] = newAnswer3
-        userInfoArray[13] = newAnswer4}
+        userInfoArray[photoQuestion] = newAnswer1
+        userInfoArray[photoQuestion+1] = newAnswer2
+        userInfoArray[photoQuestion+2] = newAnswer3
+        userInfoArray[photoQuestion+3] = newAnswer4}
     val onIndexChange: (Int, Int) -> Unit = { newAnswer, index -> indexArray[index] = newAnswer }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
     BackButton(onClick = {
@@ -102,6 +113,9 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
         composable(route = SignUp.HieghtScreen.name) {
             HeightScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
         }
+        composable(route = SignUp.EthnicityScreen.name) {
+            EthnicityScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+        }
         composable(route = SignUp.SearchScreen.name) {
             SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
         }
@@ -146,9 +160,11 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
                 SignUp.NameScreen.name -> SignUp.BirthScreen.name
                 SignUp.BirthScreen.name -> SignUp.PronounScreen.name
                 SignUp.PronounScreen.name -> SignUp.GenderScreen.name
-                SignUp.GenderScreen.name -> SignUp.SexOriScreen.name
-                SignUp.SexOriScreen.name -> SignUp.HieghtScreen.name
-                SignUp.HieghtScreen.name -> SignUp.SearchScreen.name
+                SignUp.GenderScreen.name -> SignUp.HieghtScreen.name
+                SignUp.HieghtScreen.name -> SignUp.EthnicityScreen.name
+                SignUp.EthnicityScreen.name -> SignUp.SexOriScreen.name
+
+                SignUp.SexOriScreen.name -> SignUp.SearchScreen.name
                 SignUp.SearchScreen.name -> SignUp.SexScreen.name
                 SignUp.SexScreen.name -> SignUp.MbtiScreen.name
                 SignUp.MbtiScreen.name -> SignUp.OurTestScreen.name
@@ -173,4 +189,35 @@ fun checkButtonState(index:String): Boolean {
 }
 fun checkButtonStateBio(index:String): Boolean {
     return index.length >= 15
+}
+
+@Composable
+fun DatingNav() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None }){
+        composable(route = Dating.SearchingScreen.name) {
+            SearchingScreen(navController)
+        }
+        composable(route = Dating.ProfileScreen.name) {
+            ProfileScreen(navController)
+        }
+        composable(route = Dating.ChatsScreen.name) {
+            ChatsScreen(navController)
+        }
+        composable(route = Dating.GroupsScreen.name) {
+            GroupsScreen(navController)
+        }
+        composable(route = Dating.SomeScreen.name) {
+            SomeScreen(navController)
+        }
+        composable(route = Dating.MessagerScreen.name) {
+            MessagerScreen(navController)
+        }
+    }
+
 }

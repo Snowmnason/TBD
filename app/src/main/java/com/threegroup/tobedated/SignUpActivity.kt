@@ -51,6 +51,7 @@ import com.threegroup.tobedated.composables.RadioButtonGroup
 import com.threegroup.tobedated.composables.SignUpFormat
 import com.threegroup.tobedated.composables.SignUpNav
 import com.threegroup.tobedated.composables.TitleText
+import com.threegroup.tobedated.composables.getCustomButtonStyle
 import com.threegroup.tobedated.composables.rememberPickerState
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
@@ -168,7 +169,7 @@ fun NameScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, 
     }
     SignUpFormat(
         title = "Your Name",
-        label = "This is what people will know you ass \n Just your first name is needed",
+        label = "This is what people will know you ass \nJust your first name is needed",
         enterField = {
             NameQuestion(
                 input = name,
@@ -303,7 +304,7 @@ fun PronounScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (S
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     pronoun = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium,
+                style = getCustomButtonStyle(),
             )
         },
     )
@@ -332,7 +333,7 @@ fun GenderScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     gender = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             ) },
     )
 }
@@ -397,7 +398,7 @@ fun EthnicityScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     ethnicity = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -427,7 +428,7 @@ fun StarScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Stri
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     star = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -456,7 +457,7 @@ fun SexOriScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     sexOri = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -485,7 +486,7 @@ fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     search = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -514,7 +515,7 @@ fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Strin
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     sex = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -619,7 +620,7 @@ fun ChildrenScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     children = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -648,7 +649,7 @@ fun FamilyScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     family = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -677,7 +678,7 @@ fun EducationScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     education = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -706,7 +707,7 @@ fun ReligiousScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     religious = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -735,7 +736,7 @@ fun PoliticsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     politics = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -764,7 +765,7 @@ fun RelationshipScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChange
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     relationship = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -793,7 +794,7 @@ fun IntentionsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged:
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     intention = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -822,7 +823,7 @@ fun DrinkScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Str
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     drink = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -851,7 +852,7 @@ fun SmokeScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Str
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     smoke = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )
@@ -880,7 +881,7 @@ fun WeedScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Stri
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     weed = opts[selectedOptionIndex]
                 },
-                style = AppTheme.typography.titleMedium
+                style = getCustomButtonStyle()
             )
         },
     )

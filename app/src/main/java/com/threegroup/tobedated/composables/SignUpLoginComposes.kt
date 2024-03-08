@@ -81,6 +81,22 @@ fun getCustomTextStyle(): TextStyle {
         )
     )
 }
+@Composable
+fun getCustomButtonStyle(): TextStyle {
+    return TextStyle(
+        color = AppTheme.colorScheme.onBackground,
+        fontFamily = JoseFinSans,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp,
+        shadow = Shadow(
+            color = shadowWithOpacity,
+            offset = Offset(4f, 4f),
+            blurRadius = 4f
+        )
+    )
+}
 
 @Composable
 fun getCustomTextStyleLabel(
@@ -181,7 +197,6 @@ fun SignUpFormat(
                     .padding(15.dp)
                     .verticalScroll(state)
                     .fillMaxSize()
-
             ) {
                 // Title
                 TitleText(title = title)

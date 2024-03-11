@@ -211,6 +211,54 @@ fun SignUpFormat(
         }
     }
 }
+
+//TO ALLOW TWO QUESTIONS ON ONE PAGE
+@Composable
+fun SignUpFormatDouble(
+    title1: String,
+    label1: String,
+    enterField1: @Composable () -> Unit = {},
+    title2: String,
+    label2: String,
+    enterField2: @Composable () -> Unit = {},
+){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(0.dp, 65.dp, 0.dp, 145.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(25.dp, 0.dp, 25.dp, 0.dp),
+            color = AppTheme.colorScheme.surface,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            val state = rememberScrollState()
+            LaunchedEffect(Unit) { state.animateScrollTo(0) }
+            Column(
+                modifier = Modifier
+                    .padding(15.dp)
+                    .verticalScroll(state)
+                    .fillMaxSize()
+            ) {
+                // Title
+                TitleText(title = title1)
+                Spacer(modifier = Modifier.height(5.dp))
+                enterField1()
+                //Fun Label
+                Spacer(modifier = Modifier.height(12.dp))
+                LabelText(label = label1,)
+                Spacer(modifier = Modifier.height(12.dp))
+                TitleText(title = title2)
+                Spacer(modifier = Modifier.height(5.dp))
+                enterField2()
+                //Fun Label
+                Spacer(modifier = Modifier.height(12.dp))
+                LabelText(label = label2,)
+            }
+        }
+    }
+}
 @Composable
 fun TitleText(
     title:String
@@ -609,6 +657,7 @@ fun HeightQuestion(
             Text(
                 text = "Ft",
                 style = AppTheme.typography.titleMedium,
+                color = AppTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
             Switch(
@@ -619,6 +668,7 @@ fun HeightQuestion(
             Text(
                 text = "Cm",
                 style = AppTheme.typography.titleMedium,
+                color = AppTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }

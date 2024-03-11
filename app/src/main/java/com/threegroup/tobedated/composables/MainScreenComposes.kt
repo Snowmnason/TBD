@@ -1,5 +1,6 @@
 package com.threegroup.tobedated.composables
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,12 +11,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,12 +55,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,8 +68,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
+import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.ui.theme.AppTheme
+import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.zodiac
 
 data class BotNavItem(
@@ -92,6 +100,35 @@ val mbtiColorMap = mapOf(
     "ESFJ" to 2, "ESTJ" to 2, "ISFJ" to 2, "ISTJ" to 2,
     "ISTP" to 3, "ISFP" to 3, "ESTP" to 3, "ESFP" to 3
 )
+val zodiacToLetterMap = mapOf(
+    "Aries" to "a", "Taurus" to "b", "Capricorn" to "c", "Aquarius" to "d",
+    "Gemini" to "e", "Pisces" to "f", "Cancer" to "g", "Leo" to "h",
+    "Virgo" to "i", "Libra" to "j", "Scorpio" to "k", "Sagittarius" to "l", "Ask me" to "m"
+)
+@Composable
+fun getStarTextStyle(oppositeIndex:Int, font:FontFamily): TextStyle{
+    return TextStyle(
+        fontFamily = font,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        shadow = Shadow(
+            color = starColors[oppositeIndex],
+            offset = Offset(3f, 4f),
+            blurRadius = 4f
+        )
+    )
+}
+@Composable
+fun getSmallerTextStyle(): TextStyle{
+    return TextStyle(
+        fontFamily = JoseFinSans,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        letterSpacing = 0.sp
+    )
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAndBotBars(
@@ -275,19 +312,38 @@ fun SimpleBox(
 /*
 THIS IS SEARCHING SCREEN STUFF
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserInfo(
-    name:String, bio:String, age:String, height:String,
-    pronouns:String, gender:String, sign:String = "m",
-    mbti:String = "Not Taken",
-    promptQ1:String, promptA1:String,
-    sexOri:String = "Ask me", relationshipType:String = "Ask me",
-    promptQ2:String, promptA2:String,
-    smokes: String = "Ask me", drinks:String = "Ask me", weeds:String = "Ask me",
-    promptQ3:String, promptA3:String,
-    work:String = "Ask me", school:String = "Ask me", kids:String = "Ask me",
-    exercise:String = "Ask me", politics:String = "Ask me", religion:String = "Ask me",
+    userAnswers: Array<String>,
+//    name:String,
+//    age:String, height:String, ethnicity:String, pronouns:String, //DONE
+//    bio:String,//DONE
+//    gender:String, sexOri:String, relationshipType:String, intentions:String,//DONE
+//    promptQ1:String, promptA1:String,//DONE
+//    sign:String, mbti:String, exercise:String,//DONE
+//    promptQ2:String, promptA2:String,//DONE
+//    kids:String, family:String, school:String,//DONE
+//    promptQ3:String, promptA3:String,//DONE
+//    smokes: String, drinks:String, weeds:String,//DONE
+//    politics:String, religion:String,
+//    photos: List<String>,
+    onClickLike: () -> Unit,
+    onClickPass: () -> Unit,
+    onClickReport: () -> Unit,
+    onClickSuggest: () -> Unit,
 ){
+    val photos = listOf(userAnswers[30], userAnswers[31],userAnswers[32],userAnswers[33],)
+    val mbtiColor:Color  = if(userAnswers[10] != "Not Taken"){
+        val parts = userAnswers[10].split("-")
+        val mainType = parts.first()
+        mbtiColors[mbtiColorMap[mainType]!!]
+    }else {
+        AppTheme.colorScheme.onSurface
+    }
+    //Sign Sign MBTI
+    val starSymbol = zodiacToLetterMap[userAnswers[6]]!!
+    val oppositeIndex = (starColorMap[starSymbol]!! + 2)  % starColorMap.size
     Column(
         Modifier
             .fillMaxSize()
@@ -296,83 +352,106 @@ fun UserInfo(
         //Name
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-                Text(text = name, style = AppTheme.typography.titleMedium)
+                Text(text = userAnswers[0], style = AppTheme.typography.titleMedium) //Name
             }
-        })//Age, Pronouns, Gender
+        })//Age, Ethnicity
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Text(text = age, style = AppTheme.typography.titleSmall)
+                Text(text = calcAge(userAnswers[1].split("/")), style = AppTheme.typography.titleSmall) //Age
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Text(text = pronouns, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[5], style = AppTheme.typography.titleSmall) //Ethnicity
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Text(text = gender, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[2], style = AppTheme.typography.titleSmall) //Pronouns
+
+            }
+        })
+        //Sexual orientation, Pronouns, Gender
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(whatsInsideTheBox = {
+            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
+                Text(text = userAnswers[3], style = AppTheme.typography.titleSmall) //Gender
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Text(text = userAnswers[7], style = AppTheme.typography.titleLarge) //Sexual Orientation
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.height), contentDescription = "Height", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = height, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[4], style = AppTheme.typography.titleSmall) //Hieght
+
             }
         })
         //BIO
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
                 Column(modifier = Modifier.fillMaxSize()){
-                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
+//                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = bio, style = AppTheme.typography.bodySmall)
+                    Text(text = userAnswers[29], style = AppTheme.typography.bodySmall) //Bio
                 }
             })
-        val mbtiColor:Color  = if(mbti != "Not Taken"){
-            val parts = mbti.split("-")
-            val mainType = parts.first()
-            mbtiColors[mbtiColorMap[mainType]!!]
-        }else {
-            AppTheme.colorScheme.onSurface
-        }
-        //Sign Sign MBTI
-        val oppositeIndex = (starColorMap[sign]!! + 2)  % starColorMap.size
+        //relationship type, Intentions
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Text(text = sign, style =TextStyle(
-                    fontFamily = zodiac,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                    lineHeight = 28.sp,
-                    shadow = Shadow(
-                        color = starColors[oppositeIndex],
-                        offset = Offset(3f, 2f),
-                        blurRadius = 4f
-                    )
-                ), color = starColors[starColorMap[sign]!!])
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.relationship_type), contentDescription = "relationship type", modifier = Modifier.offset(y = (-2).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[17], style = AppTheme.typography.titleSmall, modifier = Modifier.offset(y = 4.dp)) //Relationship
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Text(text = mbti, style = AppTheme.typography.titleLarge, color = mbtiColor)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.intentions), contentDescription = "intentions", modifier = Modifier.offset(y = (-2).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[18], style = AppTheme.typography.titleSmall, modifier = Modifier.offset(y = 4.dp)) //Intentions
+
             }
         })
         //First prompt question
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ1, style = AppTheme.typography.titleLarge)
+                Text(text = userAnswers[23], style = AppTheme.typography.titleLarge)//Prompt question
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = promptA1, style = AppTheme.typography.bodySmall)
+                Text(text = userAnswers[24], style = AppTheme.typography.bodySmall)//Prompt Answer
             }
         })
-        //Sexual orientation, relationship type
+        //Star Sign, MBTI, exercise
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Text(text = sexOri, style = AppTheme.typography.titleLarge)
+                Row{
+                    Text(text = starSymbol, style =getStarTextStyle(oppositeIndex, zodiac), color = starColors[starColorMap[starSymbol]!!])
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = userAnswers[6], style =getStarTextStyle(oppositeIndex, JoseFinSans), color = starColors[starColorMap[starSymbol]!!])//Star Sign
+                }
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Text(text = relationshipType, style = AppTheme.typography.titleLarge)
+                Text(text = userAnswers[10], style = AppTheme.typography.titleLarge, color = mbtiColor) //MBTI Results
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.exercise), contentDescription = "Exercise", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[19], style = AppTheme.typography.titleSmall)//Exercise
             }
         })
         //Second prompt question
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ2, style = AppTheme.typography.titleLarge)
+                Text(text = userAnswers[25], style = AppTheme.typography.titleLarge)//Prompt Questions2
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = promptA2, style = AppTheme.typography.bodySmall)
+                Text(text = userAnswers[26], style = AppTheme.typography.bodySmall)//Prompt Answer 2
+            }
+        })
+        //Family, Kids
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(whatsInsideTheBox = {
+            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.children), contentDescription = "Children", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[12], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Kids
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.family), contentDescription = "Family", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[13], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Family
+            }
+        })
+        //Third Prompt Question
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(whatsInsideTheBox = {
+            Column(modifier = Modifier.fillMaxSize()){
+                Text(text = userAnswers[27], style = AppTheme.typography.titleLarge)//Prompt Question 3
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(text = userAnswers[28], style = AppTheme.typography.bodySmall)//Prompt answer 3
             }
         })
         //Smokes, drinks, weeds
@@ -380,71 +459,121 @@ fun UserInfo(
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.smoking), contentDescription = "Weeds", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = smokes, style = AppTheme.typography.titleLarge)
+                Text(text = userAnswers[20], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Drink
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.drinking), contentDescription = "Weeds", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = drinks, style = AppTheme.typography.titleLarge)
-                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Text(text = userAnswers[21], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)//Smoke
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.weeds), contentDescription = "Weeds", Modifier.size(20.dp), tint = AppTheme.colorScheme.primary)
-                Text(text = weeds, style = AppTheme.typography.titleLarge)
-            }
-        })
-        //Third Prompt Question
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
-            Column(modifier = Modifier.fillMaxSize()){
-                Text(text = promptQ3, style = AppTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = promptA3, style = AppTheme.typography.bodySmall)
-            }
-        })
-        //Word School Kids
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
-            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.work), contentDescription = "work", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = work, style = AppTheme.typography.titleSmall)
-                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.school), contentDescription = "School", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = school, style = AppTheme.typography.titleSmall)
-                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.children), contentDescription = "Children", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = kids, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[22], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Weed
             }
         })
         /*
         TODO add another breaker it will look nicer
          */
-        //Exercise
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
-            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
-                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.exercise), contentDescription = "Exercise", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = exercise, style = AppTheme.typography.titleSmall)
 
-            }
-        })
         /*
         TODO add another breaker it will look nicer
          */
-        //Politics Religion
+        //Politics Religion School
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly){
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.politics), contentDescription = "Politics", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = politics, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[16], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Politics
                 VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.religion), contentDescription = "Religion", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
-                Text(text = religion, style = AppTheme.typography.titleSmall)
+                Text(text = userAnswers[15], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//Religion
+                VerticalDivider(modifier = Modifier.height(20.dp),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.school), contentDescription = "Children", modifier = Modifier.offset(y = (-4).dp), tint = AppTheme.colorScheme.primary)
+                Text(text = userAnswers[14], style = getSmallerTextStyle(), modifier = Modifier.offset(y = 3.dp))//School
             }
         })
+        Spacer(modifier = Modifier.height(12.dp))
+        var subtract = 0
+        if(photos[3] == ""){
+            subtract = 1
+        }
+        val pagerState = rememberPagerState(pageCount = { photos.size - subtract})
+        HorizontalPager(state = pagerState,
+                modifier = Modifier.aspectRatio(2f / 3f),
+
+        ) { page ->
+
+                AsyncImage(
+                    modifier = Modifier.aspectRatio(2f / 3f),
+                    model = photos[page],
+                    contentDescription = "Profile Photo $page",
+                    contentScale = ContentScale.FillBounds  // Ensure photos fill the box without distortion
+                )
+
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row {
+            Button(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                onClick = onClickPass,
+                colors = ButtonColors(
+                    containerColor = Color.Gray,
+                    contentColor = AppTheme.colorScheme.primary,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = AppTheme.colorScheme.primary,
+                )
+
+            ) {
+                Text(text = "Pass")
+            }
+            Spacer(modifier = Modifier.width(6.dp))
+            Button(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                onClick = onClickLike,
+                colors = ButtonColors(
+                    containerColor = AppTheme.colorScheme.primary,
+                    contentColor = AppTheme.colorScheme.onPrimary,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = AppTheme.colorScheme.primary,
+                )
+            ) {
+                Text(text = "Like")
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row {
+            Button(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                onClick = onClickReport,
+                colors = ButtonColors(
+                    containerColor = Color.Red,
+                    contentColor = AppTheme.colorScheme.onPrimary,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = AppTheme.colorScheme.primary,
+                )
+
+            ) {
+                Text(text = "Report")
+            }
+            Spacer(modifier = Modifier.width(6.dp))
+            Button(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                onClick = onClickSuggest,
+                colors = ButtonColors(
+                    containerColor = Color.Green,
+                    contentColor = AppTheme.colorScheme.onPrimary,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = AppTheme.colorScheme.primary,
+                )
+            ) {
+                Text(text = "Suggestion")
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
 @Composable
 fun MessageStart(
     noMatches:Boolean = true,
-    userPhoto:Painter,
+    userPhoto:String,
     userName:String,
     userLastMessage:String,
     openChat: () -> Unit,
@@ -477,10 +606,11 @@ fun MessageStart(
         }else{
             Spacer(modifier = Modifier.height(16.dp))
             Row(Modifier.clickable(onClick = openChat)){
-                Image(painter = userPhoto, contentDescription = "UserPfp", contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(58.dp)
-                        .clip(shape = CircleShape)
+                AsyncImage(
+                    modifier = Modifier.size(58.dp).clip(shape = CircleShape),
+                    model = userPhoto,
+                    contentDescription = "UserPfp",
+                    contentScale = ContentScale.Crop,
                 )
                 Column(
                     modifier = Modifier.padding(15.dp, 6.dp),
@@ -624,7 +754,7 @@ fun UserMessage(
 @Composable
 fun TheirMessage(
     replyMessage:String,
-    userPhoto:Painter,
+    userPhoto:String,
     photoClick: () -> Unit
 ){
     Column {
@@ -637,12 +767,11 @@ fun TheirMessage(
             verticalAlignment = Alignment.Bottom
         ) {
             IconButton(onClick = photoClick) {
-                Image(painter = userPhoto,
+                AsyncImage(
+                    modifier = Modifier.size(44.dp).clip(shape = CircleShape),
+                    model = userPhoto,
                     contentDescription = "UserPfp",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(shape = CircleShape)
                 )
             }
 

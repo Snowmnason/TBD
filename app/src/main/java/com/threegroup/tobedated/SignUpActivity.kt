@@ -109,6 +109,13 @@ class SignUpActivity : ComponentActivity() {
             drink = userInfoArray[19],
             smoke = userInfoArray[20],
             weed = userInfoArray[21],
+            exerise = "Ask me",
+            promptQ1 = "not Picked",
+            promptA1 = "not answered",
+            promptQ2 = "not Picked",
+            promptA2 = "not answered",
+            promptQ3 = "not Picked",
+            promptA3 = "not answered",
             bio = userInfoArray[22],
             image1 = userInfoArray[23],
             image2 = userInfoArray[24],
@@ -119,6 +126,7 @@ class SignUpActivity : ComponentActivity() {
             status = "Active",
             number = userLoginInfo,
         )
+        //TODO, URI does not store data. we need to take the URI and turn it into an image
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null && currentUser.phoneNumber != null) {
             FirebaseDatabase.getInstance().getReference("users")
@@ -134,6 +142,9 @@ class SignUpActivity : ComponentActivity() {
             Toast.makeText(applicationContext, "User NOT authenticated or phone number is null", Toast.LENGTH_LONG).show()
         }
     }
+//    fun uploadImage(imageUri: String, onComplete: (String) -> Unit) {
+//
+//    }
 }
 
 @Composable
@@ -421,7 +432,7 @@ fun StarScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Stri
         label = "Do the stars say we are in favor?",
         enterField = {
             val opts = listOf("Aries", "Taurus", "Gemini",
-                "Cancer",  "Leo", "Virgo", "Libra",  "Scorpius",  "Sagittarius",  "Capricornus", "Aquarius", "Pisces", "Ask me",)
+                "Cancer",  "Leo", "Virgo", "Libra",  "Scorpio",  "Sagittarius",  "Capricorn", "Aquarius", "Pisces", "Ask me",)
             RadioButtonGroup(
                 options = opts,
                 selectedIndex = selectedOptionIndex,
@@ -613,7 +624,7 @@ fun ChildrenScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (
         title = "Do you have children?",
         label = "Do you have someone else we should think about too?",
         enterField = {
-            val opts = listOf("Don't have children", "Have children", "Ask me")
+            val opts = listOf("Don't have", "Have children", "Ask me")
             RadioButtonGroup(
                 options = opts,
                 selectedIndex = selectedOptionIndex,
@@ -642,7 +653,7 @@ fun FamilyScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
         title = "Do you want Children?",
         label = "What are your plans for your family?",
         enterField = {
-            val opts = listOf("Don't want children", "Want children", "Open to children", "Not sure yet", "Ask me")
+            val opts = listOf("Don't want", "Want children", "Open to children", "Not sure yet", "Ask me")
             RadioButtonGroup(
                 options = opts,
                 selectedIndex = selectedOptionIndex,
@@ -980,29 +991,29 @@ fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, Strin
 
 enum class SignUp {
     WelcomeScreen,
-    NameScreen,
-    BirthScreen,
-    PronounScreen,
-    GenderScreen,
-    SexOriScreen,
-    HieghtScreen,
-    EthnicityScreen,
-    StarScreen,
-    SearchScreen,
-    SexScreen,
-    MbtiScreen,
-    OurTestScreen,
-    ChildrenScreen,
-    FamilyScreen,
-    EducationScreen,
-    ReligiousScreen,
-    PoliticsScreen,
-    RelationshipScreen,
-    IntentionsScreen,
-    DrinkScreen,
-    SmokeScreen,
-    WeedScreen,
-    BioScreen,
+    NameScreen,//
+    BirthScreen,//
+    PronounScreen,//
+    GenderScreen,//
+    SexOriScreen,//
+    HieghtScreen,//
+    EthnicityScreen,//
+    StarScreen,//
+    SearchScreen,////
+    SexScreen,////
+    MbtiScreen,//
+    OurTestScreen,////
+    ChildrenScreen,//
+    FamilyScreen,//
+    EducationScreen,//
+    ReligiousScreen,//
+    PoliticsScreen,//
+    RelationshipScreen,//
+    IntentionsScreen,//
+    DrinkScreen,//
+    SmokeScreen,//
+    WeedScreen,//
+    BioScreen,//
     PhotoScreen,
 }
 /* Cool multiSelect

@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.InsideMessages
@@ -18,11 +17,13 @@ import com.threegroup.tobedated.composables.TheirMessage
 import com.threegroup.tobedated.composables.TopAndBotBars
 import com.threegroup.tobedated.composables.UserInfo
 import com.threegroup.tobedated.composables.UserMessage
+import com.threegroup.tobedated.models.profiles
 import com.threegroup.tobedated.ui.theme.AppTheme
+import kotlin.random.Random
 
-val notifiGroup = true
-val notifiChat = 3
-val notifiSearching = false
+val notifiGroup = Random.nextBoolean()
+val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
+//val notifiSearching = Random.nextBoolean()
 class DatingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +58,7 @@ ISTP ISFP ESTP ESFP 71531e
 @Composable
 fun SearchingScreen(navController: NavHostController) {
     val profileEdit by remember { mutableStateOf("Profile")}
+    val mockArray =  profiles.random()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -67,32 +69,11 @@ fun SearchingScreen(navController: NavHostController) {
         settingsButton = { /* Change search filters */ },
         currentScreen = {
             UserInfo(
-                name = "Mitchel",
-                bio = "WORDS WORDS \n WORDS WORDS WORDS",
-                age = "24",
-                pronouns = "They/Them",
-                gender = "Non-Binary",
-                sign = "i",
-                mbti = "ISTP-T",
-                promptQ1 = "Do you even?",
-                promptA1 = "No I can't even, I am actually so odd",
-                sexOri = "Bisexual",
-                relationshipType = "Monogamous",
-                promptQ2 = "Do you odd?",
-                promptA2 = "No I am so even, I am actually can't odd",
-                smokes = "Sometimes",
-                drinks = "Socially",
-                weeds = "Never",
-                promptQ3 = "Do you amalgamate?",
-                promptA3 = "No I am even so , I odd actually can't am",
-                school = "Undergrad",
-                work = "simple A?",
-                kids = "Someday",
-                exercise = "Sometimes",
-                height = "5'11\"",
-                politics = "Moderate",
-                religion = "Budda"
-
+                mockArray,
+                onClickLike = { /*TODO*/ },
+                onClickPass= { /*TODO*/ },
+                onClickReport = { /*TODO*/ },
+                onClickSuggest= { /*TODO*/ },
             )
         }
     )
@@ -127,7 +108,7 @@ fun ChatsScreen(navController: NavHostController){
         currentScreen = {
             MessageStart(
                 noMatches = false,
-                userPhoto = painterResource(id = R.drawable.firstphoto), //Need this to accept URI
+                userPhoto = "https://media.vanityfair.com/photos/63765577474812eb37ec70bc/master/w_1600,c_limit/Headshot%20-%20credit%20%E2%80%9CNational%20Geographic%20for%20Disney+%E2%80%9D.jpg", //Need this to accept URI
                 userName = "Dom",
                 userLastMessage = "LOL hows have you been? \nLOL hows have you been?",
                 openChat = {
@@ -174,7 +155,7 @@ fun SomeScreen(navController: NavHostController){
 fun MessagerScreen(navController: NavHostController){
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
-    val userPhoto = painterResource(id = R.drawable.firstphoto)
+
     InsideMessages(
         nav = navController,
         titleText = "Dom",
@@ -183,9 +164,9 @@ fun MessagerScreen(navController: NavHostController){
         sendMessage = {/* TODO Send Message*/ },
         titleButton = {/* TODO Go to Profile from name*/ },
         messages = {
-            UserMessage("Oh my god I totaly agree")
-            TheirMessage(replyMessage = "Thats crazy because I don't nerd...",
-                userPhoto = userPhoto,
+            UserMessage("Oh my god I totally agree")
+            TheirMessage(replyMessage = "That's crazy because I don't nerd...",
+                userPhoto = "https://media.vanityfair.com/photos/63765577474812eb37ec70bc/master/w_1600,c_limit/Headshot%20-%20credit%20%E2%80%9CNational%20Geographic%20for%20Disney+%E2%80%9D.jpg",
                 photoClick = { /* TODO Go to Profile image*/ }
             )
 

@@ -384,6 +384,7 @@ fun Picker(
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = AppTheme.typography.titleMedium,
     dividerColor: Color = AppTheme.colorScheme.primary,
+    textColor:Color = AppTheme.colorScheme.onBackground
 ) {
 
     val visibleItemsMiddle = visibleItemsCount / 2
@@ -431,6 +432,7 @@ fun Picker(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle,
+                    color = textColor,
                     modifier = Modifier
                         .onSizeChanged { size -> itemHeightPixels.intValue = size.height }
                         .then(textModifier)

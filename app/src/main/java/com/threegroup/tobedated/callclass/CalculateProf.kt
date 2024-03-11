@@ -11,15 +11,12 @@ fun calcAge(birth: List<String>?): String{
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val currentMonth = (Calendar.getInstance().get(Calendar.MONTH))+1
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-    val age = year?.minus(currentYear)
+    val age = currentYear.minus(year!!)
     if(year == (currentYear - 18)){
         if (month != null) {
             if (day != null) {
                 if (month > currentMonth || (month == currentMonth && day >= currentDay)) {
-                    if (age != null) {
-                        //return "calculatedAgeSubtractedOne"
-                        return (age - 1).toString()
-                    }
+                    return (age - 1).toString()
                 }
             }
         }

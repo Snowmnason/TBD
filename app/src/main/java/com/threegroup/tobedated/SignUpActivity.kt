@@ -38,20 +38,20 @@ import com.threegroup.tobedated.callclass.checkDay
 import com.threegroup.tobedated.callclass.checkMonth
 import com.threegroup.tobedated.callclass.checkYear
 import com.threegroup.tobedated.callclass.getCurrentLocation
-import com.threegroup.tobedated.composables.BioQuestion
-import com.threegroup.tobedated.composables.BirthdateQuestion
-import com.threegroup.tobedated.composables.BodyText
 import com.threegroup.tobedated.composables.DialogWithImage
-import com.threegroup.tobedated.composables.HeightQuestion
-import com.threegroup.tobedated.composables.NameQuestion
-import com.threegroup.tobedated.composables.PersonalityTest
-import com.threegroup.tobedated.composables.PhotoQuestion
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.RadioButtonGroup
-import com.threegroup.tobedated.composables.SignUpFormat
+import com.threegroup.tobedated.composables.SignUp.BioQuestion
+import com.threegroup.tobedated.composables.SignUp.BirthdateQuestion
+import com.threegroup.tobedated.composables.SignUp.BodyText
+import com.threegroup.tobedated.composables.SignUp.HeightQuestion
+import com.threegroup.tobedated.composables.SignUp.NameQuestion
+import com.threegroup.tobedated.composables.SignUp.PersonalityTest
+import com.threegroup.tobedated.composables.SignUp.PhotoQuestion
+import com.threegroup.tobedated.composables.SignUp.SignUpFormat
+import com.threegroup.tobedated.composables.SignUp.TitleText
+import com.threegroup.tobedated.composables.SignUp.getCustomButtonStyle
 import com.threegroup.tobedated.composables.SignUpNav
-import com.threegroup.tobedated.composables.TitleText
-import com.threegroup.tobedated.composables.getCustomButtonStyle
 import com.threegroup.tobedated.composables.rememberPickerState
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
@@ -109,7 +109,6 @@ class SignUpActivity : ComponentActivity() {
             drink = userInfoArray[19],
             smoke = userInfoArray[20],
             weed = userInfoArray[21],
-            exerise = "Ask me",
             promptQ1 = "not Picked",
             promptA1 = "not answered",
             promptQ2 = "not Picked",
@@ -920,6 +919,7 @@ fun BioScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, u
         },
     )
 }
+
 @Composable
 fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, String, String) -> Unit, updateButtonState: (String) -> Unit) {
     val questionNumber = 23
@@ -984,7 +984,8 @@ fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, Strin
             isEnabled2= enables[0],
             isEnabled3= enables[1],
             isEnabled4= enables[2],
-        )},
+        )
+        },
     )
 }
 

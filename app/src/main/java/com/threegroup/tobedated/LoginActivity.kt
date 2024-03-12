@@ -73,12 +73,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.composables.BackButton
-import com.threegroup.tobedated.composables.BigButton
-import com.threegroup.tobedated.composables.LabelText
+import com.threegroup.tobedated.composables.SignUp.BigButton
+import com.threegroup.tobedated.composables.SignUp.LabelText
 import com.threegroup.tobedated.composables.PolkaDotCanvas
-import com.threegroup.tobedated.composables.TitleText
-import com.threegroup.tobedated.composables.getCustomTextStyle
-import com.threegroup.tobedated.composables.getCustomTextStyleLabel
+import com.threegroup.tobedated.composables.SignUp.TitleText
+import com.threegroup.tobedated.composables.SignUp.getCustomTextStyle
+import com.threegroup.tobedated.composables.SignUp.getCustomTextStyleLabel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.shadowWithOpacity

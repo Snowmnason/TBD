@@ -138,6 +138,22 @@ fun AlertDialogBox(
     )
 }
 @Composable
+fun GenericTitleSmall(
+    text:String
+){
+    Text(text = text,
+        style = AppTheme.typography.titleSmall,
+        color = AppTheme.colorScheme.onBackground)
+}
+@Composable
+fun GenericBodyText(
+    text:String
+){
+    Text(text = text,
+        style = AppTheme.typography.body,
+        color = AppTheme.colorScheme.onBackground)
+}
+@Composable
 fun DialogWithImage( //TODO maybe make a second one, being a little more specific
     onDismissRequest: () -> Unit,
     painter: Painter,

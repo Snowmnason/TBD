@@ -39,6 +39,7 @@ import com.threegroup.tobedated.ProfileScreen
 import com.threegroup.tobedated.PronounScreen
 import com.threegroup.tobedated.RelationshipScreen
 import com.threegroup.tobedated.ReligiousScreen
+import com.threegroup.tobedated.SearchPreferenceScreen
 import com.threegroup.tobedated.SearchScreen
 import com.threegroup.tobedated.SearchingScreen
 import com.threegroup.tobedated.SexOriScreen
@@ -50,6 +51,7 @@ import com.threegroup.tobedated.SomeScreen
 import com.threegroup.tobedated.StarScreen
 import com.threegroup.tobedated.WeedScreen
 import com.threegroup.tobedated.WelcomeScreen
+import com.threegroup.tobedated.composables.SignUp.BigButton
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -263,6 +265,9 @@ fun DatingNav() {
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController)
+        }
+        composable(route = Dating.SearchPreferenceScreen.name){
+            SearchPreferenceScreen(navController)
         }
         composable(route = Dating.ChatsScreen.name) {
             ChatsScreen(navController)

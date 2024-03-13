@@ -287,7 +287,7 @@ fun UserInfo(
         //Sexual orientation, Pronouns, Gender
         Spacer(modifier = Modifier.height(12.dp))
         SimpleIconBox(
-            answerList = listOf(user.gender, user.sexOrientation, user.hieght),
+            answerList = listOf(user.gender, user.sexOrientation, user.height),
             iconList = listOf( null, null, ImageVector.vectorResource(id = R.drawable.height)),
         )
         //BIO
@@ -372,7 +372,7 @@ fun UserInfo(
         //Politics Religion School
         Spacer(modifier = Modifier.height(12.dp))
         SimpleIconBox(
-            answerList = listOf(user.politics,user.religious,user.education),
+            answerList = listOf(user.politics,user.religion,user.education),
             iconList = listOf(ImageVector.vectorResource(id = R.drawable.politics), ImageVector.vectorResource(id = R.drawable.religion), ImageVector.vectorResource(id = R.drawable.school)),
         )
         Spacer(modifier = Modifier.height(12.dp))

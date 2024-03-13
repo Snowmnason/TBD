@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.callclass.checkBirthDate
 import com.threegroup.tobedated.callclass.checkDay
 import com.threegroup.tobedated.callclass.checkMonth
@@ -53,21 +52,23 @@ import com.threegroup.tobedated.composables.SignUp.TitleText
 import com.threegroup.tobedated.composables.SignUp.getCustomButtonStyle
 import com.threegroup.tobedated.composables.SignUpNav
 import com.threegroup.tobedated.composables.rememberPickerState
+import com.threegroup.tobedated.models.NewUserModel
+import com.threegroup.tobedated.models.PreferenceIndexModel
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import java.util.Calendar
 
+var newUser = NewUserModel()
+var newUserIndex = PreferenceIndexModel()
 class SignUpActivity : ComponentActivity() {
-    private val indexArray = Array(17) { -1 }
-    private val userInfoArray = Array(27) { "" }
     private var userLoginInfo: String = "" //This is the users phone number
     override fun onCreate(savedInstanceState: Bundle?) {
-        userLoginInfo = intent.getStringExtra("userPhone").toString()
+        newUser.number = intent.getStringExtra("userPhone").toString()
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
                 PolkaDotCanvas()
-                SignUpNav(this@SignUpActivity, userInfoArray, indexArray)
+                SignUpNav(this@SignUpActivity)
                 //HeightTest()
             }
         }
@@ -87,40 +88,39 @@ class SignUpActivity : ComponentActivity() {
 
     fun storeData() {
         val data = UserModel(
-            name = userInfoArray[0],
-            birthday = userInfoArray[1],
-            pronoun = userInfoArray[2],
-            gender = userInfoArray[3],
-            hieght = userInfoArray [4],
-            ethnicity = userInfoArray[5],
-            star = userInfoArray[6],
-            sexOrientation = userInfoArray[7],
-            seeking = userInfoArray[8],
-            sex = userInfoArray[9],
-            testResultsMbti = userInfoArray[10],
-            testResultTbd = userInfoArray[11],
-            children = userInfoArray[12],
-            family = userInfoArray[13],
-            education = userInfoArray[14],
-            religious = userInfoArray[15],
-            politics = userInfoArray[16],
-            relationship = userInfoArray[17],
-            intentions = userInfoArray[18],
-            drink = userInfoArray[19],
-            smoke = userInfoArray[20],
-            weed = userInfoArray[21],
+            name = newUser.name,
+            birthday = newUser.birthday,
+            pronoun = newUser.pronoun,
+            gender = newUser.gender,
+            height = newUser.height,
+            ethnicity = newUser.ethnicity,
+            star = newUser.star,
+            sexOrientation = newUser.sexOrientation,
+            seeking = newUser.seeking,
+            sex = newUser.sex,
+            testResultsMbti = newUser.testResultsMbti,
+            testResultTbd = newUser.testResultTbd,
+            children = newUser.children,
+            family = newUser.family,
+            education = newUser.education,
+            religion = newUser.religion,
+            politics = newUser.politics,
+            relationship = newUser.relationship,
+            intentions = newUser.intentions,
+            drink = newUser.drink,
+            smoke = newUser.smoke,
+            weed = newUser.weed,
             promptQ1 = "not Picked",
             promptA1 = "not answered",
             promptQ2 = "not Picked",
             promptA2 = "not answered",
             promptQ3 = "not Picked",
             promptA3 = "not answered",
-            bio = userInfoArray[22],
-            image1 = userInfoArray[23],
-            image2 = userInfoArray[24],
-            image3 = userInfoArray[25],
-            image4 = userInfoArray[26],
-            age = calcAge(userInfoArray[1].split("/")),
+            bio = newUser.bio,
+            image1 = newUser.image1,
+            image2 = newUser.image2,
+            image3 = newUser.image3,
+            image4 = newUser.image4,
             location = getCurrentLocation(),
             status = "Active",
             number = userLoginInfo,
@@ -147,7 +147,7 @@ class SignUpActivity : ComponentActivity() {
 }
 
 @Composable
-fun WelcomeScreen() {
+fun welcomeScreen():Boolean {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -164,34 +164,29 @@ fun WelcomeScreen() {
             Spacer(modifier = Modifier.height(5.dp))
         BodyText(label = "Don't jump into things too quick")
     }
+    return true
 }
 
 
 @Composable
-fun NameScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 0
-    var name by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    updateButtonState(name)
-    DisposableEffect(name) {
-        onDispose {
-            onAnswerChanged(name, questionNumber)
-        }
-    }
+fun nameScreen():Boolean {
+    var name by rememberSaveable { mutableStateOf(newUser.name) }
     SignUpFormat(
         title = "Your Name",
         label = "This is what people will know you ass \nJust your first name is needed",
         enterField = {
             NameQuestion(
                 input = name,
-                onInputChanged = { input ->  name = input },
+                onInputChanged = { input ->  name = input
+                                 newUser.name = input},
             )
         },
     )
+    return name.isNotEmpty()
 }
 @Composable
-fun BirthScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 1
-    var date by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
+fun birthScreen(): Boolean {
+    var date by rememberSaveable { mutableStateOf(newUser.birthday) }
     val dateComponents = date.split("/")
     var month by rememberSaveable { mutableStateOf(dateComponents.getOrNull(0) ?: "") }
     var day by rememberSaveable { mutableStateOf(dateComponents.getOrNull(1) ?: "") }
@@ -202,12 +197,12 @@ fun BirthScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit,
     val yearMin = 1940
     var yearMax by rememberSaveable { mutableIntStateOf(currentYear - 17) }
     val focusManager = LocalFocusManager.current
-    updateButtonState(date)
     DisposableEffect(date) {
         onDispose {
-            onAnswerChanged(date, questionNumber)
+            newUser.birthday = date
         }
     }
+
     SignUpFormat(
         title = "Birthday",
         label = "Let us celebrate together!",
@@ -289,20 +284,13 @@ fun BirthScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit,
             }
         ) },
     )
+    return date.isNotEmpty()
 }
 @Composable
-fun PronounScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 2
-    val radioQuestionNumber = 0
-    var pronoun by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(pronoun)
-    DisposableEffect(pronoun, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(pronoun, questionNumber)
-        }
-    }
+fun pronounScreen(): Boolean {
+    var pronoun by rememberSaveable { mutableStateOf(newUser.pronoun) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.pronoun) }
+
     SignUpFormat(
         title = "Pronouns",
         label = "How do you go by?",
@@ -313,25 +301,18 @@ fun PronounScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (S
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     pronoun = opts[selectedOptionIndex]
+                    newUser.pronoun = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle(),
             )
         },
     )
+    return pronoun.isNotEmpty()
 }
 @Composable
-fun GenderScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 3
-    val radioQuestionNumber = 1
-    var gender by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(gender)
-    DisposableEffect(gender, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(gender, questionNumber)
-        }
-    }
+fun genderScreen():Boolean {
+    var gender by rememberSaveable { mutableStateOf(newUser.gender) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.gender) }
     SignUpFormat(
         title = "Your Gender",
         label = "What do you identify as",
@@ -342,22 +323,23 @@ fun GenderScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     gender = opts[selectedOptionIndex]
+                    newUser.gender = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             ) },
     )
+    return gender.isNotEmpty()
 }
 @Composable
-fun HeightScreen(userInfo: Array<String>,  onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 4
-    var height by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    updateButtonState(height)
+fun heightScreen():Boolean {
+    var height by rememberSaveable { mutableStateOf(newUser.height) }
+    val valuesPickerState = rememberPickerState()
     DisposableEffect(height) {
         onDispose {
-            onAnswerChanged(height, questionNumber)
+            newUser.height = height
         }
     }
-    val valuesPickerState = rememberPickerState()
+
     height = valuesPickerState.selectedItem
     val feet = remember {
         val heights = mutableListOf<String>()
@@ -382,20 +364,12 @@ fun HeightScreen(userInfo: Array<String>,  onAnswerChanged: (String, Int) -> Uni
                 pickedState = valuesPickerState
             )
         })
+    return height.isNotEmpty()
 }
 @Composable
-fun EthnicityScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 5
-    val radioQuestionNumber = 2
-    var ethnicity by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(ethnicity)
-    DisposableEffect(ethnicity, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(ethnicity, questionNumber)
-        }
-    }
+fun ethnicityScreen():Boolean {
+    var ethnicity by rememberSaveable { mutableStateOf(newUser.ethnicity) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.ethnicity) }
     SignUpFormat(
         title = "Ethnicity",
         label = "We curious on where you are from!",
@@ -407,25 +381,19 @@ fun EthnicityScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     ethnicity = opts[selectedOptionIndex]
+                    newUser.ethnicity = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return ethnicity.isNotEmpty()
 }
 @Composable
-fun StarScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 6
-    val radioQuestionNumber = 3
-    var star by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(star)
-    DisposableEffect(star, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(star, questionNumber)
-        }
-    }
+fun starScreen():Boolean{
+    var star by rememberSaveable { mutableStateOf(newUser.star) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.star) }
+
     SignUpFormat(
         title = "Whats your sign?",
         label = "Do the stars say we are in favor?",
@@ -437,25 +405,18 @@ fun StarScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Stri
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     star = opts[selectedOptionIndex]
+                    newUser.star = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return star.isNotEmpty()
 }
 @Composable
-fun SexOriScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 7
-    val radioQuestionNumber = 4
-    var sexOri by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(sexOri)
-    DisposableEffect(sexOri, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(sexOri, questionNumber)
-        }
-    }
+fun sexOriScreen():Boolean{
+    var sexOri by rememberSaveable { mutableStateOf(newUser.sexOrientation) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.sexOrientation) }
     SignUpFormat(
         title = "Sexual Orientation",
         label = "Who do you like?",
@@ -466,25 +427,18 @@ fun SexOriScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     sexOri = opts[selectedOptionIndex]
+                    newUser.sexOrientation = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return sexOri.isNotEmpty()
 }
 @Composable
-fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 8
-    val radioQuestionNumber = 5
-    var search by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(search)
-    DisposableEffect(search, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(search, questionNumber)
-        }
-    }
+fun searchScreen():Boolean{
+    var search by rememberSaveable { mutableStateOf(newUser.seeking) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.seeking) }
     SignUpFormat(
         title = "Searching For?",
         label = "Who are you looking to connect with?",
@@ -495,25 +449,18 @@ fun SearchScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     search = opts[selectedOptionIndex]
+                    newUser.seeking = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return search.isNotEmpty()
 }
 @Composable
-fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 9
-    val radioQuestionNumber = 6
-    var sex by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(sex)
-    DisposableEffect(sex, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(sex, questionNumber)
-        }
-    }
+fun sexScreen():Boolean{
+    var sex by rememberSaveable { mutableStateOf(newUser.sex) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.sex) }
     SignUpFormat(
         title = "Your sex",
         label = "What search category will you be in?",
@@ -524,23 +471,18 @@ fun SexScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Strin
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     sex = opts[selectedOptionIndex]
+                    newUser.sex = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return sex.isNotEmpty()
 }
 @Composable
-fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 10
-    var mbti by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    updateButtonState("mbti")//Don'tWork??
+fun mbtiScreen():Boolean{
+    var mbti by rememberSaveable { mutableStateOf(newUser.testResultsMbti) }
     val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3", "MBTI TEST QUESTION 4", "MBTI QUESTION 5", "MBTI 6")
-    DisposableEffect(mbti) {
-        onDispose {
-            onAnswerChanged(mbti, questionNumber)
-        }
-    }
     SignUpFormat(
         title = "MBTI",
         label = "What does your personality say about you?",
@@ -559,6 +501,7 @@ fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, 
                         onSelectionChange = { newIndex ->
                             selectedOptionIndex = newIndex
                             mbti = "MBTI Text answer"
+                            newUser.testResultsMbti = "ENTP-T"
                         },
                         question = quest
                     )
@@ -566,17 +509,11 @@ fun MbtiScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, 
             }
         },
     )
+    return true//mbti.isNotEmpty()
 }
 @Composable
-fun OurTestScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 11
-    var our by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    updateButtonState("our")//Don't Work???
-    DisposableEffect(our) {
-        onDispose {
-            onAnswerChanged(our, questionNumber)
-        }
-    }
+fun ourTestScreen():Boolean{
+    var our by rememberSaveable { mutableStateOf(newUser.testResultTbd) }
     val questions = listOf( "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
         "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
         "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
@@ -598,6 +535,7 @@ fun OurTestScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Uni
                         selectedIndex = selectedOptionIndex,
                         onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                             our = "our Test Answer"
+                            newUser.testResultTbd = "0.241"
                         },
                         question = quest
                     )
@@ -605,20 +543,12 @@ fun OurTestScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Uni
             }
         },
     )
+    return true //our.isNotEmpty()
 }
 @Composable
-fun ChildrenScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 12
-    val radioQuestionNumber = 7
-    var children by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(children)
-    DisposableEffect(children, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(children, questionNumber)
-        }
-    }
+fun childrenScreen():Boolean{
+    var children by rememberSaveable { mutableStateOf(newUser.children) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.children) }
     SignUpFormat(
         title = "Do you have children?",
         label = "Do you have someone else we should think about too?",
@@ -629,25 +559,18 @@ fun ChildrenScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     children = opts[selectedOptionIndex]
+                    newUser.children = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return children.isNotEmpty()
 }
 @Composable
-fun FamilyScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 13
-    val radioQuestionNumber = 8
-    var family by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(family)
-    DisposableEffect(family, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(family, questionNumber)
-        }
-    }
+fun familyScreen():Boolean{
+    var family by rememberSaveable { mutableStateOf(newUser.family) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.family) }
     SignUpFormat(
         title = "Do you want Children?",
         label = "What are your plans for your family?",
@@ -658,25 +581,18 @@ fun FamilyScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (St
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     family = opts[selectedOptionIndex]
+                    newUser.family = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return family.isNotEmpty()
 }
 @Composable
-fun EducationScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 14
-    val radioQuestionNumber = 9
-    var education by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(education)
-    DisposableEffect(education, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(education, questionNumber)
-        }
-    }
+fun educationScreen():Boolean{
+    var education by rememberSaveable { mutableStateOf(newUser.education) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.education) }
     SignUpFormat(
         title = "Education Level",
         label = "Your heart is always smarter than your brain",
@@ -687,25 +603,18 @@ fun EducationScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     education = opts[selectedOptionIndex]
+                    newUser.education = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return education.isNotEmpty()
 }
 @Composable
-fun ReligiousScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 15
-    val radioQuestionNumber = 10
-    var religious by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(religious)
-    DisposableEffect(religious, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(religious, questionNumber)
-        }
-    }
+fun religiousScreen():Boolean{
+    var religious by rememberSaveable { mutableStateOf(newUser.religion) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.religion) }
     SignUpFormat(
         title = "Religion",
         label = "We believe in you, but what do you believe in?",
@@ -716,25 +625,18 @@ fun ReligiousScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: 
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     religious = opts[selectedOptionIndex]
+                    newUser.religion = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return religious.isNotEmpty()
 }
 @Composable
-fun PoliticsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 16
-    val radioQuestionNumber = 11
-    var politics by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(politics)
-    DisposableEffect(politics, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(politics, questionNumber)
-        }
-    }
+fun politicsScreen():Boolean{
+    var politics by rememberSaveable { mutableStateOf(newUser.politics) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.politics) }
     SignUpFormat(
         title = "Politics",
         label = "We vote for you to find a meaningful connection",
@@ -745,25 +647,18 @@ fun PoliticsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     politics = opts[selectedOptionIndex]
+                    newUser.politics = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return politics.isNotEmpty()
 }
 @Composable
-fun RelationshipScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 17
-    val radioQuestionNumber = 12
-    var relationship by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(relationship)
-    DisposableEffect(relationship, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(relationship, questionNumber)
-        }
-    }
+fun relationshipScreen():Boolean{
+    var relationship by rememberSaveable { mutableStateOf(newUser.relationship) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.relationship) }
     SignUpFormat(
         title = "Relationship type",
         label = "There is always enough to go around",
@@ -774,25 +669,18 @@ fun RelationshipScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChange
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     relationship = opts[selectedOptionIndex]
+                    newUser.relationship = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return relationship.isNotEmpty()
 }
 @Composable
-fun IntentionsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 18
-    val radioQuestionNumber = 13
-    var intention by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(intention)
-    DisposableEffect(intention, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(intention, questionNumber)
-        }
-    }
+fun intentionsScreen():Boolean{
+    var intention by rememberSaveable { mutableStateOf(newUser.intentions) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.intentions) }
     SignUpFormat(
         title = "Dating Intentions",
         label = "What are you looking for?",
@@ -803,25 +691,18 @@ fun IntentionsScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged:
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     intention = opts[selectedOptionIndex]
+                    newUser.intentions = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return intention.isNotEmpty()
 }
 @Composable
-fun DrinkScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 19
-    val radioQuestionNumber = 14
-    var drink by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(drink)
-    DisposableEffect(drink, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(drink, questionNumber)
-        }
-    }
+fun drinkScreen():Boolean{
+    var drink by rememberSaveable { mutableStateOf(newUser.drink) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.drink) }
     SignUpFormat(
         title = "Do you drink?",
         label = "How do you like to party?",
@@ -832,25 +713,18 @@ fun DrinkScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Str
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     drink = opts[selectedOptionIndex]
+                    newUser.drink = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return drink.isNotEmpty()
 }
 @Composable
-fun SmokeScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 20
-    val radioQuestionNumber = 15
-    var smoke by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(smoke)
-    DisposableEffect(smoke, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(smoke, questionNumber)
-        }
-    }
+fun smokeScreen():Boolean{
+    var smoke by rememberSaveable { mutableStateOf(newUser.smoke) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.smoke) }
     SignUpFormat(
         title = "Do you Smoke?",
         label = "How do you like to relax?",
@@ -861,25 +735,18 @@ fun SmokeScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Str
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     smoke = opts[selectedOptionIndex]
+                    newUser.smoke = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return smoke.isNotEmpty()
 }
 @Composable
-fun WeedScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (String, Int) -> Unit, onIndexChange: (Int, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 21
-    val radioQuestionNumber = 16
-    var weed by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(index[radioQuestionNumber]) }
-    updateButtonState(weed)
-    DisposableEffect(weed, selectedOptionIndex) {
-        onDispose {
-            onIndexChange(selectedOptionIndex, radioQuestionNumber)
-            onAnswerChanged(weed, questionNumber)
-        }
-    }
+fun weedScreen():Boolean{
+    var weed by rememberSaveable { mutableStateOf(newUser.weed) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.weed) }
     SignUpFormat(
         title = "Do you Smoke, Marijuana?",
         label = "How do you like to relax or party?",
@@ -890,23 +757,18 @@ fun WeedScreen(userInfo: Array<String>, index:Array<Int>, onAnswerChanged: (Stri
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     weed = opts[selectedOptionIndex]
+                    newUser.weed = opts[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
         },
     )
+    return weed.isNotEmpty()
 }
 
 @Composable
-fun BioScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 22
-    var bio by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    updateButtonState(bio) //Make it work so its only 15 characters allowed
-    DisposableEffect(bio) {
-        onDispose {
-            onAnswerChanged(bio, questionNumber)
-        }
-    }
+fun bioScreen():Boolean{
+    var bio by rememberSaveable { mutableStateOf(newUser.bio) }
     SignUpFormat(
         title = "Bio",
         label = "",
@@ -914,25 +776,20 @@ fun BioScreen(userInfo: Array<String>, onAnswerChanged: (String, Int) -> Unit, u
             BioQuestion(
                 input = bio,
                 onInputChanged = { input  ->  bio = input
+                    newUser.bio = input
                 },
             )
         },
     )
+    return (bio.length in 16..499)
 }
 
 @Composable
-fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, String, String) -> Unit, updateButtonState: (String) -> Unit) {
-    val questionNumber = 23
-    var photo1 by rememberSaveable { mutableStateOf(userInfo[questionNumber]) }
-    var photo2 by rememberSaveable { mutableStateOf(userInfo[questionNumber+1]) }
-    var photo3 by rememberSaveable { mutableStateOf(userInfo[questionNumber+2]) }
-    var photo4 by rememberSaveable { mutableStateOf(userInfo[questionNumber+3]) }
-    updateButtonState(photo3)
-    DisposableEffect(photo1, photo2, photo3, photo4) {
-        onDispose {
-            onAnswerChanged(photo1, photo2, photo3, photo4)
-        }
-    }
+fun photoScreen():Boolean{
+    var photo1 by rememberSaveable { mutableStateOf(newUser.image1) }
+    var photo2 by rememberSaveable { mutableStateOf(newUser.image2) }
+    var photo3 by rememberSaveable { mutableStateOf(newUser.image3) }
+    var photo4 by rememberSaveable { mutableStateOf(newUser.image4) }
     var showFinalDialog by rememberSaveable { mutableStateOf(true) }
     if (showFinalDialog) {
         DialogWithImage(
@@ -951,16 +808,20 @@ fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, Strin
     val enables by rememberSaveable { mutableStateOf(BooleanArray(3) { false }) }
     val galleryLauncher1 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri1 = it
-            photo1 = it.toString()} })
+            photo1 = it.toString()
+            newUser.image1 = it.toString()} })
     val galleryLauncher2 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri2 = it
-            photo2 = it.toString()} })
+            photo2 = it.toString()
+            newUser.image2 = it.toString()} })
     val galleryLauncher3 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri3 = it
-            photo3 = it.toString()} })
+            photo3 = it.toString()
+            newUser.image3 = it.toString()} })
     val galleryLauncher4 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri4 = it
-            photo4 = it.toString()} })
+            photo4 = it.toString()
+            newUser.image4 = it.toString()} })
 
     SignUpFormat(
         title = "Add some photos!",
@@ -987,6 +848,7 @@ fun PhotoScreen(userInfo: Array<String>, onAnswerChanged: (String, String, Strin
         )
         },
     )
+    return (photo1.isNotEmpty() && photo2.isNotEmpty() && photo3.isNotEmpty())
 }
 
 

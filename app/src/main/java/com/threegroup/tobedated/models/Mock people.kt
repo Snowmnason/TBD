@@ -5,7 +5,7 @@ val sophiaModel = UserModel(
      birthday       ="07/15/1995", // Birthday
      pronoun        ="She/Her", // Pronoun
      gender         ="Female", // Gender
-     hieght         ="5'5\"", // Height
+     height         ="5'5\"", // Height
      ethnicity      ="Black/African Descent", // Ethnicity
      star           ="Cancer", // Star
      sexOrientation ="Bisexual", // Sex Orientation
@@ -16,7 +16,7 @@ val sophiaModel = UserModel(
      children       ="Don't have", // Children
      family         ="No Children",
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Atheist", // Religious
      relationship   ="Liberal", // Politics
      intentions     ="Long-term", // Intentions
@@ -34,7 +34,6 @@ val sophiaModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216758663939620864/snowmanson_Sophia_is_a_creative_soul_who_finds_joy_in_the_arts__740fc45b-c2be-4ee7-bced-a666f538cbc2.png?ex=66018dcf&is=65ef18cf&hm=ba68a68e77d74738fec76552d0d33fcdb1ca2a1e83c68b61c8be81c6eccfb79d&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216758663939620864/snowmanson_Sophia_is_a_creative_soul_who_finds_joy_in_the_arts__740fc45b-c2be-4ee7-bced-a666f538cbc2.png?ex=66018dcf&is=65ef18cf&hm=ba68a68e77d74738fec76552d0d33fcdb1ca2a1e83c68b61c8be81c6eccfb79d&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216758663939620864/snowmanson_Sophia_is_a_creative_soul_who_finds_joy_in_the_arts__740fc45b-c2be-4ee7-bced-a666f538cbc2.png?ex=66018dcf&is=65ef18cf&hm=ba68a68e77d74738fec76552d0d33fcdb1ca2a1e83c68b61c8be81c6eccfb79d&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
-     age            ="29", // Age (to be calculated)
      location       ="New York City, NY", // Location
      status         ="Online", // Status
      number         ="+1 (555) 789-0123", // Phone Number
@@ -46,7 +45,7 @@ val liamModel = UserModel(
      birthday       ="04/20/1989", // Birthday
      pronoun        ="He/Him", // Pronoun
      gender         ="Male", // Gender
-     hieght         ="6'0\"", // Height
+     height         ="6'0\"", // Height
      ethnicity      ="White/Caucasian", // Ethnicity
      star           ="Taurus", // Star
      sexOrientation ="Pansexual", // Sex Orientation
@@ -57,7 +56,7 @@ val liamModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Atheist", // Religious
      relationship   ="Moderate", // Politics
      intentions     ="Life Partner", // Intentions
@@ -75,7 +74,6 @@ val liamModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216761712548515900/snowmanson_Liam_is_a_driven_individual_with_a_passion_for_music_bbc03bf2-b18a-4489-adc6-77369191cc9e.png?ex=660190a6&is=65ef1ba6&hm=001ff63baeb39649da3ea18dd423fa2a78ad94ac59aeb0c00c72021c668cf52a&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216761712548515900/snowmanson_Liam_is_a_driven_individual_with_a_passion_for_music_bbc03bf2-b18a-4489-adc6-77369191cc9e.png?ex=660190a6&is=65ef1ba6&hm=001ff63baeb39649da3ea18dd423fa2a78ad94ac59aeb0c00c72021c668cf52a&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="", // Image 4
-     age            ="33", // Age (to be calculated)
      location       ="Austin, TX", // Location
      status         ="Online", // Status
      number         ="+1 (555) 890-1234", // Phone Number
@@ -87,7 +85,7 @@ val jackModel = UserModel(
      birthday       ="10/08/1990", // Birthday
      pronoun        ="He/Him", // Pronoun
      gender         ="Male", // Gender
-     hieght         ="6'2\"", // Height
+     height         ="6'2\"", // Height
      ethnicity      ="White/Caucasian", // Ethnicity
      star           ="Aquarius", // Star
      sexOrientation ="Heterosexual", // Sex Orientation
@@ -98,7 +96,7 @@ val jackModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Atheist", // Religious
      relationship   ="Moderate", // Politics
      intentions     ="Life Partner", // Intentions
@@ -116,7 +114,6 @@ val jackModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216763051068358666/snowmanson_Jack_is_an_adventurous_soul_with_a_curious_mind_and__72d0cf3b-5192-4bc0-92ed-3788e9614661.png?ex=660191e5&is=65ef1ce5&hm=c564f7024d0e88ebb7b82eb69ff4e1ce8cd4535a1abbbea06ac564625fa3f2c3&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216763051068358666/snowmanson_Jack_is_an_adventurous_soul_with_a_curious_mind_and__72d0cf3b-5192-4bc0-92ed-3788e9614661.png?ex=660191e5&is=65ef1ce5&hm=c564f7024d0e88ebb7b82eb69ff4e1ce8cd4535a1abbbea06ac564625fa3f2c3&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216763051068358666/snowmanson_Jack_is_an_adventurous_soul_with_a_curious_mind_and__72d0cf3b-5192-4bc0-92ed-3788e9614661.png?ex=660191e5&is=65ef1ce5&hm=c564f7024d0e88ebb7b82eb69ff4e1ce8cd4535a1abbbea06ac564625fa3f2c3&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
-     age            ="31", // Age (to be calculated)
      location       ="Denver, CO", // Location
      status         ="Online", // Status
      number         ="+1 (555) 345-6789", // Phone Number
@@ -128,7 +125,7 @@ val emmaModel = UserModel(
      birthday       ="05/20/1987", // Birthday
      pronoun        ="She/Her", // Pronoun
      gender         ="Female", // Gender
-     hieght         ="5'8\"", // Height
+     height         ="5'8\"", // Height
      ethnicity      ="White/Caucasian", // Ethnicity
      star           ="Gemini", // Star
      sexOrientation ="Pansexual", // Sex Orientation
@@ -139,7 +136,7 @@ val emmaModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Spiritual", // Religious
      relationship   ="Liberal", // Politics
      intentions     ="Long-term", // Intentions
@@ -157,7 +154,6 @@ val emmaModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216763680415289426/snowmanson_Emma_is_a_free-spirited_traveler_who_is_passionate_a_3fb94519-1024-41dc-af83-ad622028a421.png?ex=6601927b&is=65ef1d7b&hm=24d3d824809575d885a4a61089baffeef09e1dc6b12d94bc865a298df646ebfe&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216763680415289426/snowmanson_Emma_is_a_free-spirited_traveler_who_is_passionate_a_3fb94519-1024-41dc-af83-ad622028a421.png?ex=6601927b&is=65ef1d7b&hm=24d3d824809575d885a4a61089baffeef09e1dc6b12d94bc865a298df646ebfe&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="", // Image 4 (No fourth image)
-     age            ="34", // Age (to be calculated)
      location       ="San Francisco, CA", // Location
      status         ="Online", // Status
      number         ="+1 (555) 234-5678", // Phone Number
@@ -169,7 +165,7 @@ val miaModel = UserModel(
      birthday       ="08/15/1995", // Birthday
      pronoun        ="She/Her", // Pronoun
      gender         ="Female", // Gender
-     hieght         ="5'5\"", // Height
+     height         ="5'5\"", // Height
      ethnicity      ="Hispanic/Latino", // Ethnicity
      star           ="Leo", // Star
      sexOrientation ="Bisexual", // Sex Orientation
@@ -180,7 +176,7 @@ val miaModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Atheist", // Religious
      relationship   ="Liberal", // Politics
      intentions     ="Long-term", // Intentions
@@ -198,7 +194,6 @@ val miaModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 3
      image4         ="", // Image 4 (No fourth image)
-     age            ="29", // Age (to be calculated)
      location       ="Miami, FL", // Location
      status         ="Online", // Status
      number         ="+1 (555) 789-0123", // Phone Number
@@ -210,7 +205,7 @@ val AmirModel = UserModel(
      birthday       ="10/25/1990", // Birthday
      pronoun        ="He/Him", // Pronoun
      gender         ="Male", // Gender
-     hieght         ="6'2\"", // Height
+     height         ="6'2\"", // Height
      ethnicity      ="Middle Eastern", // Ethnicity
      star           ="Libra", // Star
      sexOrientation ="Heterosexual", // Sex Orientation
@@ -221,7 +216,7 @@ val AmirModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Life Partner", // Relationship
-     religious      ="Postgrad", // Education
+     religion      ="Postgrad", // Education
      politics       ="Muslim", // Religious
      relationship   ="Moderate", // Politics
      intentions     ="Long-term", // Intentions
@@ -239,7 +234,6 @@ val AmirModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764886445723709/snowmanson_Amir_is_an_adventurous_soul_with_a_passion_for_explo_e7a84695-80a8-43a1-976a-8b1943aa4ba4.png?ex=6601939b&is=65ef1e9b&hm=755ea995386a458d5c4d5bd9d961624e5ebde177fb665417303cda5666b1de4b&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764886445723709/snowmanson_Amir_is_an_adventurous_soul_with_a_passion_for_explo_e7a84695-80a8-43a1-976a-8b1943aa4ba4.png?ex=6601939b&is=65ef1e9b&hm=755ea995386a458d5c4d5bd9d961624e5ebde177fb665417303cda5666b1de4b&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="", // Image 4 (No fourth image)
-     age            ="31", // Age (to be calculated)
      location       ="Toronto, Canada", // Location
      status         ="Online", // Status
      number         ="+1 (555) 901-2345", // Phone Number
@@ -251,7 +245,7 @@ val LaylaModel = UserModel(
      birthday       ="05/12/1988", // Birthday
      pronoun        ="She/Her", // Pronoun
      gender         ="Female", // Gender
-     hieght         ="5'6\"", // Height
+     height         ="5'6\"", // Height
      ethnicity      ="Black/African Descent", // Ethnicity
      star           ="Taurus", // Star
      sexOrientation ="Pansexual", // Sex Orientation
@@ -262,7 +256,7 @@ val LaylaModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Life Partner", // Relationship
-     religious      ="Postgrad", // Education
+     religion      ="Postgrad", // Education
      politics       ="Agnostic", // Religious
      relationship   ="Liberal", // Politics
      intentions     ="Long-term", // Intentions
@@ -280,7 +274,6 @@ val LaylaModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216766566469865532/snowmanson_Layla_is_a_woman_of_BlackAfrican_Descent_with_smooth_fea0091d-ff8a-4823-938e-9f6119635103.png?ex=6601952b&is=65ef202b&hm=d07d17823eb0c2f217fc2a0aa18fe7e07f0de6811d91da9bc2e3dec44dce6afe&=&format=webp&quality=lossless&width=291&height=437", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216766566469865532/snowmanson_Layla_is_a_woman_of_BlackAfrican_Descent_with_smooth_fea0091d-ff8a-4823-938e-9f6119635103.png?ex=6601952b&is=65ef202b&hm=d07d17823eb0c2f217fc2a0aa18fe7e07f0de6811d91da9bc2e3dec44dce6afe&=&format=webp&quality=lossless&width=291&height=437", // Image 3
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216765873042231336/snowmanson_Layla_is_a_creative_spirit_with_a_love_for_storytell_ce982885-6b55-40c6-a23b-75eed157370f.png?ex=66019486&is=65ef1f86&hm=09e04af750ac3db1c38f6bd26370ae55d50f77729f4cd0fddb4db91877330e39&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
-     age            ="33", // Age (to be calculated)
      location       ="New York City, NY", // Location
      status         ="Online", // Status
      number         ="+1 (555) 678-9012", // Phone Number
@@ -292,7 +285,7 @@ val MalikModel = UserModel(
      birthday       ="08/18/1995", // Birthday
      pronoun        ="He/Him", // Pronoun
      gender         ="Male", // Gender
-     hieght         ="6'0\"", // Height
+     height         ="6'0\"", // Height
      ethnicity      ="Hispanic/Latino", // Ethnicity
      star           ="Leo", // Star
      sexOrientation ="Bisexual", // Sex Orientation
@@ -303,7 +296,7 @@ val MalikModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Catholic", // Religious
      relationship   ="Liberal", // Politics
      intentions     ="Long-term", // Intentions
@@ -321,7 +314,6 @@ val MalikModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216767011418542110/snowmanson_Malik_is_a_charming_individual_with_a_warm_smile_and_1ed4da8c-fae8-4217-8a6f-5776193cfe22.png?ex=66019595&is=65ef2095&hm=552dd6216752b18b0b2bd5fcf3b66ff85dde926676664d04e2cde09385293128&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216767011418542110/snowmanson_Malik_is_a_charming_individual_with_a_warm_smile_and_1ed4da8c-fae8-4217-8a6f-5776193cfe22.png?ex=66019595&is=65ef2095&hm=552dd6216752b18b0b2bd5fcf3b66ff85dde926676664d04e2cde09385293128&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216767011418542110/snowmanson_Malik_is_a_charming_individual_with_a_warm_smile_and_1ed4da8c-fae8-4217-8a6f-5776193cfe22.png?ex=66019595&is=65ef2095&hm=552dd6216752b18b0b2bd5fcf3b66ff85dde926676664d04e2cde09385293128&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
-     age            ="29", // Age (to be calculated)
      location       ="Miami, FL", // Location
      status         ="Online", // Status
      number         ="+1 (555) 789-0123", // Phone Number
@@ -333,7 +325,7 @@ val MeiModel = UserModel(
      birthday       ="03/25/1990", // Birthday
      pronoun        ="She/Her", // Pronoun
      gender         ="Female", // Gender
-     hieght         ="5'4\"", // Height
+     height         ="5'4\"", // Height
      ethnicity      ="East Asian", // Ethnicity
      star           ="Pisces", // Star
      sexOrientation ="Pansexual", // Sex Orientation
@@ -344,7 +336,7 @@ val MeiModel = UserModel(
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
-     religious      ="Undergrad", // Education
+     religion      ="Undergrad", // Education
      politics       ="Buddhist", // Religious
      relationship   ="Moderate", // Politics
      intentions     ="Long-term", // Intentions
@@ -362,7 +354,6 @@ val MeiModel = UserModel(
      image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216767754305015928/snowmanson_Mei_is_real_person_and_a_gentle_soul_with_a_serene_p_4d96546f-db12-41f5-9b3b-aba25c2d186a.png?ex=66019647&is=65ef2147&hm=889499c2dc242da7eb4fb3e1118e876d2eeb50a6b6b19b58a5b8955a52dc1c15&=&format=webp&quality=lossless&width=291&height=437", // Image 2
      image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216767754305015928/snowmanson_Mei_is_real_person_and_a_gentle_soul_with_a_serene_p_4d96546f-db12-41f5-9b3b-aba25c2d186a.png?ex=66019647&is=65ef2147&hm=889499c2dc242da7eb4fb3e1118e876d2eeb50a6b6b19b58a5b8955a52dc1c15&=&format=webp&quality=lossless&width=291&height=437", // Image 3
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216767386028347442/snowmanson_Mei_is_a_gentle_soul_with_a_serene_presence_and_a_lo_7c1f7926-4888-4c34-931e-7c78c7ce1737.png?ex=660195ef&is=65ef20ef&hm=d0043edfe85a0791329265f1f728cd3c73567ea5af1682ff2320034c78ebd6b6&=&format=webp&quality=lossless&width=291&height=437", // Image 4
-     age            ="32", // Age (to be calculated)
      location       ="Tokyo, Japan", // Location
      status         ="Online", // Status
      number         ="+1 (555) 890-1234", // Phone Number
@@ -374,7 +365,7 @@ val AshaModel = UserModel(
     birthday       ="09/12/1988", // Birthday
     pronoun        ="She/Her", // Pronoun
     gender         ="Female", // Gender
-    hieght         ="5'8\"", // Height
+    height         ="5'8\"", // Height
     ethnicity      ="Black/African Descent", // Ethnicity
     star           ="Virgo", // Star
     sexOrientation ="Pansexual", // Sex Orientation
@@ -385,7 +376,7 @@ val AshaModel = UserModel(
     children       ="Don't have", // Family
     family         ="Don't want", // Children
     education      ="Long-term", // Relationship
-    religious      ="Postgrad", // Education
+    religion      ="Postgrad", // Education
     politics       ="Atheist", // Religious
     relationship   ="Liberal", // Politics
     intentions     ="Long-term", // Intentions
@@ -403,7 +394,6 @@ val AshaModel = UserModel(
     image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216768055019835412/snowmanson_Asha_is_a_dynamic_individual_with_a_passion_for_expl_c36be00d-dd88-438b-be28-b8d03d990b96.png?ex=6601968e&is=65ef218e&hm=e6e7dcbd156ad81e9e24b0660e603e4b92b6bfe587270d8444e23a28dbd2a126&=&format=webp&quality=lossless&width=291&height=437", // Image 2
     image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216768055019835412/snowmanson_Asha_is_a_dynamic_individual_with_a_passion_for_expl_c36be00d-dd88-438b-be28-b8d03d990b96.png?ex=6601968e&is=65ef218e&hm=e6e7dcbd156ad81e9e24b0660e603e4b92b6bfe587270d8444e23a28dbd2a126&=&format=webp&quality=lossless&width=291&height=437", // Image 3
     image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216768055019835412/snowmanson_Asha_is_a_dynamic_individual_with_a_passion_for_expl_c36be00d-dd88-438b-be28-b8d03d990b96.png?ex=6601968e&is=65ef218e&hm=e6e7dcbd156ad81e9e24b0660e603e4b92b6bfe587270d8444e23a28dbd2a126&=&format=webp&quality=lossless&width=291&height=437", // Image 4
-    age            ="33", // Age (to be calculated)
     location       ="Cape Town, South Africa", // Location
     status         ="Online", // Status
     number         ="+1 (555) 234-5678", // Phone Number
@@ -415,7 +405,7 @@ val jasonModel = UserModel(
     birthday ="07/18/1995", // Birthday
     pronoun="He/Him", // Pronoun
     gender ="Male", // Gender
-    hieght ="6'0\"", // Height
+    height ="6'0\"", // Height
     ethnicity ="White/Caucasian", // Ethnicity
     star ="Cancer", // Star
     sexOrientation ="Heterosexual", // Sex Orientation
@@ -426,7 +416,7 @@ val jasonModel = UserModel(
     children ="Don't have", // Family
     family ="Don't want", // Children
     education ="Long-term", // Relationship
-    religious ="Undergrad", // Education
+    religion ="Undergrad", // Education
     politics="Christian", // Religious
     relationship ="Moderate", // Politics
     intentions ="Long-term", // Intentions
@@ -444,7 +434,6 @@ val jasonModel = UserModel(
     image2 ="https://media.discordapp.net/attachments/1091674973841657856/1216768756492275803/snowmanson_Jack_is_a_down-to-earth_guy_with_a_love_for_lifes_si_85ee31b1-a16a-405b-8f6b-f2a49c4280b1.png?ex=66019736&is=65ef2236&hm=d944fb47dacce85821bace8d12eff6eb7fa3e82c47875c910c8f975e80960228&=&format=webp&quality=lossless&width=935&height=1403", // Image 2
     image3 ="https://media.discordapp.net/attachments/1091674973841657856/1216768756492275803/snowmanson_Jack_is_a_down-to-earth_guy_with_a_love_for_lifes_si_85ee31b1-a16a-405b-8f6b-f2a49c4280b1.png?ex=66019736&is=65ef2236&hm=d944fb47dacce85821bace8d12eff6eb7fa3e82c47875c910c8f975e80960228&=&format=webp&quality=lossless&width=935&height=1403", // Image 3
     image4 ="https://media.discordapp.net/attachments/1091674973841657856/1216768756492275803/snowmanson_Jack_is_a_down-to-earth_guy_with_a_love_for_lifes_si_85ee31b1-a16a-405b-8f6b-f2a49c4280b1.png?ex=66019736&is=65ef2236&hm=d944fb47dacce85821bace8d12eff6eb7fa3e82c47875c910c8f975e80960228&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
-    age ="26", // Age (to be calculated)
     location ="Portland, OR", // Location
     status ="Online", // Status
     number ="+1 (555) 678-9012", // Phone Number
@@ -456,7 +445,7 @@ val anaModel = UserModel(
     birthday       = "05/10/1990", // Birthday
     pronoun        = "She/Her", // Pronoun
     gender         = "Female", // Gender
-    hieght         = "5'5\"", // Height
+    height         = "5'5\"", // Height
     ethnicity      = "Hispanic/Latino", // Ethnicity
     star           = "Taurus", // Star
     sexOrientation = "Bisexual", // Sex Orientation
@@ -467,7 +456,7 @@ val anaModel = UserModel(
     children       = "Don't have", // Family
     family         = "Don't want", // Children
     education      = "Long-term", // Relationship
-    religious      = "Postgrad", // Education
+    religion      = "Postgrad", // Education
     politics       = "Agnostic", // Religious
     relationship   = "Liberal", // Politics
     intentions     = "Long-term", // Intentions
@@ -485,7 +474,6 @@ val anaModel = UserModel(
     image2         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 2
     image3         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 3
     image4         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 4
-    age            = "31", // Age (to be calculated)
     location       = "Miami, FL", // Location
     status         = "Online", // Status
     number         = "+1 (555) 789-0123", // Phone Number

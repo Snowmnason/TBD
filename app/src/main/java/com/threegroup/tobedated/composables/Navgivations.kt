@@ -16,61 +16,56 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.threegroup.tobedated.BioScreen
-import com.threegroup.tobedated.BirthScreen
 import com.threegroup.tobedated.ChatsScreen
-import com.threegroup.tobedated.ChildrenScreen
 import com.threegroup.tobedated.Dating
-import com.threegroup.tobedated.DrinkScreen
-import com.threegroup.tobedated.EducationScreen
-import com.threegroup.tobedated.EthnicityScreen
-import com.threegroup.tobedated.FamilyScreen
-import com.threegroup.tobedated.GenderScreen
 import com.threegroup.tobedated.GroupsScreen
-import com.threegroup.tobedated.HeightScreen
-import com.threegroup.tobedated.IntentionsScreen
-import com.threegroup.tobedated.MbtiScreen
 import com.threegroup.tobedated.MessagerScreen
-import com.threegroup.tobedated.NameScreen
-import com.threegroup.tobedated.OurTestScreen
-import com.threegroup.tobedated.PhotoScreen
-import com.threegroup.tobedated.PoliticsScreen
 import com.threegroup.tobedated.ProfileScreen
-import com.threegroup.tobedated.PronounScreen
-import com.threegroup.tobedated.RelationshipScreen
-import com.threegroup.tobedated.ReligiousScreen
 import com.threegroup.tobedated.SearchPreferenceScreen
-import com.threegroup.tobedated.SearchScreen
 import com.threegroup.tobedated.SearchingScreen
-import com.threegroup.tobedated.SexOriScreen
-import com.threegroup.tobedated.SexScreen
 import com.threegroup.tobedated.SignUp
 import com.threegroup.tobedated.SignUpActivity
-import com.threegroup.tobedated.SmokeScreen
 import com.threegroup.tobedated.SomeScreen
-import com.threegroup.tobedated.StarScreen
-import com.threegroup.tobedated.WeedScreen
-import com.threegroup.tobedated.WelcomeScreen
+import com.threegroup.tobedated.bioScreen
+import com.threegroup.tobedated.birthScreen
+import com.threegroup.tobedated.childrenScreen
 import com.threegroup.tobedated.composables.SignUp.BigButton
+import com.threegroup.tobedated.drinkScreen
+import com.threegroup.tobedated.educationScreen
+import com.threegroup.tobedated.ethnicityScreen
+import com.threegroup.tobedated.familyScreen
+import com.threegroup.tobedated.genderScreen
+import com.threegroup.tobedated.heightScreen
+import com.threegroup.tobedated.intentionsScreen
+import com.threegroup.tobedated.mbtiScreen
+import com.threegroup.tobedated.nameScreen
+import com.threegroup.tobedated.newUser
+import com.threegroup.tobedated.ourTestScreen
+import com.threegroup.tobedated.photoScreen
+import com.threegroup.tobedated.politicsScreen
+import com.threegroup.tobedated.pronounScreen
+import com.threegroup.tobedated.relationshipScreen
+import com.threegroup.tobedated.religiousScreen
+import com.threegroup.tobedated.searchScreen
+import com.threegroup.tobedated.sexOriScreen
+import com.threegroup.tobedated.sexScreen
+import com.threegroup.tobedated.smokeScreen
+import com.threegroup.tobedated.starScreen
+import com.threegroup.tobedated.weedScreen
+import com.threegroup.tobedated.welcomeScreen
 import kotlinx.coroutines.runBlocking
 
 @Composable
-fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, indexArray:Array<Int>) {
-    val photoQuestion = 23
+fun SignUpNav(signUpActivity: SignUpActivity) {
+
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
     var showDialog by remember { mutableStateOf(false) }
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
-    val onNameChanged: (String, Int) -> Unit = { newAnswer, index -> userInfoArray[index] = newAnswer }
-    val onPhotoChanged: (String, String, String, String) -> Unit = { newAnswer1, newAnswer2, newAnswer3, newAnswer4 ->
-        userInfoArray[photoQuestion] = newAnswer1
-        userInfoArray[photoQuestion+1] = newAnswer2
-        userInfoArray[photoQuestion+2] = newAnswer3
-        userInfoArray[photoQuestion+3] = newAnswer4}
-    val onIndexChange: (Int, Int) -> Unit = { newAnswer, index -> indexArray[index] = newAnswer }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
+
     BackButton(onClick = {
         if(isFirstScreen){
             showDialog = true
@@ -91,98 +86,92 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     if(!isFirstScreen) {
         ProgressBar(
             questionIndex = questionIndex,
-            totalQuestionCount = 10,
+            totalQuestionCount = 24,
         )
     }
-    val updateButtonState: (String) -> Unit = { input ->
-        isButtonEnabled = checkButtonState(input)
-    }
-    val updateButtonStateBio: (String) -> Unit = { input ->
-        isButtonEnabled = checkButtonStateBio(input)
-    }
+
     NavHost(navController = navController, startDestination = SignUp.WelcomeScreen.name,
         enterTransition = { slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(durationMillis = 150)) },
         exitTransition = { slideOutHorizontally(targetOffsetX  = { -1000 }, animationSpec = tween(durationMillis = 150)) },
         popEnterTransition = { slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween(durationMillis = 150)) },
         popExitTransition = { slideOutHorizontally(targetOffsetX  = { 1000 }, animationSpec = tween(durationMillis = 150)) }) {
         composable(route = SignUp.WelcomeScreen.name) {
-            WelcomeScreen()
+            isButtonEnabled = welcomeScreen()
         }
         composable(route = SignUp.NameScreen.name) {
-            NameScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+            isButtonEnabled = nameScreen()
         }
         composable(route = SignUp.BirthScreen.name) {
-            BirthScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+            isButtonEnabled = birthScreen()
         }
         composable(route = SignUp.PronounScreen.name) {
-            PronounScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = pronounScreen()
         }
         composable(route = SignUp.GenderScreen.name) {
-            GenderScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = genderScreen()
         }
         composable(route = SignUp.SexOriScreen.name) {
-            SexOriScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = sexOriScreen()
         }
         composable(route = SignUp.HieghtScreen.name) {
-            HeightScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+            isButtonEnabled = heightScreen()
         }
         composable(route = SignUp.EthnicityScreen.name) {
-            EthnicityScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = ethnicityScreen()
         }
         composable(route = SignUp.StarScreen.name) {
-            StarScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = starScreen()
         }
         composable(route = SignUp.SearchScreen.name) {
-            SearchScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = searchScreen()
         }
         composable(route = SignUp.SexScreen.name) {
-            SexScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = sexScreen()
         }
         composable(route = SignUp.MbtiScreen.name) {
-            MbtiScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+            isButtonEnabled = mbtiScreen()
         }
         composable(route = SignUp.OurTestScreen.name) {
-            OurTestScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonState)
+            isButtonEnabled = ourTestScreen()
         }
         composable(route = SignUp.ChildrenScreen.name) {
-            ChildrenScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = childrenScreen()
         }
         composable(route = SignUp.FamilyScreen.name) {
-            FamilyScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = familyScreen()
         }
         composable(route = SignUp.EducationScreen.name) {
-            EducationScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = educationScreen()
         }
         composable(route = SignUp.SexScreen.name) {
-            SexScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = sexScreen()
         }
         composable(route = SignUp.ReligiousScreen.name) {
-            ReligiousScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = religiousScreen()
         }
         composable(route = SignUp.PoliticsScreen.name) {
-            PoliticsScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = politicsScreen()
         }
         composable(route = SignUp.RelationshipScreen.name) {
-            RelationshipScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = relationshipScreen()
         }
         composable(route = SignUp.IntentionsScreen.name) {
-            IntentionsScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = intentionsScreen()
         }
         composable(route = SignUp.DrinkScreen.name) {
-            DrinkScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = drinkScreen()
         }
         composable(route = SignUp.SmokeScreen.name) {
-            SmokeScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = smokeScreen()
         }
         composable(route = SignUp.WeedScreen.name) {
-            WeedScreen(userInfo = userInfoArray, index= indexArray, onAnswerChanged = onNameChanged, onIndexChange = onIndexChange, updateButtonState)
+            isButtonEnabled = weedScreen()
         }
-
         composable(route = SignUp.BioScreen.name) {
-            BioScreen(userInfo = userInfoArray, onAnswerChanged = onNameChanged, updateButtonStateBio)
+            isButtonEnabled = bioScreen()
         }
         composable(route = SignUp.PhotoScreen.name) {
-            PhotoScreen(userInfo = userInfoArray, onAnswerChanged = onPhotoChanged, updateButtonState)
+            isButtonEnabled = photoScreen()
         }
 
     }
@@ -193,62 +182,57 @@ fun SignUpNav(signUpActivity: SignUpActivity, userInfoArray: Array<String>, inde
     if(isLastScreen){
         buttonText = "Finish"
     }
-
-
-
-    if(isFirstScreen){
-        isButtonEnabled = true
-    }
     BigButton(
         text = buttonText,
         onClick = {
             if(!isFirstScreen){
                 questionIndex++
             }
-            val nextDestination = when (navController.currentDestination?.route) {
-                SignUp.WelcomeScreen.name -> SignUp.NameScreen.name
-                SignUp.NameScreen.name -> SignUp.BirthScreen.name
-                SignUp.BirthScreen.name -> SignUp.PronounScreen.name
-                SignUp.PronounScreen.name -> SignUp.GenderScreen.name
-                SignUp.GenderScreen.name -> SignUp.HieghtScreen.name
-                SignUp.HieghtScreen.name -> SignUp.EthnicityScreen.name
-                SignUp.EthnicityScreen.name -> SignUp.StarScreen.name
-                SignUp.StarScreen.name ->  SignUp.SexOriScreen.name
-                SignUp.SexOriScreen.name -> SignUp.SearchScreen.name
-                SignUp.SearchScreen.name -> SignUp.SexScreen.name
-                SignUp.SexScreen.name -> SignUp.MbtiScreen.name
-                SignUp.MbtiScreen.name -> SignUp.OurTestScreen.name
-                SignUp.OurTestScreen.name -> SignUp.ChildrenScreen.name
-                SignUp.ChildrenScreen.name -> SignUp.FamilyScreen.name
-                SignUp.FamilyScreen.name -> SignUp.EducationScreen.name
-                SignUp.EducationScreen.name -> SignUp.ReligiousScreen.name
-                SignUp.ReligiousScreen.name -> SignUp.PoliticsScreen.name
-                SignUp.PoliticsScreen.name -> SignUp.RelationshipScreen.name
-                SignUp.RelationshipScreen.name -> SignUp.IntentionsScreen.name
-                SignUp.IntentionsScreen.name -> SignUp.DrinkScreen.name
-                SignUp.DrinkScreen.name -> SignUp.SmokeScreen.name
-                SignUp.SmokeScreen.name -> SignUp.WeedScreen.name
-                SignUp.WeedScreen.name -> SignUp.BioScreen.name
-                SignUp.BioScreen.name -> SignUp.PhotoScreen.name
-                else -> null // Handle unknown destinations or end of flow
-            }
+            val screenOrder = listOf(
+                SignUp.WelcomeScreen.name,
+                SignUp.NameScreen.name,
+                SignUp.BirthScreen.name,
+                SignUp.PronounScreen.name,
+                SignUp.GenderScreen.name,
+                SignUp.HieghtScreen.name,
+                SignUp.EthnicityScreen.name,
+                SignUp.StarScreen.name,
+                SignUp.SexOriScreen.name,
+                SignUp.SearchScreen.name,
+                SignUp.SexScreen.name,
+                SignUp.MbtiScreen.name,
+                SignUp.OurTestScreen.name,
+                SignUp.ChildrenScreen.name,
+                SignUp.FamilyScreen.name,
+                SignUp.EducationScreen.name,
+                SignUp.ReligiousScreen.name,
+                SignUp.PoliticsScreen.name,
+                SignUp.RelationshipScreen.name,
+                SignUp.IntentionsScreen.name,
+                SignUp.DrinkScreen.name,
+                SignUp.SmokeScreen.name,
+                SignUp.WeedScreen.name,
+                SignUp.BioScreen.name,
+                SignUp.PhotoScreen.name
+            )
+
+            val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
+            val nextDestinationIndex = currentDestinationIndex?.plus(1)
+
+            nextDestinationIndex?.let { screenOrder.getOrNull(it)
+                ?.let { it1 -> navController.navigate(it1) } }
+
             if(buttonText == "Finish"){
                 runBlocking {
                     signUpActivity.storeData()
                     signUpActivity.goNextScreen()
                 }
             }
-            println(userInfoArray.joinToString(separator = ", "))
-            nextDestination?.let { navController.navigate(it) }
+            //println(userInfoArray.joinToString(separator = ", "))
+            println("$newUser in fun")
         },
         isUse = isButtonEnabled
     )
-}
-fun checkButtonState(index:String): Boolean {
-    return index != ""
-}
-fun checkButtonStateBio(index:String): Boolean {
-    return index.length >= 15
 }
 
 @Composable

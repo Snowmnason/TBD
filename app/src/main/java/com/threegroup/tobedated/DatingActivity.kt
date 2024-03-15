@@ -6,27 +6,36 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.composables.DatingNav
+import com.threegroup.tobedated.composables.DatingScreens.ChangePreferenceScreen
 import com.threegroup.tobedated.composables.DatingScreens.InsideMessages
 import com.threegroup.tobedated.composables.DatingScreens.InsideSearchSettings
 import com.threegroup.tobedated.composables.DatingScreens.MessageStart
+import com.threegroup.tobedated.composables.DatingScreens.OtherPreferences
 import com.threegroup.tobedated.composables.DatingScreens.TheirMessage
 import com.threegroup.tobedated.composables.DatingScreens.TopAndBotBars
 import com.threegroup.tobedated.composables.DatingScreens.UserInfo
 import com.threegroup.tobedated.composables.DatingScreens.UserMessage
 import com.threegroup.tobedated.composables.DatingScreens.ageSlider
 import com.threegroup.tobedated.composables.DatingScreens.distanceSlider
+import com.threegroup.tobedated.composables.DatingScreens.seekingBox
+import com.threegroup.tobedated.composables.GenericTitleSmall
+import com.threegroup.tobedated.models.UserSearchPreferenceModel
+import com.threegroup.tobedated.models.miaModel
 import com.threegroup.tobedated.models.profiles
 import com.threegroup.tobedated.ui.theme.AppTheme
 import kotlin.random.Random
@@ -71,26 +80,42 @@ fun SearchingScreen(navController: NavHostController) {
 }
 @Composable
 fun SearchPreferenceScreen(navController: NavHostController){
-
+    val currentUser = miaModel
+    val searchPref = UserSearchPreferenceModel()
+    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Education", "Religion", "Political Views", "Intentions", "Drink", "Smokes", "Weed")
+    val userPref = listOf(searchPref.gender,searchPref.zodiac,searchPref.sexualOri,searchPref.mbti,searchPref.children,searchPref.familyPlans,searchPref.education,searchPref.religion,searchPref.politicalViews,searchPref.intentions,searchPref.drink,searchPref.smoke,searchPref.weed)
     InsideSearchSettings(
         nav = navController,
         searchSettings = {
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(15.dp, 0.dp)
+                    .padding(15.dp, 0.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val preferredRange = ageSlider(
-                    preferredMin = 18,
-                    preferredMax = 100,
-                )
+                searchPref.ageRange = ageSlider(preferredMin = 18, preferredMax = 35)
                 Spacer(modifier = Modifier.height(14.dp))
-                val maxPreferredDistance = distanceSlider(
-                    preferredMax = 25)
-
+                searchPref.maxDistance = distanceSlider(preferredMax = 25)
+                Spacer(modifier = Modifier.height(14.dp))
+                currentUser.seeking = seekingBox(desiredSex = currentUser.seeking, navController )//TODO dunno how to update it yet
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
+                Spacer(modifier = Modifier.height(6.dp))
+                GenericTitleSmall(text = "Premium Settings")
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
+                Spacer(modifier = Modifier.height(14.dp))
+                for (i in pref.indices){
+                    OtherPreferences(title = pref[i], navController = navController, currentlySelected = userPref[i], clickable = true)
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
             }
         }
     )
+}
+@Composable
+fun ChangePreference(navController: NavHostController, title:String){
+    ChangePreferenceScreen(navController, title = title)
 }
 @Composable
 fun ProfileScreen(navController: NavHostController){

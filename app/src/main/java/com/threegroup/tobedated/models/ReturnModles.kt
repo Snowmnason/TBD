@@ -1,6 +1,6 @@
 package com.threegroup.tobedated.models
 
-data class ageRange(
+data class AgeRange(
     val min: Int,
     val max: Int
 )

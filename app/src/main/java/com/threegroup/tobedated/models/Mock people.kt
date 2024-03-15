@@ -1,5 +1,45 @@
 package com.threegroup.tobedated.models
 
+val miaModel = UserModel(
+    name           ="Mia", // Name
+    birthday       ="08/15/1995", // Birthday
+    pronoun        ="She/Her", // Pronoun
+    gender         ="Female", // Gender
+    height         ="5'5\"", // Height
+    ethnicity      ="Hispanic/Latino", // Ethnicity
+    star           ="Leo", // Star
+    sexOrientation ="Bisexual", // Sex Orientation
+    seeking        ="Everyone", // Seeking
+    sex            ="Female", // Sex
+    testResultsMbti="ENFP-T", // MBTI Test Results
+    testResultTbd  ="0.763", // Test Result TBD
+    children       ="Don't have", // Family
+    family         ="Don't want", // Children
+    education      ="Long-term", // Relationship
+    religion      ="Undergrad", // Education
+    politics       ="Atheist", // Religious
+    relationship   ="Liberal", // Politics
+    intentions     ="Long-term", // Intentions
+    drink          ="Sometimes", // Drink
+    smoke          ="No", // Smoke
+    weed           ="No", // Weed
+    promptQ1       ="What's your favorite hobby?", // PromptQ1
+    promptA1       ="My favorite hobby is painting. It allows me to express myself creatively and unwind after a long day.", // PromptA1
+    promptQ2       ="If you could learn any new skill, what would it be?", // PromptQ2
+    promptA2       ="I would love to learn how to play the piano. Music has always been a passion of mine, and being able to create beautiful melodies would be incredible.", // PromptA2
+    promptQ3       ="What's your dream travel destination?", // PromptQ3
+    promptA3       ="My dream travel destination is Machu Picchu in Peru. The ancient ruins and breathtaking mountain landscapes fascinate me.", // PromptA3
+    bio            ="I'm Mia, a creative soul with a love for art and adventure. When I'm not painting or exploring new places, you can find me curled up with a good book or spending time with loved ones.", // Bio
+    image1         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 1
+    image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 2
+    image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 3
+    image4         ="", // Image 4 (No fourth image)
+    location       ="Miami, FL", // Location
+    status         ="Online", // Status
+    number         ="+1 (555) 789-0123", // Phone Number
+    verified       ="true"
+)
+
 val sophiaModel = UserModel(
      name           ="Sophia", // Name
      birthday       ="07/15/1995", // Birthday
@@ -158,46 +198,6 @@ val emmaModel = UserModel(
      status         ="Online", // Status
      number         ="+1 (555) 234-5678", // Phone Number
      verified       ="false"
-)
-
-val miaModel = UserModel(
-     name           ="Mia", // Name
-     birthday       ="08/15/1995", // Birthday
-     pronoun        ="She/Her", // Pronoun
-     gender         ="Female", // Gender
-     height         ="5'5\"", // Height
-     ethnicity      ="Hispanic/Latino", // Ethnicity
-     star           ="Leo", // Star
-     sexOrientation ="Bisexual", // Sex Orientation
-     seeking        ="Everyone", // Seeking
-     sex            ="Female", // Sex
-     testResultsMbti="ENFP-T", // MBTI Test Results
-     testResultTbd  ="0.763", // Test Result TBD
-     children       ="Don't have", // Family
-     family         ="Don't want", // Children
-     education      ="Long-term", // Relationship
-     religion      ="Undergrad", // Education
-     politics       ="Atheist", // Religious
-     relationship   ="Liberal", // Politics
-     intentions     ="Long-term", // Intentions
-     drink          ="Sometimes", // Drink
-     smoke          ="No", // Smoke
-     weed           ="No", // Weed
-     promptQ1       ="What's your favorite hobby?", // PromptQ1
-     promptA1       ="My favorite hobby is painting. It allows me to express myself creatively and unwind after a long day.", // PromptA1
-     promptQ2       ="If you could learn any new skill, what would it be?", // PromptQ2
-     promptA2       ="I would love to learn how to play the piano. Music has always been a passion of mine, and being able to create beautiful melodies would be incredible.", // PromptA2
-     promptQ3       ="What's your dream travel destination?", // PromptQ3
-     promptA3       ="My dream travel destination is Machu Picchu in Peru. The ancient ruins and breathtaking mountain landscapes fascinate me.", // PromptA3
-     bio            ="I'm Mia, a creative soul with a love for art and adventure. When I'm not painting or exploring new places, you can find me curled up with a good book or spending time with loved ones.", // Bio
-     image1         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 1
-     image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 2
-     image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 3
-     image4         ="", // Image 4 (No fourth image)
-     location       ="Miami, FL", // Location
-     status         ="Online", // Status
-     number         ="+1 (555) 789-0123", // Phone Number
-     verified       ="true"
 )
 
 val AmirModel = UserModel(
@@ -441,44 +441,83 @@ val jasonModel = UserModel(
 )
 
 val anaModel = UserModel(
-    name           = "Ana", // Name
-    birthday       = "05/10/1990", // Birthday
-    pronoun        = "She/Her", // Pronoun
-    gender         = "Female", // Gender
-    height         = "5'5\"", // Height
-    ethnicity      = "Hispanic/Latino", // Ethnicity
-    star           = "Taurus", // Star
-    sexOrientation = "Bisexual", // Sex Orientation
-    seeking        = "Everyone", // Seeking
-    sex            = "Female", // Sex
-    testResultsMbti= "ENFP-T", // MBTI Test Results
-    testResultTbd  = "0.435", // Test Result TBD
-    children       = "Don't have", // Family
-    family         = "Don't want", // Children
-    education      = "Long-term", // Relationship
-    religion      = "Postgrad", // Education
-    politics       = "Agnostic", // Religious
-    relationship   = "Liberal", // Politics
-    intentions     = "Long-term", // Intentions
-    drink          = "Sometimes", // Drink
-    smoke          = "No", // Smoke
-    weed           = "Sometimes", // Weed
-    promptQ1       = "What's your favorite book?", // PromptQ1
-    promptA1       = "My favorite book is 'The Alchemist' by Paulo Coelho. It's a timeless tale of self-discovery and following one's dreams.", // PromptA1
-    promptQ2       = "If you could live in any fictional universe, where would it be?", // PromptQ2
+    name           = "Ana",
+    birthday       = "05/10/1990",
+    pronoun        = "She/Her",
+    gender         = "Female",
+    height         = "5'5\"",
+    ethnicity      = "Hispanic/Latino",
+    star           = "Taurus",
+    sexOrientation = "Bisexual",
+    seeking        = "Everyone",
+    sex            = "Female",
+    testResultsMbti= "ENFP-T",
+    testResultTbd  = "0.435",
+    children       = "Don't have",
+    family         = "Don't want",
+    education      = "Long-term",
+    religion      = "Postgrad",
+    politics       = "Agnostic",
+    relationship   = "Liberal",
+    intentions     = "Long-term",
+    drink          = "Sometimes",
+    smoke          = "No",
+    weed           = "Sometimes",
+    promptQ1       = "What's your favorite book?",
+    promptA1       = "My favorite book is 'The Alchemist' by Paulo Coelho. It's a timeless tale of self-discovery and following one's dreams.",
+    promptQ2       = "If you could live in any fictional universe, where would it be?",
     promptA2       = "I would love to live in the magical world of Harry Potter. The idea of attending Hogwarts and learning magic sounds like an enchanting adventure.", // PromptA2
-    promptQ3       = "What's your guilty pleasure?", // PromptQ3
-    promptA3       = "My guilty pleasure is binge-watching romantic comedies while indulging in a pint of ice cream.", // PromptA3
-    bio            = "I'm Sofia, a free-spirited soul with a passion for creativity and exploration. With my Hispanic/Latino heritage, my warm olive skin and dark hair reflect my cultural roots. Standing at 5'5\", I possess an infectious energy and an insatiable curiosity that drives me to seek new experiences. Let's capture the essence of Sofia in the vibrant streets of a bustling city, where her zest for life shines through in every moment.", // Bio
+    promptQ3       = "What's your guilty pleasure?",
+    promptA3       = "My guilty pleasure is binge-watching romantic comedies while indulging in a pint of ice cream.",
+    bio            = "I'm Sofia, a free-spirited soul with a passion for creativity and exploration. With my Hispanic/Latino heritage, my warm olive skin and dark hair reflect my cultural roots. Standing at 5'5\", I possess an infectious energy and an insatiable curiosity that drives me to seek new experiences. Let's capture the essence of Sofia in the vibrant streets of a bustling city, where her zest for life shines through in every moment.",
     image1         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 1
     image2         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 2
     image3         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 3
     image4         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 4
-    location       = "Miami, FL", // Location
-    status         = "Online", // Status
-    number         = "+1 (555) 789-0123", // Phone Number
+    location       = "Miami, FL",
+    status         = "Online",
+    number         = "+1 (555) 789-0123",
     verified       = "true"
 )
 
+val samuelModel = UserModel(
+    name           = "Samuel",
+    birthday       = "02/18/1985",
+    pronoun        = "He/Him",
+    gender         = "Male",
+    height         = "6'2\"",
+    ethnicity      = "Black/African descent",
+    star           = "Aquarius",
+    sexOrientation = "Heterosexual",
+    seeking        = "Everyone",
+    sex            = "Male",
+    testResultsMbti= "ISTJ-T",
+    testResultTbd  = "0.612",
+    children       = "Don't have",
+    family         = "Don't want",
+    education      = "Bachelor's degree",
+    religion       = "Agnostic",
+    politics       = "Moderate",
+    relationship   = "Long-term",
+    intentions     = "Long-term",
+    drink          = "Occasionally",
+    smoke          = "No",
+    weed           = "No",
+    promptQ1       = "What's your favorite hobby?",
+    promptA1       = "My favorite hobby is playing basketball. I love the thrill of competition and the camaraderie of being part of a team.",
+    promptQ2       = "If you could visit any country, where would you go?",
+    promptA2       = "I've always wanted to visit Japan. The blend of traditional culture and modern innovation fascinates me.",
+    promptQ3       = "What's your go-to comfort food?",
+    promptA3       = "My go-to comfort food is a hearty bowl of ramen. It's warm, comforting, and always hits the spot.",
+    bio            = "I'm Samuel, a tall, athletic man with dark skin and a friendly smile. My curly black hair adds to my charismatic appearance. Standing at 6'2\", I possess an infectious energy and a passion for basketball. Let's capture the essence of Samuel in the vibrant atmosphere of a basketball court, where I feel most at home.",
+    image1         = "https://media.discordapp.net/attachments/1091674973841657856/1217872382757175316/snowmanson_Samuel_is_a_tall_athletic_man_with_dark_skin_and_a_f_56787fa9-d4ee-419c-a6ec-4163ed5c6969.png?ex=66059b0b&is=65f3260b&hm=e71b98a2940c2b047481e4936a0631e230cdcf8d98604c50c73229c3938daba6&=&format=webp&quality=lossless&width=291&height=437", // Image 1
+    image2         = "https://media.discordapp.net/attachments/1091674973841657856/1217872382757175316/snowmanson_Samuel_is_a_tall_athletic_man_with_dark_skin_and_a_f_56787fa9-d4ee-419c-a6ec-4163ed5c6969.png?ex=66059b0b&is=65f3260b&hm=e71b98a2940c2b047481e4936a0631e230cdcf8d98604c50c73229c3938daba6&=&format=webp&quality=lossless&width=291&height=437", // Image 2
+    image3         = "https://media.discordapp.net/attachments/1091674973841657856/1217872382757175316/snowmanson_Samuel_is_a_tall_athletic_man_with_dark_skin_and_a_f_56787fa9-d4ee-419c-a6ec-4163ed5c6969.png?ex=66059b0b&is=65f3260b&hm=e71b98a2940c2b047481e4936a0631e230cdcf8d98604c50c73229c3938daba6&=&format=webp&quality=lossless&width=291&height=437", // Image 3
+    image4         = "https://media.discordapp.net/attachments/1091674973841657856/1217872382757175316/snowmanson_Samuel_is_a_tall_athletic_man_with_dark_skin_and_a_f_56787fa9-d4ee-419c-a6ec-4163ed5c6969.png?ex=66059b0b&is=65f3260b&hm=e71b98a2940c2b047481e4936a0631e230cdcf8d98604c50c73229c3938daba6&=&format=webp&quality=lossless&width=291&height=437", // Image 4
+    location       = "New York City, NY",
+    status         = "Online",
+    number         = "+1 (555) 890-1234",
+    verified       = "true"
+)
 
-val profiles = arrayOf( sophiaModel, liamModel, jackModel, emmaModel, miaModel, AmirModel, LaylaModel, MalikModel, MeiModel, AshaModel, jasonModel, anaModel)
+val profiles = arrayOf(sophiaModel, liamModel, jackModel, emmaModel, AmirModel, LaylaModel, MalikModel, MeiModel, AshaModel, jasonModel, anaModel, samuelModel)

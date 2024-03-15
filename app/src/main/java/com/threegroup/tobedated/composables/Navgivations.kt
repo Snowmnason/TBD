@@ -12,10 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.threegroup.tobedated.ChangePreference
 import com.threegroup.tobedated.ChatsScreen
 import com.threegroup.tobedated.Dating
 import com.threegroup.tobedated.GroupsScreen
@@ -57,7 +60,6 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity) {
-
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
@@ -65,6 +67,36 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
     var showDialog by remember { mutableStateOf(false) }
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
+    val screenOrder = listOf(
+        SignUp.WelcomeScreen.name,
+        SignUp.NameScreen.name,
+        SignUp.BirthScreen.name,
+        SignUp.PronounScreen.name,
+        SignUp.GenderScreen.name,
+        SignUp.HieghtScreen.name,
+        SignUp.EthnicityScreen.name,
+        SignUp.StarScreen.name,
+        SignUp.SexOriScreen.name,
+        SignUp.SearchScreen.name,
+        SignUp.SexScreen.name,
+        SignUp.MbtiScreen.name,
+        SignUp.OurTestScreen.name,
+        SignUp.ChildrenScreen.name,
+        SignUp.FamilyScreen.name,
+        SignUp.EducationScreen.name,
+        SignUp.ReligiousScreen.name,
+        SignUp.PoliticsScreen.name,
+        SignUp.RelationshipScreen.name,
+        SignUp.IntentionsScreen.name,
+        SignUp.DrinkScreen.name,
+        SignUp.SmokeScreen.name,
+        SignUp.WeedScreen.name,
+        SignUp.BioScreen.name,
+        SignUp.PhotoScreen.name
+    )
+
+    val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
+    val nextDestinationIndex = currentDestinationIndex?.plus(1)
 
     BackButton(onClick = {
         if(isFirstScreen){
@@ -175,49 +207,14 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         }
 
     }
-    var buttonText = "I Agree"
-    if(!isFirstScreen){
-        buttonText = "Enter"
-    }
-    if(isLastScreen){
-        buttonText = "Finish"
-    }
+    val buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
+
     BigButton(
         text = buttonText,
         onClick = {
             if(!isFirstScreen){
                 questionIndex++
             }
-            val screenOrder = listOf(
-                SignUp.WelcomeScreen.name,
-                SignUp.NameScreen.name,
-                SignUp.BirthScreen.name,
-                SignUp.PronounScreen.name,
-                SignUp.GenderScreen.name,
-                SignUp.HieghtScreen.name,
-                SignUp.EthnicityScreen.name,
-                SignUp.StarScreen.name,
-                SignUp.SexOriScreen.name,
-                SignUp.SearchScreen.name,
-                SignUp.SexScreen.name,
-                SignUp.MbtiScreen.name,
-                SignUp.OurTestScreen.name,
-                SignUp.ChildrenScreen.name,
-                SignUp.FamilyScreen.name,
-                SignUp.EducationScreen.name,
-                SignUp.ReligiousScreen.name,
-                SignUp.PoliticsScreen.name,
-                SignUp.RelationshipScreen.name,
-                SignUp.IntentionsScreen.name,
-                SignUp.DrinkScreen.name,
-                SignUp.SmokeScreen.name,
-                SignUp.WeedScreen.name,
-                SignUp.BioScreen.name,
-                SignUp.PhotoScreen.name
-            )
-
-            val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
-            val nextDestinationIndex = currentDestinationIndex?.plus(1)
 
             nextDestinationIndex?.let { screenOrder.getOrNull(it)
                 ?.let { it1 -> navController.navigate(it1) } }
@@ -243,14 +240,14 @@ fun DatingNav() {
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None }){
+        popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
             SearchingScreen(navController)
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController)
         }
-        composable(route = Dating.SearchPreferenceScreen.name){
+        composable(route = Dating.SearchPreferenceScreen.name) {
             SearchPreferenceScreen(navController)
         }
         composable(route = Dating.ChatsScreen.name) {
@@ -264,6 +261,15 @@ fun DatingNav() {
         }
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController)
+        }
+        composable(
+            route = "ChangePreference/{my_param}",
+            arguments = listOf(
+                navArgument("my_param") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
+            ChangePreference(navController, myParam)
         }
     }
 

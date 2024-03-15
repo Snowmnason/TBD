@@ -96,7 +96,7 @@ fun TopAndBotBars(
         color = Color.Transparent,
     ) {
         Scaffold(
-            containerColor = AppTheme.colorScheme.background,
+            containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
             bottomBar = {
                 NavigationBar(
                     containerColor = AppTheme.colorScheme.onTertiary,

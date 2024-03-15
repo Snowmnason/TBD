@@ -2,6 +2,8 @@ package com.threegroup.tobedated.composables.DatingScreens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,13 +60,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.calcAge
+import com.threegroup.tobedated.composables.GenericBodyText
 import com.threegroup.tobedated.composables.GenericTitleSmall
+import com.threegroup.tobedated.models.AgeRange
 import com.threegroup.tobedated.models.UserModel
-import com.threegroup.tobedated.models.ageRange
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.zodiac
@@ -250,7 +254,7 @@ fun UserInfo(
     onClickReport: () -> Unit,
     onClickSuggest: () -> Unit,
 ){
-    val photos = listOf(user.image1, user.image2, user.image3, user.image4,)
+    val photos = listOf(user.image1, user.image2, user.image3, user.image4)
     var subtract = 0
     if(photos[3] == ""){
         subtract = 1
@@ -377,7 +381,7 @@ fun UserInfo(
         )
         Spacer(modifier = Modifier.height(12.dp))
         val pagerState = rememberPagerState(pageCount = { photos.size - subtract})
-        HorizontalPager(state = pagerState, modifier = Modifier.aspectRatio(2f / 3f),) { page ->
+        HorizontalPager(state = pagerState, modifier = Modifier.aspectRatio(2f / 3f)) { page ->
             AsyncImage(
                 modifier = Modifier.aspectRatio(2f / 3f),
                 model = photos[page],
@@ -443,7 +447,7 @@ fun InsideSearchSettings(
     Surface(
         modifier = Modifier
             .fillMaxSize(),
-        color = AppTheme.colorScheme.background,
+        color = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -469,7 +473,7 @@ fun InsideSearchSettings(
         ) {
                 paddingValues ->
             val state = rememberScrollState()
-            LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
+            LaunchedEffect(Unit) { state.animateScrollTo(0) }
             Column(
                 Modifier
                     .padding(paddingValues)
@@ -486,8 +490,8 @@ fun InsideSearchSettings(
 fun ageSlider(
     preferredMin:Int,
     preferredMax:Int,
-):ageRange{
-    var sliderPosition by remember { mutableStateOf(18F..100F) }
+):AgeRange{
+    var sliderPosition by remember { mutableStateOf(preferredMin.toFloat()..preferredMax.toFloat()) }
     var min:Int by remember { mutableIntStateOf(preferredMin)    }
     var max:Int by remember { mutableIntStateOf(preferredMax)    }
     SimpleBox(
@@ -502,7 +506,7 @@ fun ageSlider(
                     value = sliderPosition,
                     steps = 82,
                     onValueChange = { range -> sliderPosition = range },
-                    valueRange = 18f..100f,
+                    valueRange = 18f..80f,
                     onValueChangeFinished = { },
                     colors = SliderColors(
                         thumbColor = AppTheme.colorScheme.primary,
@@ -520,7 +524,7 @@ fun ageSlider(
             }
         }
     )
-    return ageRange(min, max)
+    return AgeRange(min, max)
 }
 @Composable
 fun distanceSlider(
@@ -559,4 +563,140 @@ fun distanceSlider(
         }
     )
     return max
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChangePreferenceTopBar(
+    nav: NavHostController,
+    title:String = "",
+    changeSettings: @Composable () -> Unit = {},
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize(),
+        color = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+    ) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier.height(46.dp),
+                    colors = TopAppBarColors(
+                        containerColor = AppTheme.colorScheme.onTertiary,
+                        navigationIconContentColor = AppTheme.colorScheme.primary,
+                        titleContentColor = AppTheme.colorScheme.secondary,
+                        actionIconContentColor = AppTheme.colorScheme.primary,
+                        scrolledContainerColor = AppTheme.colorScheme.background
+                    ),
+                    title = { TopBarText(title= title, isPhoto = false) },
+                    /*
+                    navigationIcon = {
+                        Button(onClick = { nav.popBackStack() },
+                            colors = ButtonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                disabledContentColor = Color.Transparent
+                            ))  { //Showing in stuff like messages, editing profile and stuff
+                            Text(text = "Cancel",
+                                style = AppTheme.typography.titleSmall,
+                                color = Color(0xFFB45A76))
+                        }
+                    }, */
+                    actions = {
+                        Button(onClick = { nav.popBackStack() },
+                            colors = ButtonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                disabledContentColor = Color.Transparent
+                            ),
+                            modifier = Modifier.offset(y = 5.dp)
+                        ) { //Showing in stuff like messages, editing profile and stuff
+                            Text(text = "Confirm",
+                                style = AppTheme.typography.titleSmall,
+                                color = Color(0xFF93C47D))
+                        }
+                    }
+                )
+            },
+        ) {
+                paddingValues ->
+            val state = rememberScrollState()
+            LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
+            Column(
+                Modifier
+                    .padding(paddingValues)
+                    .verticalScroll(state)
+                    .fillMaxSize()
+            ){
+                Spacer(modifier = Modifier.height(24.dp))
+                changeSettings()
+            }
+        }
+    }
+}
+@Composable
+fun seekingBox(
+    desiredSex:String,
+    navController: NavController
+    ):String {
+    val lookingFor by remember { mutableStateOf(desiredSex) }
+    SimpleBox(
+        whatsInsideTheBox = {
+            Column(
+                modifier = Modifier
+                    .padding(15.dp, 15.dp, 15.dp, 0.dp)
+                    .clickable { navController.navigate("ChangePreference/Searching For") }
+                    .fillMaxWidth()) {
+                GenericTitleSmall(text = "Looking for:")
+                Spacer(modifier = Modifier.height(4.dp))
+                GenericBodyText(text = lookingFor)
+            }
+        }
+    )
+    return lookingFor
+}
+
+
+@Composable
+fun ChangePreferenceScreen(
+    nav: NavHostController,
+    title:String = "",
+){
+    ChangePreferenceTopBar(
+        nav =nav,
+        title = title,
+        changeSettings = {
+
+        }
+    )
+}
+@Composable
+fun OtherPreferences(
+    title: String,
+    navController: NavController,
+    currentlySelected: List<String>,
+    clickable: Boolean = false
+) {
+    val modifier = if (clickable) {
+        Modifier.clickable { navController.navigate("ChangePreference/$title") }
+    } else {
+        Modifier
+    }
+
+    SimpleBox(
+        whatsInsideTheBox = {
+            Column(
+                modifier = Modifier
+                    .padding(15.dp, 15.dp, 15.dp, 0.dp)
+                    .fillMaxWidth()
+                    .then(modifier)
+            ) {
+                GenericTitleSmall(text = "$title:")
+                Spacer(modifier = Modifier.height(4.dp))
+                GenericBodyText(text = currentlySelected.joinToString(", "))
+            }
+        }
+    )
 }

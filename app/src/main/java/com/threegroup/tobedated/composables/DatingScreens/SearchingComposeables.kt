@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
@@ -27,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,6 +72,21 @@ import com.threegroup.tobedated.composables.GenericBodyText
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.AgeRange
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.UserSearchPreferenceModel
+import com.threegroup.tobedated.models.childrenList
+import com.threegroup.tobedated.models.drinkList
+import com.threegroup.tobedated.models.educationList
+import com.threegroup.tobedated.models.familyPlansList
+import com.threegroup.tobedated.models.genderList
+import com.threegroup.tobedated.models.intentionsList
+import com.threegroup.tobedated.models.mbtiList
+import com.threegroup.tobedated.models.politicalViewsList
+import com.threegroup.tobedated.models.relationshipTypeList
+import com.threegroup.tobedated.models.religionList
+import com.threegroup.tobedated.models.sexualOriList
+import com.threegroup.tobedated.models.smokeList
+import com.threegroup.tobedated.models.weedList
+import com.threegroup.tobedated.models.zodiacList
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.zodiac
@@ -570,6 +588,7 @@ fun ChangePreferenceTopBar(
     nav: NavHostController,
     title:String = "",
     changeSettings: @Composable () -> Unit = {},
+    save: @Composable RowScope.() -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -603,21 +622,7 @@ fun ChangePreferenceTopBar(
                                 color = Color(0xFFB45A76))
                         }
                     }, */
-                    actions = {
-                        Button(onClick = { nav.popBackStack() },
-                            colors = ButtonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                disabledContentColor = Color.Transparent
-                            ),
-                            modifier = Modifier.offset(y = 5.dp)
-                        ) { //Showing in stuff like messages, editing profile and stuff
-                            Text(text = "Confirm",
-                                style = AppTheme.typography.titleSmall,
-                                color = Color(0xFF93C47D))
-                        }
-                    }
+                    actions = save
                 )
             },
         ) {
@@ -637,17 +642,17 @@ fun ChangePreferenceTopBar(
     }
 }
 @Composable
-fun seekingBox(
+fun SeekingBox(
     desiredSex:String,
     navController: NavController
-    ):String {
+    ) {
     val lookingFor by remember { mutableStateOf(desiredSex) }
     SimpleBox(
         whatsInsideTheBox = {
             Column(
                 modifier = Modifier
                     .padding(15.dp, 15.dp, 15.dp, 0.dp)
-                    .clickable { navController.navigate("ChangePreference/Searching For") }
+                    .clickable { navController.navigate("ChangePreference/Searching For/$lookingFor") }
                     .fillMaxWidth()) {
                 GenericTitleSmall(text = "Looking for:")
                 Spacer(modifier = Modifier.height(4.dp))
@@ -655,32 +660,22 @@ fun seekingBox(
             }
         }
     )
-    return lookingFor
 }
 
 
-@Composable
-fun ChangePreferenceScreen(
-    nav: NavHostController,
-    title:String = "",
-){
-    ChangePreferenceTopBar(
-        nav =nav,
-        title = title,
-        changeSettings = {
 
-        }
-    )
-}
 @Composable
 fun OtherPreferences(
     title: String,
     navController: NavController,
-    currentlySelected: List<String>,
-    clickable: Boolean = false
+    searchPref: UserSearchPreferenceModel,
+    clickable: Boolean = false,
+    index:Int
 ) {
+    val userPref = listOf(searchPref.gender,searchPref.zodiac,searchPref.sexualOri,searchPref.mbti,searchPref.children,searchPref.familyPlans,searchPref.education,searchPref.religion,searchPref.politicalViews,searchPref.relationshipType,searchPref.intentions,searchPref.drink,searchPref.smoke,searchPref.weed)
+    val currentPref by remember { mutableStateOf(userPref[index]) }
     val modifier = if (clickable) {
-        Modifier.clickable { navController.navigate("ChangePreference/$title") }
+        Modifier.clickable { navController.navigate("ChangePreference/$title/$index") }
     } else {
         Modifier
     }
@@ -695,7 +690,86 @@ fun OtherPreferences(
             ) {
                 GenericTitleSmall(text = "$title:")
                 Spacer(modifier = Modifier.height(4.dp))
-                GenericBodyText(text = currentlySelected.joinToString(", "))
+                GenericBodyText(text = currentPref.joinToString(", "))
+            }
+        }
+    )
+}
+@Composable
+fun ChangePreferenceScreen(
+    nav: NavHostController,
+    title: String = "",
+
+    index:Int
+) {
+
+    val opts = when (title) {
+        "Gender" -> genderList
+        "Zodiac Sign" -> zodiacList
+        "Sexual Orientation" -> sexualOriList
+        "Mbti" -> mbtiList
+        "Children" -> childrenList
+        "Family Plans" -> familyPlansList
+        "Education" -> educationList
+        "Religion" -> religionList
+        "Political Views" -> politicalViewsList
+        "Relationship Type" -> relationshipTypeList
+        "Intentions" -> intentionsList
+        "Drink" -> drinkList
+        "Smokes" -> smokeList
+        "Weed" -> weedList
+        else -> listOf("Man", "Woman", "Everyone")
+    }
+
+    val checkedItems = remember { mutableStateListOf<String>() }
+
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = title,
+        changeSettings = {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                opts.forEach { option ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = checkedItems.contains(option),
+                            onCheckedChange = { isChecked ->
+                                if (isChecked) {
+                                    checkedItems.add(option)
+                                } else {
+                                    checkedItems.remove(option)
+                                }
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        GenericTitleSmall(text = option)
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    nav.popBackStack()
+                    checkedItems.clear()
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
             }
         }
     )

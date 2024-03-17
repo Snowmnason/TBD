@@ -26,13 +26,13 @@ import com.threegroup.tobedated.composables.DatingScreens.InsideMessages
 import com.threegroup.tobedated.composables.DatingScreens.InsideSearchSettings
 import com.threegroup.tobedated.composables.DatingScreens.MessageStart
 import com.threegroup.tobedated.composables.DatingScreens.OtherPreferences
+import com.threegroup.tobedated.composables.DatingScreens.SeekingBox
 import com.threegroup.tobedated.composables.DatingScreens.TheirMessage
 import com.threegroup.tobedated.composables.DatingScreens.TopAndBotBars
 import com.threegroup.tobedated.composables.DatingScreens.UserInfo
 import com.threegroup.tobedated.composables.DatingScreens.UserMessage
 import com.threegroup.tobedated.composables.DatingScreens.ageSlider
 import com.threegroup.tobedated.composables.DatingScreens.distanceSlider
-import com.threegroup.tobedated.composables.DatingScreens.seekingBox
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import com.threegroup.tobedated.models.miaModel
@@ -78,12 +78,18 @@ fun SearchingScreen(navController: NavHostController) {
         }
     )
 }
+
 @Composable
 fun SearchPreferenceScreen(navController: NavHostController){
     val currentUser = miaModel
     val searchPref = UserSearchPreferenceModel()
-    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Education", "Religion", "Political Views", "Intentions", "Drink", "Smokes", "Weed")
-    val userPref = listOf(searchPref.gender,searchPref.zodiac,searchPref.sexualOri,searchPref.mbti,searchPref.children,searchPref.familyPlans,searchPref.education,searchPref.religion,searchPref.politicalViews,searchPref.intentions,searchPref.drink,searchPref.smoke,searchPref.weed)
+
+
+    val userPref = listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti,
+        searchPref.children, searchPref.familyPlans, searchPref.education, searchPref.religion, searchPref.politicalViews,
+        searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed)
+    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans",
+        "Education", "Religion", "Political Views", "Relationship Type","Intentions", "Drink", "Smokes", "Weed")
     InsideSearchSettings(
         nav = navController,
         searchSettings = {
@@ -97,7 +103,7 @@ fun SearchPreferenceScreen(navController: NavHostController){
                 Spacer(modifier = Modifier.height(14.dp))
                 searchPref.maxDistance = distanceSlider(preferredMax = 25)
                 Spacer(modifier = Modifier.height(14.dp))
-                currentUser.seeking = seekingBox(desiredSex = currentUser.seeking, navController )//TODO dunno how to update it yet
+                SeekingBox(desiredSex = currentUser.seeking, navController )//currentUser.seeking = /TODO dunno how to update it yet
                 Spacer(modifier = Modifier.height(14.dp))
                 HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
                 Spacer(modifier = Modifier.height(6.dp))
@@ -106,7 +112,7 @@ fun SearchPreferenceScreen(navController: NavHostController){
                 HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
                 Spacer(modifier = Modifier.height(14.dp))
                 for (i in pref.indices){
-                    OtherPreferences(title = pref[i], navController = navController, currentlySelected = userPref[i], clickable = true)
+                    OtherPreferences(title = pref[i], navController = navController, searchPref = searchPref, clickable = true, index = i)
                     Spacer(modifier = Modifier.height(14.dp))
                 }
             }
@@ -114,8 +120,12 @@ fun SearchPreferenceScreen(navController: NavHostController){
     )
 }
 @Composable
-fun ChangePreference(navController: NavHostController, title:String){
-    ChangePreferenceScreen(navController, title = title)
+fun ChangePreference(navController: NavHostController, title:String, index:Int){
+    ChangePreferenceScreen(navController,
+        title = title,
+
+        index = index,
+    )
 }
 @Composable
 fun ProfileScreen(navController: NavHostController){

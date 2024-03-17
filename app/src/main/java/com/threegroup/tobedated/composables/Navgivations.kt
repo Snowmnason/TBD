@@ -263,13 +263,17 @@ fun DatingNav() {
             MessagerScreen(navController)
         }
         composable(
-            route = "ChangePreference/{my_param}",
+            route = "ChangePreference/{my_param}/{index}",
             arguments = listOf(
-                navArgument("my_param") { type = NavType.StringType }
+                navArgument("my_param") { type = NavType.StringType },
+                navArgument("index") { type = NavType.IntType },
+
+
             )
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
-            ChangePreference(navController, myParam)
+            val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
+            ChangePreference(navController, myParam, myIndex)
         }
     }
 

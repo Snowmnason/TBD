@@ -39,8 +39,25 @@ data class UserModel(
     val number:String = "",//
     val verified:String = ""//
 )
-
-data class NewUserModel(
+data class UserSearchPreferenceModel(
+    var ageRange: AgeRange = AgeRange(18, 45),
+    var maxDistance: Int = 25,
+    var gender: List<String> = listOf("Doesn't Matter"),
+    var zodiac: List<String> = listOf("Doesn't Matter"),
+    var sexualOri: List<String> = listOf("Doesn't Matter"),
+    var mbti: List<String> = listOf("Doesn't Matter"),
+    var children: List<String> = listOf("Doesn't Matter"),
+    var familyPlans: List<String> = listOf("Doesn't Matter"),
+    var education: List<String> = listOf("Doesn't Matter"),
+    var religion: List<String> = listOf("Doesn't Matter"),
+    var politicalViews: List<String> = listOf("Doesn't Matter"),
+    var relationshipType: List<String> = listOf("Doesn't Matter"),
+    var intentions: List<String> = listOf("Doesn't Matter"),
+    var drink: List<String> = listOf("Doesn't Matter"),
+    var smoke: List<String> = listOf("Doesn't Matter"),
+    var weed: List<String> = listOf("Doesn't Matter"),
+)
+data class NewUserModel( //Can probably remove this. added this to not effect other code
     var name: String = "",
     var birthday: String = "",
     var pronoun: String = "",
@@ -105,20 +122,3 @@ data class PreferenceIndexModel(
     var promptA3 : Int = -1,
 )
 
-data class UserSearchPreferenceModel(
-    var ageRange: AgeRange = AgeRange(18, 45),
-    var maxDistance: Int = 25,
-    var gender: List<String> = listOf("Doesn't Matter"),
-    var zodiac: List<String> = listOf("Doesn't Matter"),
-    var sexualOri: List<String> = listOf("Doesn't Matter"),
-    var mbti: List<String> = listOf("Doesn't Matter"),
-    var children: List<String> = listOf("Doesn't Matter"),
-    var familyPlans: List<String> = listOf("Doesn't Matter"),
-    var education: List<String> = listOf("Doesn't Matter"),
-    var religion: List<String> = listOf("Doesn't Matter"),
-    var politicalViews: List<String> = listOf("Doesn't Matter"),
-    var intentions: List<String> = listOf("Doesn't Matter"),
-    var drink: List<String> = listOf("Doesn't Matter"),
-    var smoke: List<String> = listOf("Doesn't Matter"),
-    var weed: List<String> = listOf("Doesn't Matter"),
-)

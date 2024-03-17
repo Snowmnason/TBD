@@ -55,6 +55,23 @@ import com.threegroup.tobedated.composables.rememberPickerState
 import com.threegroup.tobedated.models.NewUserModel
 import com.threegroup.tobedated.models.PreferenceIndexModel
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.childrenOptions
+import com.threegroup.tobedated.models.drinkOptions
+import com.threegroup.tobedated.models.educationOptions
+import com.threegroup.tobedated.models.ethnicityOptions
+import com.threegroup.tobedated.models.familyOptions
+import com.threegroup.tobedated.models.genderOptions
+import com.threegroup.tobedated.models.intentionsOptions
+import com.threegroup.tobedated.models.politicsOptions
+import com.threegroup.tobedated.models.pronounOptions
+import com.threegroup.tobedated.models.relationshipOptions
+import com.threegroup.tobedated.models.religionOptions
+import com.threegroup.tobedated.models.seekingOptions
+import com.threegroup.tobedated.models.sexOptions
+import com.threegroup.tobedated.models.sexOrientationOptions
+import com.threegroup.tobedated.models.smokeOptions
+import com.threegroup.tobedated.models.starOptions
+import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
 import java.util.Calendar
 
@@ -295,13 +312,12 @@ fun pronounScreen(): Boolean {
         title = "Pronouns",
         label = "How do you go by?",
         enterField = {
-            val opts = listOf("He/Him", "She/Her", "They/Them", "Ze/Zir" ,"Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = pronounOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    pronoun = opts[selectedOptionIndex]
-                    newUser.pronoun = opts[selectedOptionIndex]
+                    pronoun = pronounOptions[selectedOptionIndex]
+                    newUser.pronoun = pronounOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle(),
             )
@@ -317,13 +333,12 @@ fun genderScreen():Boolean {
         title = "Your Gender",
         label = "What do you identify as",
         enterField = {
-            val opts = listOf("Cis-Gender", "Transgender", "Non-binary")
             RadioButtonGroup(
-                options = opts,
+                options = genderOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    gender = opts[selectedOptionIndex]
-                    newUser.gender = opts[selectedOptionIndex]
+                    gender = genderOptions[selectedOptionIndex]
+                    newUser.gender = genderOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             ) },
@@ -374,14 +389,12 @@ fun ethnicityScreen():Boolean {
         title = "Ethnicity",
         label = "We curious on where you are from!",
         enterField = {
-            val opts = listOf("Black/African Descent", "East Asian", "Hispanic/Latino",
-                "Middle Eastern",  "Native American", "Pacific Islander", "South Asian",  "Southeast Asian",  "White/Caucasian",  "Other",  "Ask me",)
             RadioButtonGroup(
-                options = opts,
+                options = ethnicityOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    ethnicity = opts[selectedOptionIndex]
-                    newUser.ethnicity = opts[selectedOptionIndex]
+                    ethnicity = ethnicityOptions[selectedOptionIndex]
+                    newUser.ethnicity = ethnicityOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -398,14 +411,12 @@ fun starScreen():Boolean{
         title = "Whats your sign?",
         label = "Do the stars say we are in favor?",
         enterField = {
-            val opts = listOf("Aries", "Taurus", "Gemini",
-                "Cancer",  "Leo", "Virgo", "Libra",  "Scorpio",  "Sagittarius",  "Capricorn", "Aquarius", "Pisces", "Ask me",)
             RadioButtonGroup(
-                options = opts,
+                options = starOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    star = opts[selectedOptionIndex]
-                    newUser.star = opts[selectedOptionIndex]
+                    star = starOptions[selectedOptionIndex]
+                    newUser.star = starOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -421,13 +432,12 @@ fun sexOriScreen():Boolean{
         title = "Sexual Orientation",
         label = "Who do you like?",
         enterField = {
-            val opts = listOf("Androsexual", "Asexual", "Bisexual", "Demisexuality", "Gynesexual", "HeteroSexual", "Pansexual", "Queer", "Questioning", "Ask Me")
             RadioButtonGroup(
-                options = opts,
+                options = sexOrientationOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    sexOri = opts[selectedOptionIndex]
-                    newUser.sexOrientation = opts[selectedOptionIndex]
+                    sexOri = sexOrientationOptions[selectedOptionIndex]
+                    newUser.sexOrientation = sexOrientationOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -443,13 +453,12 @@ fun searchScreen():Boolean{
         title = "Searching For?",
         label = "Who are you looking to connect with?",
         enterField = {
-            val opts = listOf("Male", "Female", "Everyone")
             RadioButtonGroup(
-                options = opts,
+                options = seekingOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    search = opts[selectedOptionIndex]
-                    newUser.seeking = opts[selectedOptionIndex]
+                    search = seekingOptions[selectedOptionIndex]
+                    newUser.seeking = seekingOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -465,13 +474,12 @@ fun sexScreen():Boolean{
         title = "Your sex",
         label = "What search category will you be in?",
         enterField = {
-            val opts = listOf("Male", "Female", "Other")
             RadioButtonGroup(
-                options = opts,
+                options = sexOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    sex = opts[selectedOptionIndex]
-                    newUser.sex = opts[selectedOptionIndex]
+                    sex = sexOptions[selectedOptionIndex]
+                    newUser.sex = sexOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -553,13 +561,12 @@ fun childrenScreen():Boolean{
         title = "Do you have children?",
         label = "Do you have someone else we should think about too?",
         enterField = {
-            val opts = listOf("Don't have", "Have children", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = childrenOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    children = opts[selectedOptionIndex]
-                    newUser.children = opts[selectedOptionIndex]
+                    children = childrenOptions[selectedOptionIndex]
+                    newUser.children = childrenOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -575,13 +582,12 @@ fun familyScreen():Boolean{
         title = "Do you want Children?",
         label = "What are your plans for your family?",
         enterField = {
-            val opts = listOf("Don't want", "Want children", "Open to children", "Not sure yet", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = familyOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    family = opts[selectedOptionIndex]
-                    newUser.family = opts[selectedOptionIndex]
+                    family = familyOptions[selectedOptionIndex]
+                    newUser.family = familyOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -597,13 +603,12 @@ fun educationScreen():Boolean{
         title = "Education Level",
         label = "Your heart is always smarter than your brain",
         enterField = {
-            val opts = listOf("High School", "Undergrad", "Postgrad", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = educationOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    education = opts[selectedOptionIndex]
-                    newUser.education = opts[selectedOptionIndex]
+                    education = educationOptions[selectedOptionIndex]
+                    newUser.education = educationOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -619,13 +624,12 @@ fun religiousScreen():Boolean{
         title = "Religion",
         label = "We believe in you, but what do you believe in?",
         enterField = {
-            val opts = listOf("Agnostic", "Atheist", "Buddhist", "Catholic", "Christian", "Hindu", "Jewish", "Muslim", "Sikh", "Spiritual", "Other", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = religionOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    religious = opts[selectedOptionIndex]
-                    newUser.religion = opts[selectedOptionIndex]
+                    religious = religionOptions[selectedOptionIndex]
+                    newUser.religion = religionOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -641,13 +645,12 @@ fun politicsScreen():Boolean{
         title = "Politics",
         label = "We vote for you to find a meaningful connection",
         enterField = {
-            val opts = listOf("Liberal", "Moderate", "Conservative", "Not Political", "Other", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = politicsOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    politics = opts[selectedOptionIndex]
-                    newUser.politics = opts[selectedOptionIndex]
+                    politics = politicsOptions[selectedOptionIndex]
+                    newUser.politics = politicsOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -663,13 +666,12 @@ fun relationshipScreen():Boolean{
         title = "Relationship type",
         label = "There is always enough to go around",
         enterField = {
-            val opts = listOf("Monogamy", "Non-monogamy", "Finding it", "Other", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = relationshipOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    relationship = opts[selectedOptionIndex]
-                    newUser.relationship = opts[selectedOptionIndex]
+                    relationship = relationshipOptions[selectedOptionIndex]
+                    newUser.relationship = relationshipOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -685,13 +687,12 @@ fun intentionsScreen():Boolean{
         title = "Dating Intentions",
         label = "What are you looking for?",
         enterField = {
-            val opts = listOf("Life Partner", "Long-term", "Long open to short", "Short open to long", "Short-term", "Figuring it out","Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = intentionsOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    intention = opts[selectedOptionIndex]
-                    newUser.intentions = opts[selectedOptionIndex]
+                    intention = intentionsOptions[selectedOptionIndex]
+                    newUser.intentions = intentionsOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -707,13 +708,12 @@ fun drinkScreen():Boolean{
         title = "Do you drink?",
         label = "How do you like to party?",
         enterField = {
-            val opts = listOf("Yes", "Sometimes", "No", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = drinkOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    drink = opts[selectedOptionIndex]
-                    newUser.drink = opts[selectedOptionIndex]
+                    drink = drinkOptions[selectedOptionIndex]
+                    newUser.drink = drinkOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -729,13 +729,12 @@ fun smokeScreen():Boolean{
         title = "Do you Smoke?",
         label = "How do you like to relax?",
         enterField = {
-            val opts = listOf("Yes", "Sometimes", "No", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = smokeOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    smoke = opts[selectedOptionIndex]
-                    newUser.smoke = opts[selectedOptionIndex]
+                    smoke = smokeOptions[selectedOptionIndex]
+                    newUser.smoke = smokeOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )
@@ -751,13 +750,12 @@ fun weedScreen():Boolean{
         title = "Do you Smoke, Marijuana?",
         label = "How do you like to relax or party?",
         enterField = {
-            val opts = listOf("Yes", "Sometimes", "No", "Ask me")
             RadioButtonGroup(
-                options = opts,
+                options = weedOptions,
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                    weed = opts[selectedOptionIndex]
-                    newUser.weed = opts[selectedOptionIndex]
+                    weed = weedOptions[selectedOptionIndex]
+                    newUser.weed = weedOptions[selectedOptionIndex]
                 },
                 style = getCustomButtonStyle()
             )

@@ -73,9 +73,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.composables.BackButton
+import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.SignUp.BigButton
 import com.threegroup.tobedated.composables.SignUp.LabelText
-import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.SignUp.TitleText
 import com.threegroup.tobedated.composables.SignUp.getCustomTextStyle
 import com.threegroup.tobedated.composables.SignUp.getCustomTextStyleLabel
@@ -615,7 +615,7 @@ fun ResendCode() {
             color = AppTheme.colorScheme.onBackground,
             fontFamily = JoseFinSans,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 40.sp,
+            fontSize = 30.sp,
             lineHeight = 24.sp,
             letterSpacing = 0.5.sp,
             shadow = Shadow(
@@ -625,7 +625,7 @@ fun ResendCode() {
             )
         )
         TextField(
-            modifier = modifier,
+            modifier = modifier.padding(0.dp),
             value = enterCode,
             textStyle = customTextStyle,
             colors = OutlinedTextFieldDefaults.colors(

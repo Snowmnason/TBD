@@ -13,7 +13,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +48,6 @@ class DatingActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 DatingNav()
-                //AgeSlider()
             }
         }
     }
@@ -57,12 +55,11 @@ class DatingActivity : ComponentActivity() {
 
 @Composable
 fun SearchingScreen(navController: NavHostController) {
-    val profileEdit by remember { mutableStateOf("Profile")}
     val usersArray =  profiles.random()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = profileEdit, //Change if they are editing profile, or go to different compose dunno
+        titleText = "",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 2,

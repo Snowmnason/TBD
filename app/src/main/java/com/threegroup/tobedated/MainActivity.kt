@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
             val userToken = sharedPreferences.getString("firebase_user_token", null)
             delay(100)
             val check: Boolean = userToken != null
-            checkLogin(true)//1 goes to sign up for testing
+            checkLogin(false)//1 goes to sign up for testing
         }
     }
 

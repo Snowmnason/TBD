@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.composables.SignUp
+package com.threegroup.tobedated.composables.signUp
 
 
 import androidx.compose.foundation.Image

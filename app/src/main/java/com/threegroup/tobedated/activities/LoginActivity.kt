@@ -1,4 +1,4 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.activities
 
 import android.content.Context
 import android.content.Intent
@@ -60,11 +60,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -72,13 +75,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composables.BackButton
 import com.threegroup.tobedated.composables.PolkaDotCanvas
-import com.threegroup.tobedated.composables.SignUp.BigButton
-import com.threegroup.tobedated.composables.SignUp.LabelText
-import com.threegroup.tobedated.composables.SignUp.TitleText
-import com.threegroup.tobedated.composables.SignUp.getCustomTextStyle
-import com.threegroup.tobedated.composables.SignUp.getCustomTextStyleLabel
+import com.threegroup.tobedated.composables.signUp.BigButton
+import com.threegroup.tobedated.composables.signUp.LabelText
+import com.threegroup.tobedated.composables.signUp.TitleText
+import com.threegroup.tobedated.composables.signUp.getCustomTextStyle
+import com.threegroup.tobedated.composables.signUp.getCustomTextStyleLabel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.shadowWithOpacity
@@ -88,7 +92,6 @@ import java.util.concurrent.TimeUnit
 class LoginActivity : ComponentActivity() {
     private var verificationId: String? = null
     private var userPhoneNumber:String = ""
-    private var userPhoneNumberDirty:String = ""
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,15 +151,21 @@ class LoginActivity : ComponentActivity() {
     }
 
     private fun verifyOtp(otp: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-        signInWithPhoneAuthCredential(credential)
+        try{
+            val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
+            signInWithPhoneAuthCredential(credential)
+        }catch (e: FirebaseAuthInvalidCredentialsException){
+            /*
+            TO DO make a toast or something to say error
+             */
+        }
+
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    /*TODO I think this is what we need for auto login*/
                     val user = FirebaseAuth.getInstance().currentUser
                     user?.getIdToken(true)
                         ?.addOnCompleteListener { task2 ->
@@ -364,7 +373,7 @@ fun LoginScreen(navController: NavHostController) {
             controller?.hide()
             //println("__ phone __ $phoneNumber ___" + phoneNumber.length + " _____ " +formatPhoneNumber(selectedCode, phoneNumber))
             sendOtp(formatPhoneNumber(selectedCode, phoneNumber))
-            navController.navigate("VerificationCodeView")
+            navController.navigate("VerificationCodeView/$phoneNumber")
         },
         isUse = ((phoneNumber.length==11 && selectedCode != "+1")|| phoneNumber.length==14)
     )
@@ -396,7 +405,7 @@ fun LoginScreen(navController: NavHostController) {
         return formatted
     }
 @Composable
-fun VerificationCodeView(navController: NavHostController) {
+fun VerificationCodeView(navController: NavHostController, number: String) {
 
     val controller = LocalSoftwareKeyboardController.current
     var codeList by remember { mutableStateOf(List(6) { "" }) }
@@ -427,107 +436,36 @@ fun VerificationCodeView(navController: NavHostController) {
             ) {
                 val focusManager = LocalFocusManager.current
                 val modifier = Modifier
-                    .height(75.dp)
+                    .height(65.dp)
                     .weight(1f) // Equal weight for all fields
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[0],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(0, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Next)
-                        }
-                    },
-                    actionDone = KeyboardActions()
-                )
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[1],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(1, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Next)
-                        }
-                        if(newValue.isEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
-                        }
-                    },
-                    actionDone = KeyboardActions()
-                )
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[2],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(2, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Next)
-                        }
-                        if(newValue.isEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
-                        }
-                    },
-                    actionDone = KeyboardActions()
-                )
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[3],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(3, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Next)
-                        }
-                        if(newValue.isEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
-                        }
-                    },
-                    actionDone = KeyboardActions(),
-                )
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[4],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(4, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Next)
-                        }
-                        if(newValue.isEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
-                        }
-                    },
-                    actionDone = KeyboardActions(),
-                )
-                VerifyField(
-                    modifier = modifier,
-                    enterCode = codeList[5],
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 1 && newValue.all { it.isDigit() }) { // Check if newValue is a single digit
-                            codeList = codeList.toMutableList().apply { set(5, newValue) }
-                        }
-                        if(newValue.isNotEmpty()){
-                            controller?.hide()
-                        }
-                        if(newValue.isEmpty()){
-                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
-                        }
-                    },
-                    actionDone = KeyboardActions(),
-                    options = ImeAction.Done
-                )
+                    .padding(0.dp)
+                for (i in codeList.indices) {
+                    VerifyField(
+                        modifier = modifier,
+                        enterCode = codeList[i],
+                        onValueChange = { newValue ->
+                            if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
+                                codeList = codeList.toMutableList().apply { set(i, newValue) }
+                            }
+                            if (newValue.isNotEmpty()) {
+                                if (i < codeList.size - 1) {
+                                    focusManager.moveFocus(FocusDirection.Next)
+                                } else {
+                                    // Last field, hide the keyboard or perform other action
+                                    controller?.hide()
+                                }
+                            } else if (i > 0) {
+                                focusManager.moveFocus(FocusDirection.Previous)
+                            }
+                        },
+                        options = if (i == codeList.size - 1) ImeAction.Done else ImeAction.Next
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row {
                 Text(
-                    text = "Sent to\n $userPhoneNumberDirty",
+                    text = "Sent to\n $number",
                     style = AppTheme.typography.bodyMedium,
                     color = AppTheme.colorScheme.onBackground
                 )
@@ -608,7 +546,7 @@ fun ResendCode() {
         modifier: Modifier,
         enterCode: String,
         onValueChange: (String) -> Unit,
-        actionDone: KeyboardActions,
+        //actionDone: KeyboardActions,
         options: ImeAction = ImeAction.Next
     ){
         val customTextStyle = TextStyle(
@@ -616,7 +554,7 @@ fun ResendCode() {
             fontFamily = JoseFinSans,
             fontWeight = FontWeight.SemiBold,
             fontSize = 30.sp,
-            lineHeight = 24.sp,
+            lineHeight = 12.sp,
             letterSpacing = 0.5.sp,
             shadow = Shadow(
                 color = shadowWithOpacity,
@@ -625,7 +563,7 @@ fun ResendCode() {
             )
         )
         TextField(
-            modifier = modifier.padding(0.dp),
+            modifier = modifier,
             value = enterCode,
             textStyle = customTextStyle,
             colors = OutlinedTextFieldDefaults.colors(
@@ -638,7 +576,7 @@ fun ResendCode() {
                 keyboardType = KeyboardType.Number,
                 imeAction = options
             ),
-            keyboardActions = actionDone
+            keyboardActions = KeyboardActions()//actionDone
         )
     }
     @Composable
@@ -653,8 +591,12 @@ fun ResendCode() {
             composable(route = Login.LoginScreen.name) {
                 LoginScreen(navController)
             }
-            composable(route = Login.VerificationCodeView.name) {
-                VerificationCodeView(navController)
+            composable(
+                route = "VerificationCodeView/{number}",
+                arguments = listOf(navArgument("number") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val phoneNumber = backStackEntry.arguments?.getString("number") ?: ""
+                VerificationCodeView(navController, phoneNumber)
             }
         }
     }
@@ -662,6 +604,5 @@ fun ResendCode() {
     enum class Login {
         LoginMainScreen,
         LoginScreen,
-        VerificationCodeView,
     }
 }

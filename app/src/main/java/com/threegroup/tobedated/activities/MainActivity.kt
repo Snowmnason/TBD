@@ -1,4 +1,4 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.activities
 
 import android.content.Context
 import android.content.Intent
@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.AppTheme.colorScheme
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
             val userToken = sharedPreferences.getString("firebase_user_token", null)
             delay(100)
             val check: Boolean = userToken != null
-            checkLogin(false)//1 goes to sign up for testing
+            checkLogin(check)//1 goes to sign up for testing
         }
     }
 
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
         if (check){
             //Change this to main activity
             //val intent = Intent(this,SignUpActivity::class.java)//This is for testing
-            val intent = Intent(this,DatingActivity::class.java)
+            val intent = Intent(this, DatingActivity::class.java)
             startActivity(intent)
             finish()
         }else{

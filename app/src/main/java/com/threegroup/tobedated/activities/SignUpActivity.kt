@@ -1,5 +1,6 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.activities
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.checkBirthDate
 import com.threegroup.tobedated.callclass.checkDay
 import com.threegroup.tobedated.callclass.checkMonth
@@ -40,19 +42,18 @@ import com.threegroup.tobedated.callclass.getCurrentLocation
 import com.threegroup.tobedated.composables.DialogWithImage
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.RadioButtonGroup
-import com.threegroup.tobedated.composables.SignUp.BioQuestion
-import com.threegroup.tobedated.composables.SignUp.BirthdateQuestion
-import com.threegroup.tobedated.composables.SignUp.BodyText
-import com.threegroup.tobedated.composables.SignUp.HeightQuestion
-import com.threegroup.tobedated.composables.SignUp.NameQuestion
-import com.threegroup.tobedated.composables.SignUp.PersonalityTest
-import com.threegroup.tobedated.composables.SignUp.PhotoQuestion
-import com.threegroup.tobedated.composables.SignUp.SignUpFormat
-import com.threegroup.tobedated.composables.SignUp.TitleText
-import com.threegroup.tobedated.composables.SignUp.getCustomButtonStyle
 import com.threegroup.tobedated.composables.SignUpNav
 import com.threegroup.tobedated.composables.rememberPickerState
-import com.threegroup.tobedated.models.NewUserModel
+import com.threegroup.tobedated.composables.signUp.BioQuestion
+import com.threegroup.tobedated.composables.signUp.BirthdateQuestion
+import com.threegroup.tobedated.composables.signUp.BodyText
+import com.threegroup.tobedated.composables.signUp.HeightQuestion
+import com.threegroup.tobedated.composables.signUp.NameQuestion
+import com.threegroup.tobedated.composables.signUp.PersonalityTest
+import com.threegroup.tobedated.composables.signUp.PhotoQuestion
+import com.threegroup.tobedated.composables.signUp.SignUpFormat
+import com.threegroup.tobedated.composables.signUp.TitleText
+import com.threegroup.tobedated.composables.signUp.getCustomButtonStyle
 import com.threegroup.tobedated.models.PreferenceIndexModel
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.models.childrenOptions
@@ -75,10 +76,9 @@ import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
 import java.util.Calendar
 
-var newUser = NewUserModel()
+var newUser = UserModel()
 var newUserIndex = PreferenceIndexModel()
 class SignUpActivity : ComponentActivity() {
-    private var userLoginInfo: String = "" //This is the users phone number
     override fun onCreate(savedInstanceState: Bundle?) {
         newUser.number = intent.getStringExtra("userPhone").toString()
         super.onCreate(savedInstanceState)
@@ -104,51 +104,26 @@ class SignUpActivity : ComponentActivity() {
     }
 
     fun storeData() {
-        val data = UserModel(
-            name = newUser.name,
-            birthday = newUser.birthday,
-            pronoun = newUser.pronoun,
-            gender = newUser.gender,
-            height = newUser.height,
-            ethnicity = newUser.ethnicity,
-            star = newUser.star,
-            sexOrientation = newUser.sexOrientation,
-            seeking = newUser.seeking,
-            sex = newUser.sex,
-            testResultsMbti = newUser.testResultsMbti,
-            testResultTbd = newUser.testResultTbd,
-            children = newUser.children,
-            family = newUser.family,
-            education = newUser.education,
-            religion = newUser.religion,
-            politics = newUser.politics,
-            relationship = newUser.relationship,
-            intentions = newUser.intentions,
-            drink = newUser.drink,
-            smoke = newUser.smoke,
-            weed = newUser.weed,
-            promptQ1 = "not Picked",
-            promptA1 = "not answered",
-            promptQ2 = "not Picked",
-            promptA2 = "not answered",
-            promptQ3 = "not Picked",
-            promptA3 = "not answered",
-            bio = newUser.bio,
-            image1 = newUser.image1,
-            image2 = newUser.image2,
-            image3 = newUser.image3,
-            image4 = newUser.image4,
-            location = getCurrentLocation(),
-            status = "Active",
-            number = userLoginInfo,
-        )
-        //TODO, URI does not store data. we need to take the URI and turn it into an image
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null && currentUser.phoneNumber != null) {
             FirebaseDatabase.getInstance().getReference("users")
                 .child(currentUser.phoneNumber!!)
-                .setValue(data)
+                .setValue(newUser)
                 .addOnSuccessListener {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    user?.getIdToken(true)
+                        ?.addOnCompleteListener { task2 ->
+                            if (task2.isSuccessful) {
+                                val idToken = task2.result?.token
+                                val sharedPreferences =
+                                    getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+                                val editor = sharedPreferences.edit()
+                                editor.putString("firebase_user_token", idToken)
+                                editor.apply()
+                            } else {
+                                // Handle error getting user token
+                            }
+                        }
                     Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
                 }
                 .addOnFailureListener { e ->
@@ -158,9 +133,15 @@ class SignUpActivity : ComponentActivity() {
             Toast.makeText(applicationContext, "User NOT authenticated or phone number is null", Toast.LENGTH_LONG).show()
         }
     }
-//    fun uploadImage(imageUri: String, onComplete: (String) -> Unit) {
-//
-//    }
+    fun uploadImage() {//, onComplete: (String) -> Unit
+        newUser.location = getCurrentLocation()
+    //TODO, URI does not store data. we need to take the URI and turn it into an image check if 4th is not null
+
+        newUser.image1 = ""
+        newUser.image2 = ""
+        newUser. image3 = ""
+        newUser.image4 = ""
+    }
 }
 
 @Composable

@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.composables.DatingScreens
+package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme

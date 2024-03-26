@@ -18,44 +18,45 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.threegroup.tobedated.ChangePreference
-import com.threegroup.tobedated.ChatsScreen
-import com.threegroup.tobedated.Dating
-import com.threegroup.tobedated.GroupsScreen
-import com.threegroup.tobedated.MessagerScreen
-import com.threegroup.tobedated.ProfileScreen
-import com.threegroup.tobedated.SearchPreferenceScreen
-import com.threegroup.tobedated.SearchingScreen
-import com.threegroup.tobedated.SignUp
-import com.threegroup.tobedated.SignUpActivity
-import com.threegroup.tobedated.SomeScreen
-import com.threegroup.tobedated.bioScreen
-import com.threegroup.tobedated.birthScreen
-import com.threegroup.tobedated.childrenScreen
-import com.threegroup.tobedated.composables.SignUp.BigButton
-import com.threegroup.tobedated.drinkScreen
-import com.threegroup.tobedated.educationScreen
-import com.threegroup.tobedated.ethnicityScreen
-import com.threegroup.tobedated.familyScreen
-import com.threegroup.tobedated.genderScreen
-import com.threegroup.tobedated.heightScreen
-import com.threegroup.tobedated.intentionsScreen
-import com.threegroup.tobedated.mbtiScreen
-import com.threegroup.tobedated.nameScreen
-import com.threegroup.tobedated.newUser
-import com.threegroup.tobedated.ourTestScreen
-import com.threegroup.tobedated.photoScreen
-import com.threegroup.tobedated.politicsScreen
-import com.threegroup.tobedated.pronounScreen
-import com.threegroup.tobedated.relationshipScreen
-import com.threegroup.tobedated.religiousScreen
-import com.threegroup.tobedated.searchScreen
-import com.threegroup.tobedated.sexOriScreen
-import com.threegroup.tobedated.sexScreen
-import com.threegroup.tobedated.smokeScreen
-import com.threegroup.tobedated.starScreen
-import com.threegroup.tobedated.weedScreen
-import com.threegroup.tobedated.welcomeScreen
+import com.threegroup.tobedated.activities.ChangePreference
+import com.threegroup.tobedated.activities.ChatsScreen
+import com.threegroup.tobedated.activities.Dating
+import com.threegroup.tobedated.activities.GroupsScreen
+import com.threegroup.tobedated.activities.MessagerScreen
+import com.threegroup.tobedated.activities.ProfileScreen
+import com.threegroup.tobedated.activities.SearchPreferenceScreen
+import com.threegroup.tobedated.activities.SearchingScreen
+import com.threegroup.tobedated.activities.SignUp
+import com.threegroup.tobedated.activities.SignUpActivity
+import com.threegroup.tobedated.activities.SomeScreen
+import com.threegroup.tobedated.activities.bioScreen
+import com.threegroup.tobedated.activities.birthScreen
+import com.threegroup.tobedated.activities.childrenScreen
+import com.threegroup.tobedated.activities.drinkScreen
+import com.threegroup.tobedated.activities.educationScreen
+import com.threegroup.tobedated.activities.ethnicityScreen
+import com.threegroup.tobedated.activities.familyScreen
+import com.threegroup.tobedated.activities.genderScreen
+import com.threegroup.tobedated.activities.heightScreen
+import com.threegroup.tobedated.activities.intentionsScreen
+import com.threegroup.tobedated.activities.mbtiScreen
+import com.threegroup.tobedated.activities.nameScreen
+import com.threegroup.tobedated.activities.newUser
+import com.threegroup.tobedated.activities.ourTestScreen
+import com.threegroup.tobedated.activities.photoScreen
+import com.threegroup.tobedated.activities.politicsScreen
+import com.threegroup.tobedated.activities.pronounScreen
+import com.threegroup.tobedated.activities.relationshipScreen
+import com.threegroup.tobedated.activities.religiousScreen
+import com.threegroup.tobedated.activities.searchScreen
+import com.threegroup.tobedated.activities.sexOriScreen
+import com.threegroup.tobedated.activities.sexScreen
+import com.threegroup.tobedated.activities.smokeScreen
+import com.threegroup.tobedated.activities.starScreen
+import com.threegroup.tobedated.activities.weedScreen
+import com.threegroup.tobedated.activities.welcomeScreen
+import com.threegroup.tobedated.composables.signUp.BigButton
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -221,6 +222,8 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 
             if(buttonText == "Finish"){
                 runBlocking {
+                    val hold = async { signUpActivity.uploadImage() }
+                    hold.await()
                     signUpActivity.storeData()
                     signUpActivity.goNextScreen()
                 }

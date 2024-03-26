@@ -1,4 +1,4 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.activities
 
 class MeetActivity {
 

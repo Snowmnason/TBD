@@ -37,7 +37,7 @@ val miaModel = UserModel(
     location       ="Miami, FL", // Location
     status         ="Online", // Status
     number         ="+1 (555) 789-0123", // Phone Number
-    verified       ="true"
+    verified       =true
 )
 
 val sophiaModel = UserModel(
@@ -77,7 +77,7 @@ val sophiaModel = UserModel(
      location       ="New York City, NY", // Location
      status         ="Online", // Status
      number         ="+1 (555) 789-0123", // Phone Number
-     verified       ="true"
+     verified       =true
 )
 
 val liamModel = UserModel(
@@ -117,7 +117,7 @@ val liamModel = UserModel(
      location       ="Austin, TX", // Location
      status         ="Online", // Status
      number         ="+1 (555) 890-1234", // Phone Number
-     verified       ="false"
+     verified       =false
 )
 
 val jackModel = UserModel(
@@ -157,7 +157,7 @@ val jackModel = UserModel(
      location       ="Denver, CO", // Location
      status         ="Online", // Status
      number         ="+1 (555) 345-6789", // Phone Number
-     verified       ="true"
+     verified       =true
 )
 
 val emmaModel = UserModel(
@@ -197,7 +197,7 @@ val emmaModel = UserModel(
      location       ="San Francisco, CA", // Location
      status         ="Online", // Status
      number         ="+1 (555) 234-5678", // Phone Number
-     verified       ="false"
+     verified       =false
 )
 
 val AmirModel = UserModel(
@@ -237,7 +237,7 @@ val AmirModel = UserModel(
      location       ="Toronto, Canada", // Location
      status         ="Online", // Status
      number         ="+1 (555) 901-2345", // Phone Number
-     verified       ="true"
+     verified       =true
 )
 
 val LaylaModel = UserModel(
@@ -277,7 +277,7 @@ val LaylaModel = UserModel(
      location       ="New York City, NY", // Location
      status         ="Online", // Status
      number         ="+1 (555) 678-9012", // Phone Number
-     verified       ="false"
+     verified       =false
 )
 
 val MalikModel = UserModel(
@@ -317,7 +317,7 @@ val MalikModel = UserModel(
      location       ="Miami, FL", // Location
      status         ="Online", // Status
      number         ="+1 (555) 789-0123", // Phone Number
-     verified       ="false"
+     verified       =false
 )
 
 val MeiModel = UserModel(
@@ -357,7 +357,7 @@ val MeiModel = UserModel(
      location       ="Tokyo, Japan", // Location
      status         ="Online", // Status
      number         ="+1 (555) 890-1234", // Phone Number
-     verified       ="false"
+     verified       =false
 )
 
 val AshaModel = UserModel(
@@ -397,7 +397,7 @@ val AshaModel = UserModel(
     location       ="Cape Town, South Africa", // Location
     status         ="Online", // Status
     number         ="+1 (555) 234-5678", // Phone Number
-    verified       ="false"
+    verified       =false
 )
 
 val jasonModel = UserModel(
@@ -437,7 +437,7 @@ val jasonModel = UserModel(
     location ="Portland, OR", // Location
     status ="Online", // Status
     number ="+1 (555) 678-9012", // Phone Number
-    verified ="true" // Phone Number
+    verified =true // Phone Number
 )
 
 val anaModel = UserModel(
@@ -477,7 +477,7 @@ val anaModel = UserModel(
     location       = "Miami, FL",
     status         = "Online",
     number         = "+1 (555) 789-0123",
-    verified       = "true"
+    verified       = true
 )
 
 val samuelModel = UserModel(
@@ -517,7 +517,7 @@ val samuelModel = UserModel(
     location       = "New York City, NY",
     status         = "Online",
     number         = "+1 (555) 890-1234",
-    verified       = "true"
+    verified       = true
 )
 
 val profiles = arrayOf(sophiaModel, liamModel, jackModel, emmaModel, AmirModel, LaylaModel, MalikModel, MeiModel, AshaModel, jasonModel, anaModel, samuelModel)

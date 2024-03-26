@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.composables.DatingScreens
+package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -241,11 +241,11 @@ fun SimpleIconBox(
 @Composable
 fun SimpleBox(
     whatsInsideTheBox: @Composable () -> Unit = {},
-    verify:String = "false",
+    verify:Boolean = false,
 ){
     var thickness = 1
     var boardColor= Color(0xFFB39DB7)
-    if(verify == "true"){
+    if(verify){
         thickness = 3
         boardColor = Color(0xFF729CBD)
     }

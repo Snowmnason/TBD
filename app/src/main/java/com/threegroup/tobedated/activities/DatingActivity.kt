@@ -1,4 +1,4 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,18 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.composables.DatingNav
-import com.threegroup.tobedated.composables.DatingScreens.ChangePreferenceScreen
-import com.threegroup.tobedated.composables.DatingScreens.InsideMessages
-import com.threegroup.tobedated.composables.DatingScreens.InsideSearchSettings
-import com.threegroup.tobedated.composables.DatingScreens.MessageStart
-import com.threegroup.tobedated.composables.DatingScreens.OtherPreferences
-import com.threegroup.tobedated.composables.DatingScreens.SeekingBox
-import com.threegroup.tobedated.composables.DatingScreens.TheirMessage
-import com.threegroup.tobedated.composables.DatingScreens.TopAndBotBars
-import com.threegroup.tobedated.composables.DatingScreens.UserInfo
-import com.threegroup.tobedated.composables.DatingScreens.UserMessage
-import com.threegroup.tobedated.composables.DatingScreens.ageSlider
-import com.threegroup.tobedated.composables.DatingScreens.distanceSlider
+import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
+import com.threegroup.tobedated.composables.datingScreens.InsideMessages
+import com.threegroup.tobedated.composables.datingScreens.InsideSearchSettings
+import com.threegroup.tobedated.composables.datingScreens.MessageStart
+import com.threegroup.tobedated.composables.datingScreens.OtherPreferences
+import com.threegroup.tobedated.composables.datingScreens.SeekingBox
+import com.threegroup.tobedated.composables.datingScreens.TheirMessage
+import com.threegroup.tobedated.composables.datingScreens.TopAndBotBars
+import com.threegroup.tobedated.composables.datingScreens.UserInfo
+import com.threegroup.tobedated.composables.datingScreens.UserMessage
+import com.threegroup.tobedated.composables.datingScreens.ageSlider
+import com.threegroup.tobedated.composables.datingScreens.distanceSlider
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import com.threegroup.tobedated.models.miaModel

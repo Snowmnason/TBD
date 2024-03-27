@@ -73,28 +73,32 @@ class FirebaseDataSource() {
      */
     suspend fun getUserData(): ArrayList<UserModel>? { //TODO look into converting from DataSnapshot to Flow and StateFLow
         var list: ArrayList<UserModel>? = null
-        FirebaseDatabase.getInstance().getReference("users")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("TAG", "onDataChange: ${snapshot.toString()}")
+        try {
+            FirebaseDatabase.getInstance().getReference("users")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.d("MYTAG", "onDataChange: ${snapshot.toString()}")
 
-                    if (snapshot.exists()) {
-                        list = arrayListOf()
-                        for (data in snapshot.children) {
-                            val model = data.getValue(UserModel::class.java)
+                        if (snapshot.exists()) {
+                            list = arrayListOf()
+                            for (data in snapshot.children) {
+                                val model = data.getValue(UserModel::class.java)
 
-                            if (model!!.number != FirebaseAuth.getInstance().currentUser!!.phoneNumber) { // TODO check this; not sure if it works
-                                list!!.add(model)
+                                if (model!!.number != FirebaseAuth.getInstance().currentUser!!.phoneNumber) { // TODO check this; not sure if it works
+                                    list!!.add(model)
+                                }
+
                             }
-
                         }
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.d("MY_DEBUGGER", Log.ERROR.toString())
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("MY_DEBUGGER", Log.ERROR.toString())
+        }
         return list
     }
 

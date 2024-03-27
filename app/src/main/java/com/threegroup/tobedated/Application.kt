@@ -12,6 +12,6 @@ class MyApp : Application() {
         FirebaseApp.initializeApp(this)
         // Perform initialization tasks here
         // Setup global resources, libraries, etc.
-        x = Repository()
+        x = Repository(FirebaseDataSource())
     }
 }

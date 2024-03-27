@@ -523,8 +523,8 @@ fun ourTestScreen():Boolean{
                         //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
                         selectedIndex = selectedOptionIndex,
                         onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                            our = "our Test Answer"
-                            newUser.testResultTbd = "0.241"
+                            our = 10
+                            newUser.testResultTbd = 10
                         },
                         question = quest
                     )

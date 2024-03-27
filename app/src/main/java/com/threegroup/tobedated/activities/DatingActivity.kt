@@ -1,6 +1,9 @@
 package com.threegroup.tobedated.activities
 
+import android.hardware.usb.UsbRequest
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -19,8 +22,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import com.threegroup.tobedated.DatingViewModel
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
@@ -35,14 +46,52 @@ import com.threegroup.tobedated.composables.datingScreens.UserInfo
 import com.threegroup.tobedated.composables.datingScreens.UserMessage
 import com.threegroup.tobedated.composables.datingScreens.ageSlider
 import com.threegroup.tobedated.composables.datingScreens.distanceSlider
+import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.models.profiles
 import com.threegroup.tobedated.ui.theme.AppTheme
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 
 val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 //val notifiSearching = Random.nextBoolean()
+
+fun getUserData(): ArrayList<UserModel>? { //TODO look into converting from DataSnapshot to Flow and StateFLow
+    var list: ArrayList<UserModel>? = null
+    try {
+        FirebaseDatabase.getInstance().getReference("users")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d("MYTAG", "onDataChange: ${snapshot.toString()}")
+                    // println("Crashed before if statement")
+                    if (snapshot.exists()) {
+                        // println("Crashed after if statement")
+                        list = arrayListOf()
+                        // println("Crashed after list = arrayListOf")
+                        for (data in snapshot.children) {
+                            println("Crashed after $data")
+
+                            // issue
+                            val model = data.getValue(UserModel::class.java)
+
+                            if (model!!.number != FirebaseAuth.getInstance().currentUser!!.phoneNumber) { // TODO check this; not sure if it works
+                                list!!.add(model)
+                            }
+                        }
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("MY_DEBUGGER", "ERROR")
+                }
+            })
+    } catch (e: Exception) {
+        Log.d("MY_DEBUGGER", "ERROR")
+    }
+    return list
+}
+
 class DatingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +105,9 @@ class DatingActivity : ComponentActivity() {
 
 @Composable
 fun SearchingScreen(navController: NavHostController) {
-    val usersArray =  profiles.random()
+    val vm = viewModel { DatingViewModel(MyApp.x) }
+    // val user = getUserData()
+    val usersArray = profiles.random()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -69,28 +120,54 @@ fun SearchingScreen(navController: NavHostController) {
             UserInfo(
                 usersArray,
                 onClickLike = { /*TODO*/ },
-                onClickPass= { /*TODO*/ },
+                onClickPass = { /*TODO*/ },
                 onClickReport = { /*TODO*/ },
-                onClickSuggest= { /*TODO*/ },
+                onClickSuggest = { /*TODO*/ },
             )
         }
     )
 }
 
 
-
 @Composable
-fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingViewModel){
+fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingViewModel) {
     val currentUser = vmDating.getUser()
-    val searchPref by remember { mutableStateOf( currentUser.userPref) }
+    val searchPref by remember { mutableStateOf(currentUser.userPref) }
 
 
-    val userPref= listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti,
-        searchPref.children, searchPref.familyPlans, searchPref.education, searchPref.religion, searchPref.politicalViews,
-        searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed)
+    val userPref = listOf(
+        searchPref.gender,
+        searchPref.zodiac,
+        searchPref.sexualOri,
+        searchPref.mbti,
+        searchPref.children,
+        searchPref.familyPlans,
+        searchPref.education,
+        searchPref.religion,
+        searchPref.politicalViews,
+        searchPref.relationshipType,
+        searchPref.intentions,
+        searchPref.drink,
+        searchPref.smoke,
+        searchPref.weed
+    )
 
-    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans",
-        "Education", "Religion", "Political Views", "Relationship Type","Intentions", "Drink", "Smokes", "Weed")
+    val pref = listOf(
+        "Gender",
+        "Zodiac Sign",
+        "Sexual Orientation",
+        "Mbti",
+        "Children",
+        "Family Plans",
+        "Education",
+        "Religion",
+        "Political Views",
+        "Relationship Type",
+        "Intentions",
+        "Drink",
+        "Smokes",
+        "Weed"
+    )
     InsideSearchSettings(
         nav = navController,
         searchSettings = {
@@ -104,34 +181,59 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
                 Spacer(modifier = Modifier.height(14.dp))
                 searchPref.maxDistance = distanceSlider(preferredMax = 25)
                 Spacer(modifier = Modifier.height(14.dp))
-                SeekingBox(desiredSex = currentUser.seeking, navController )//currentUser.seeking = /TODO dunno how to update it yet
+                SeekingBox(
+                    desiredSex = currentUser.seeking,
+                    navController
+                )//currentUser.seeking = /TODO dunno how to update it yet
                 Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
+                HorizontalDivider(
+                    Modifier.fillMaxWidth(),
+                    color = AppTheme.colorScheme.onBackground,
+                    thickness = 2.dp
+                )
                 Spacer(modifier = Modifier.height(6.dp))
                 GenericTitleSmall(text = "Premium Settings")
                 Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
+                HorizontalDivider(
+                    Modifier.fillMaxWidth(),
+                    color = AppTheme.colorScheme.onBackground,
+                    thickness = 2.dp
+                )
                 Spacer(modifier = Modifier.height(14.dp))
-                for (i in pref.indices){
-                    OtherPreferences(title = pref[i], navController = navController, searchPref = userPref[i], clickable = true, index = i)
+                for (i in pref.indices) {
+                    OtherPreferences(
+                        title = pref[i],
+                        navController = navController,
+                        searchPref = userPref[i],
+                        clickable = true,
+                        index = i
+                    )
                     Spacer(modifier = Modifier.height(14.dp))
                 }
             }
         }
     )
 }
+
 @Composable
-fun ChangePreference(navController: NavHostController, title:String, index:Int, vmDating:DatingViewModel){
+fun ChangePreference(
+    navController: NavHostController,
+    title: String,
+    index: Int,
+    vmDating: DatingViewModel
+) {
 
 
-    ChangePreferenceScreen(navController,
+    ChangePreferenceScreen(
+        navController,
         title = title,
         vmDating = vmDating,
         index = index,
     )
 }
+
 @Composable
-fun ProfileScreen(navController: NavHostController){
+fun ProfileScreen(navController: NavHostController) {
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -145,8 +247,9 @@ fun ProfileScreen(navController: NavHostController){
         }
     )
 }
+
 @Composable
-fun ChatsScreen(navController: NavHostController){
+fun ChatsScreen(navController: NavHostController) {
     //val inChat by rememberSaveable { mutableStateOf(false)}
 
     TopAndBotBars(
@@ -173,8 +276,9 @@ fun ChatsScreen(navController: NavHostController){
         }
     )
 }
+
 @Composable
-fun MessagerScreen(navController: NavHostController){
+fun MessagerScreen(navController: NavHostController) {
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
 
@@ -182,7 +286,7 @@ fun MessagerScreen(navController: NavHostController){
         nav = navController,
         titleText = "Dom",
         value = message,
-        onValueChange = { message = it},
+        onValueChange = { message = it },
         sendMessage = {/* TODO Send Message*/ },
         titleButton = {/* TODO Go to Profile from name*/ },
         messages = {
@@ -195,8 +299,9 @@ fun MessagerScreen(navController: NavHostController){
         }
     )
 }
+
 @Composable
-fun GroupsScreen(navController: NavHostController){
+fun GroupsScreen(navController: NavHostController) {
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -210,8 +315,9 @@ fun GroupsScreen(navController: NavHostController){
         }
     )
 }
+
 @Composable
-fun SomeScreen(navController: NavHostController){
+fun SomeScreen(navController: NavHostController) {
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,

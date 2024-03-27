@@ -1,5 +1,7 @@
 package com.threegroup.tobedated.models
 
+import com.google.firebase.database.Exclude
+
 data class UserModel(
     var name : String = "", // Your name
     var birthday : String = "", // use to calculate age later
@@ -12,7 +14,7 @@ data class UserModel(
     var seeking : String = "", // looking for
     var sex : String = "", // What search category will you be
     var testResultsMbti : String = "", // MBTI test
-    var testResultTbd : String = "", // our test
+    var testResultTbd : Int = 10, // our test
     var children: String = "",//
     var family: String = "",//
     var education: String = "",//
@@ -39,7 +41,58 @@ data class UserModel(
     var number:String = "",//
     var verified:Boolean = false,
     var userPref:UserSearchPreferenceModel = UserSearchPreferenceModel()
-)
+){
+    constructor(): this("","","","","","","",
+        "","","","",10,"", "",
+        "", "","","","","","","",
+        "","","","","","","","",
+        "","","","","","",false,UserSearchPreferenceModel())
+    @Exclude
+    fun userModelToMap(): Map<String, Any?> {
+        return mapOf(
+            "name" to name,
+            "birthday" to birthday,
+            "pronoun" to pronoun,
+            "gender" to gender,
+            "height" to height,
+            "ethnicity" to ethnicity,
+            "star" to star,
+            "sexOrientation" to sexOrientation,
+            "seeking" to seeking,
+            "sex" to sex,
+            "testResultsMbti" to testResultsMbti,
+            "testResultTbd" to testResultTbd,
+            "children" to children,
+            "family" to family,
+            "education" to education,
+            "religion" to religion,
+            "politics" to politics,
+            "relationship" to relationship,
+            "intentions" to intentions,
+            "drink" to drink,
+            "smoke" to smoke,
+            "weed" to weed,
+            "promptA1" to promptA1,
+            "promptA2" to promptA2,
+            "promptA3" to promptA3,
+            "promptQ1" to promptQ1,
+            "promptQ2" to promptQ2,
+            "promptQ3" to promptQ3,
+            "bio" to bio,
+            "image1" to image1,
+            "image2" to image2,
+            "image3" to image3,
+            "image4" to image4,
+            "location" to location,
+            "status" to status,
+            "verified" to verified,
+            "number" to number,
+            "userPref" to userPref,
+        )
+    }
+}
+
+
 data class UserSearchPreferenceModel(
     var ageRange: AgeRange = AgeRange(18, 45),
     var maxDistance: Int = 25,
@@ -57,7 +110,29 @@ data class UserSearchPreferenceModel(
     var drink: List<String> = listOf("Doesn't Matter"),
     var smoke: List<String> = listOf("Doesn't Matter"),
     var weed: List<String> = listOf("Doesn't Matter"),
-)
+) {
+    @Exclude
+    fun userPrefToMap() : Map<String, Any?> {
+        return mapOf(
+       "ageRange" to ageRange,
+       "maxDistance" to maxDistance,
+       "gender" to gender,
+       "zodiac" to zodiac,
+       "sexualOri" to sexualOri,
+       "mbti" to mbti,
+       "children" to children,
+       "familyPlans" to familyPlans,
+       "education" to education,
+       "religion" to religion,
+       "politicalViews" to politicalViews,
+       "relationshipType" to relationshipType,
+       "intentions" to intentions,
+       "drink" to drink,
+       "smoke" to smoke,
+       "weed" to weed
+        )
+    }
+}
 
 data class PreferenceIndexModel(
     var pronoun : Int = -1,

@@ -93,7 +93,7 @@ class LoginActivity : ComponentActivity() {
             }
         }
         val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(number) // Phone number to verify
+            .setPhoneNumber(userPhoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
             .setActivity(this) // Activity (for callback binding)
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
@@ -101,41 +101,22 @@ class LoginActivity : ComponentActivity() {
         PhoneAuthProvider.verifyPhoneNumber(options)
     } // end sendOtp
 
-    fun resendOtp() {
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                signInWithPhoneAuthCredential(credential)
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken,
-            ) {
-                this@LoginActivity.verificationId = verificationId
-            }
-        }
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(userPhoneNumber) // Phone number to verify
-            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(this) // Activity (for callback binding)
-            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
-    }
-
     fun verifyOtp(otp: String) {
         try {
-            val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-            signInWithPhoneAuthCredential(credential)
+            if (verificationId != null) {
+                val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
+                signInWithPhoneAuthCredential(credential)
+            } else {
+                // Handle case where verificationId is null
+                this@LoginActivity.showToast("Verification Code expired")
+            }
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            /*
-            TO DO make a toast or something to say error
-             */
+            // Handle invalid credentials exception
+            this@LoginActivity.showToast("Incorrect verification code")
         }
-
+    }
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -162,9 +143,33 @@ class LoginActivity : ComponentActivity() {
                 }
             }
     }
+    fun resendOtp() {
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                signInWithPhoneAuthCredential(credential)
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+            }
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken,
+            ) {
+                this@LoginActivity.verificationId = verificationId
+            }
+        }
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(userPhoneNumber) // Phone number to verify
+            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+            .setActivity(this) // Activity (for callback binding)
+            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+            .build()
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
 
 
-    fun checkUserExist() {
+    private fun checkUserExist() {
         FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
             .addValueEventListener(object :
                 ValueEventListener {

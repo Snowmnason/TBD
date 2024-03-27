@@ -726,9 +726,7 @@ fun ChangePreferenceScreen(
     val userPrefList = listOf(currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
         currPref.children, currPref.familyPlans, currPref.education, currPref.religion, currPref.politicalViews,
         currPref.relationshipType, currPref.intentions, currPref.drink, currPref.smoke, currPref.weed)
-
     var currentPreference by remember { mutableStateOf(userPrefList[index]) }
-
 
     val checkedItems = remember { mutableStateListOf<String>() }
     ChangePreferenceTopBar(
@@ -784,6 +782,7 @@ fun ChangePreferenceScreen(
                 onClick = {
                     nav.popBackStack()
                     currentPreference = checkedItems
+                    vmDating.updateUserPreferences(currentUser.userPref)
                     checkedItems.clear()
                 }
             ) {

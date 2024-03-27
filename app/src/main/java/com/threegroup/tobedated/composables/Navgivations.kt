@@ -24,6 +24,8 @@ import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.activities.ChangePreference
 import com.threegroup.tobedated.activities.ChatsScreen
 import com.threegroup.tobedated.activities.Dating
+import com.threegroup.tobedated.activities.DatingActivity
+import com.threegroup.tobedated.activities.EditProfileScreen
 import com.threegroup.tobedated.activities.GroupsScreen
 import com.threegroup.tobedated.activities.Login
 import com.threegroup.tobedated.activities.LoginActivity
@@ -265,7 +267,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 }
 
 @Composable
-fun DatingNav() {
+fun DatingNav(dating:DatingActivity) {
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
 
@@ -279,6 +281,9 @@ fun DatingNav() {
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController)
+        }
+        composable(route = Dating.EditProfileScreen.name) {
+            EditProfileScreen(navController, dating)
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
             SearchPreferenceScreen(navController, viewModelDating)

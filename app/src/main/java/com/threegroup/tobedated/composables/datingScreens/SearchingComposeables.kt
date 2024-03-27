@@ -277,7 +277,7 @@ fun UserInfo(
     if(photos[3] == ""){
         subtract = 1
     }
-    val mbtiColor: Color = if(user.image4 != "Not Taken"){
+    val mbtiColor: Color = if(user.testResultsMbti != "Not Taken"){
         val parts = user.testResultsMbti.split("-")
         val mainType = parts.first()
         mbtiColors[mbtiColorMap[mainType]!!]

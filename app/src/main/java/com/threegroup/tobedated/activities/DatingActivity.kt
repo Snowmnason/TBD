@@ -1,5 +1,7 @@
 package com.threegroup.tobedated.activities
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,7 +26,9 @@ import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
+import com.threegroup.tobedated.composables.datingScreens.EditProfile
 import com.threegroup.tobedated.composables.datingScreens.InsideMessages
+import com.threegroup.tobedated.composables.datingScreens.InsideProfileSettings
 import com.threegroup.tobedated.composables.datingScreens.InsideSearchSettings
 import com.threegroup.tobedated.composables.datingScreens.MessageStart
 import com.threegroup.tobedated.composables.datingScreens.OtherPreferences
@@ -48,9 +52,20 @@ class DatingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                DatingNav()
+                DatingNav(this@DatingActivity)
             }
         }
+    }
+    fun clearUserToken() {
+        val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("firebase_user_token")
+        editor.apply()
+
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+
     }
 }
 
@@ -123,8 +138,6 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
 }
 @Composable
 fun ChangePreference(navController: NavHostController, title:String, index:Int, vmDating:DatingViewModel){
-
-
     ChangePreferenceScreen(navController,
         title = title,
         vmDating = vmDating,
@@ -140,9 +153,18 @@ fun ProfileScreen(navController: NavHostController){
         titleText = "Profile",
         nav = navController,
         selectedItemIndex = 4,
-        settingsButton = { /*TODO Edit profile */ },
+        settingsButton = { navController.navigate("EditProfileScreen") },
         currentScreen = {
 
+        }
+    )
+}
+@Composable
+fun EditProfileScreen(navController: NavHostController, dating:DatingActivity){
+    InsideProfileSettings(
+        nav = navController,
+        editProfile = {
+            EditProfile(dating)
         }
     )
 }
@@ -231,6 +253,7 @@ enum class Dating {
     SearchingScreen,
     SearchPreferenceScreen,
     ProfileScreen,
+    EditProfileScreen,
     ChatsScreen,
     GroupsScreen,
     SomeScreen,

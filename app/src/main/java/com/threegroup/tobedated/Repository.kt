@@ -1,45 +1,41 @@
 package com.threegroup.tobedated
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import com.google.firebase.auth.PhoneAuthCredential
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.models.miaModel
 
 class Repository (
-    //private var firebaseDataSource: FirebaseDataSource
+    private var firebaseDataSource: FirebaseDataSource
 ) {
-//    suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential){
-//        return firebaseDataSource.signInWithPhoneAuthCredential(credential)
-//    }
-//    suspend fun checkUserExist(number: String) {
-//        return firebaseDataSource.checkUserExist(number)
-//    }
-//    suspend fun storeUserData(data: UserModel) {
-//        return firebaseDataSource.storeUserData(data)
-//    }
-//    suspend fun getUserData(): ArrayList<UserModel>? {
-//        return firebaseDataSource.getUserData()
-//    }
-//    suspend fun updateUserData(userUpdates: UserModel) {
-//        return firebaseDataSource.updateUserData(userUpdates)
-//    }
-//    suspend fun getChatData(chatId: String?) {
-//        return firebaseDataSource.getChatData(chatId)
-//    }
-//
-//    suspend fun storeChatData(message: String) {
-//        return firebaseDataSource.storeChatData(message)
-//    }
-//
-//    suspend fun displayChats() {
-//        return firebaseDataSource.displayChats()
-//    }
-    @Composable
-    fun getUser() :UserModel{
-    val currentUser by remember { mutableStateOf( miaModel) }
-        return currentUser
+    suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential){
+        return firebaseDataSource.signInWithPhoneAuthCredential(credential)
+    }
+    suspend fun checkUserExist(number: String) {
+        return firebaseDataSource.checkUserExist(number)
+    }
+    suspend fun storeUserData(data: UserModel) {
+        return firebaseDataSource.storeUserData(data)
+    }
+    suspend fun getUserData(): ArrayList<UserModel>? {
+        return firebaseDataSource.getUserData()
+    }
+    suspend fun updateUserData(userUpdates: UserModel) {
+        return firebaseDataSource.updateUserData(userUpdates)
+    }
+    suspend fun getChatData(chatId: String?) {
+        return firebaseDataSource.getChatData(chatId)
+    }
+
+    suspend fun storeChatData(message: String) {
+        return firebaseDataSource.storeChatData(message)
+    }
+
+    suspend fun displayChats() {
+        return firebaseDataSource.displayChats()
+    }
+
+    fun getUser(): UserModel {
+        return miaModel
     }
 
 

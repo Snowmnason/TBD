@@ -104,6 +104,7 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
                 Spacer(modifier = Modifier.height(14.dp))
                 searchPref.maxDistance = distanceSlider(preferredMax = 25)
                 Spacer(modifier = Modifier.height(14.dp))
+                //OtherPreferences(title = pref[i], navController = navController, searchPref = currentUser.seeking, clickable = true, index = i)
                 SeekingBox(desiredSex = currentUser.seeking, navController )//currentUser.seeking = /TODO dunno how to update it yet
                 Spacer(modifier = Modifier.height(14.dp))
                 HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)

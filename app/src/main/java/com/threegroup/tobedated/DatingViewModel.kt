@@ -1,9 +1,9 @@
 package com.threegroup.tobedated
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
@@ -19,8 +19,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         }
         return userList
     }
-    @Composable
-    fun getUser() :UserModel{
-        return repository.getUser()
+
+    private var miaModel = repository.getUser()
+    fun updateUserPreferences(updatedPreferences: UserSearchPreferenceModel) {
+        miaModel.userPref = updatedPreferences
+    }
+    fun getUser(): UserModel {
+        return miaModel
     }
 }

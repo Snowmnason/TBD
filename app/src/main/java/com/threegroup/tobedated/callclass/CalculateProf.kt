@@ -84,3 +84,29 @@ fun checkBirthDate(year: Int, month: Int, day: Int): Boolean {
     }
     return day in 1..maxDays
 }
+fun formatPhone(phone: String, cCode:String): String {
+    val digits = phone.filter { it.isDigit() }
+    val formatted = buildString {
+        if(cCode == "+1"){
+            if (digits.isNotEmpty()) {
+                append("(")
+                append(digits.take(3))
+                if (digits.length > 3) {
+                    append(") ")
+                    append(digits.substring(3, minOf(digits.length, 6)))
+                }
+                if (digits.length > 6) {
+                    append("-")
+                    append(digits.substring(6, minOf(digits.length, 10)))
+                }
+            }
+        }else{
+            append(digits.take(4))
+            if (digits.length > 4) {
+                append(" ")
+                append(digits.substring(4))
+            }
+        }
+    }
+    return formatted
+}

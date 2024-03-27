@@ -37,7 +37,8 @@ data class UserModel(
     var location : String = "", // use GPS location
     var status : String = "", // online/active status could remove
     var number:String = "",//
-    var verified:Boolean = false
+    var verified:Boolean = false,
+    var userPref:UserSearchPreferenceModel = UserSearchPreferenceModel()
 )
 data class UserSearchPreferenceModel(
     var ageRange: AgeRange = AgeRange(18, 45),

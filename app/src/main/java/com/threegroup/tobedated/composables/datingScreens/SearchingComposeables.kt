@@ -66,13 +66,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.composables.GenericBodyText
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.AgeRange
 import com.threegroup.tobedated.models.UserModel
-import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import com.threegroup.tobedated.models.childrenList
 import com.threegroup.tobedated.models.drinkList
 import com.threegroup.tobedated.models.educationList
@@ -668,12 +668,11 @@ fun SeekingBox(
 fun OtherPreferences(
     title: String,
     navController: NavController,
-    searchPref: UserSearchPreferenceModel,
+    searchPref: List<String>,
     clickable: Boolean = false,
     index:Int
 ) {
-    val userPref = listOf(searchPref.gender,searchPref.zodiac,searchPref.sexualOri,searchPref.mbti,searchPref.children,searchPref.familyPlans,searchPref.education,searchPref.religion,searchPref.politicalViews,searchPref.relationshipType,searchPref.intentions,searchPref.drink,searchPref.smoke,searchPref.weed)
-    val currentPref by remember { mutableStateOf(userPref[index]) }
+
     val modifier = if (clickable) {
         Modifier.clickable { navController.navigate("ChangePreference/$title/$index") }
     } else {
@@ -690,7 +689,7 @@ fun OtherPreferences(
             ) {
                 GenericTitleSmall(text = "$title:")
                 Spacer(modifier = Modifier.height(4.dp))
-                GenericBodyText(text = currentPref.joinToString(", "))
+                GenericBodyText(text = searchPref.joinToString(", "))
             }
         }
     )
@@ -698,8 +697,8 @@ fun OtherPreferences(
 @Composable
 fun ChangePreferenceScreen(
     nav: NavHostController,
+    vmDating:DatingViewModel,
     title: String = "",
-
     index:Int
 ) {
 
@@ -720,9 +719,18 @@ fun ChangePreferenceScreen(
         "Weed" -> weedList
         else -> listOf("Man", "Woman", "Everyone")
     }
+    val currentUser = vmDating.getUser()
+
+    val currPref= currentUser.userPref
+
+    val userPrefList = listOf(currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
+        currPref.children, currPref.familyPlans, currPref.education, currPref.religion, currPref.politicalViews,
+        currPref.relationshipType, currPref.intentions, currPref.drink, currPref.smoke, currPref.weed)
+
+    var currentPreference by remember { mutableStateOf(userPrefList[index]) }
+
 
     val checkedItems = remember { mutableStateListOf<String>() }
-
     ChangePreferenceTopBar(
         nav = nav,
         title = title,
@@ -733,20 +741,33 @@ fun ChangePreferenceScreen(
                     .fillMaxWidth()
             ) {
                 opts.forEach { option ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = checkedItems.contains(option),
-                            onCheckedChange = { isChecked ->
-                                if (isChecked) {
-                                    checkedItems.add(option)
-                                } else {
-                                    checkedItems.remove(option)
-                                }
-                            },
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        GenericTitleSmall(text = option)
-                    }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = currentPreference.contains(option),
+                                onCheckedChange = { isChecked ->
+                                    //TODO WEIRD FUCKING BUG
+                                    if (isChecked) {
+                                        checkedItems.add(option)
+                                        if(option == "Doesn't Matter"){
+                                            checkedItems.clear()
+                                            checkedItems.add(option)
+                                        }
+                                        currentPreference = checkedItems
+                                    } else {
+
+                                        checkedItems.remove(option)
+                                        if(checkedItems.isEmpty()){
+                                            checkedItems.clear()
+                                            checkedItems.add("Doesn't Matter")
+                                        }
+                                            currentPreference = checkedItems
+
+                                    }
+                                },
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            GenericTitleSmall(text = option)
+                        }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -762,6 +783,7 @@ fun ChangePreferenceScreen(
                 modifier = Modifier.offset(y = 5.dp),
                 onClick = {
                     nav.popBackStack()
+                    currentPreference = checkedItems
                     checkedItems.clear()
                 }
             ) {
@@ -774,3 +796,4 @@ fun ChangePreferenceScreen(
         }
     )
 }
+

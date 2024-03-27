@@ -12,16 +12,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.DatingViewModel
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.activities.ChangePreference
 import com.threegroup.tobedated.activities.ChatsScreen
 import com.threegroup.tobedated.activities.Dating
 import com.threegroup.tobedated.activities.GroupsScreen
+import com.threegroup.tobedated.activities.Login
+import com.threegroup.tobedated.activities.LoginActivity
+import com.threegroup.tobedated.activities.LoginMainScreen
+import com.threegroup.tobedated.activities.LoginScreen
 import com.threegroup.tobedated.activities.MessagerScreen
 import com.threegroup.tobedated.activities.ProfileScreen
 import com.threegroup.tobedated.activities.SearchPreferenceScreen
@@ -29,6 +36,7 @@ import com.threegroup.tobedated.activities.SearchingScreen
 import com.threegroup.tobedated.activities.SignUp
 import com.threegroup.tobedated.activities.SignUpActivity
 import com.threegroup.tobedated.activities.SomeScreen
+import com.threegroup.tobedated.activities.VerificationCodeView
 import com.threegroup.tobedated.activities.bioScreen
 import com.threegroup.tobedated.activities.birthScreen
 import com.threegroup.tobedated.activities.childrenScreen
@@ -59,6 +67,27 @@ import com.threegroup.tobedated.composables.signUp.BigButton
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
+@Composable
+fun LoginNav(loginActivity: LoginActivity) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Login.LoginMainScreen.name,
+        enterTransition = { EnterTransition.None }, exitTransition =   { ExitTransition.None},
+        popEnterTransition = { EnterTransition.None }, popExitTransition = { ExitTransition.None}) {
+        composable(route = Login.LoginMainScreen.name) {
+            LoginMainScreen(navController)
+        }
+        composable(route = Login.LoginScreen.name) {
+            LoginScreen(navController, loginActivity)
+        }
+        composable(
+            route = "VerificationCodeView/{number}",
+            arguments = listOf(navArgument("number") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val phoneNumber = backStackEntry.arguments?.getString("number") ?: ""
+            VerificationCodeView(navController, phoneNumber, loginActivity)
+        }
+    }
+}
 @Composable
 fun SignUpNav(signUpActivity: SignUpActivity) {
     val navController = rememberNavController()
@@ -238,6 +267,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 @Composable
 fun DatingNav() {
     val navController = rememberNavController()
+    val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
 
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
@@ -251,7 +281,7 @@ fun DatingNav() {
             ProfileScreen(navController)
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
-            SearchPreferenceScreen(navController)
+            SearchPreferenceScreen(navController, viewModelDating)
         }
         composable(route = Dating.ChatsScreen.name) {
             ChatsScreen(navController)
@@ -276,7 +306,7 @@ fun DatingNav() {
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
-            ChangePreference(navController, myParam, myIndex)
+            ChangePreference(navController, myParam, myIndex, viewModelDating)
         }
     }
 

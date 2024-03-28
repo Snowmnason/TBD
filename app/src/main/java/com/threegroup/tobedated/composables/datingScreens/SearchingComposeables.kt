@@ -164,7 +164,8 @@ fun SimpleButton(
     onClick: () -> Unit,
     colorButton:Color,
     colorText:Color,
-    text:String
+    text:String,
+    enabled:Boolean = true,
 ){
     Button(
         modifier = modifier,
@@ -174,7 +175,8 @@ fun SimpleButton(
             contentColor = colorText,
             disabledContentColor = Color.Gray,
             disabledContainerColor = AppTheme.colorScheme.primary,
-        )
+        ),
+        enabled = enabled
     ) {
         Text(text = text)
     }
@@ -184,7 +186,8 @@ fun SimpleOutLinedButton(
     modifier: Modifier,
     onClick: () -> Unit,
     colorText:Color,
-    text:String
+    text:String,
+    enabled:Boolean = true,
 ){
     OutlinedButton(
         modifier = modifier,
@@ -196,6 +199,7 @@ fun SimpleOutLinedButton(
             disabledContainerColor = AppTheme.colorScheme.primary,
         ),
         contentPadding = PaddingValues(),
+        enabled = enabled
     ) {
         Text(text = text)
     }
@@ -261,7 +265,10 @@ fun SimpleBox(
         }
     }
 }
-
+@Composable
+fun Comeback(){
+    GenericBodyText(text = "Come Back when theres more people to see =0)")
+}
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserInfo(
@@ -415,7 +422,7 @@ fun UserInfo(
                 onClick = onClickPass,
                 colorButton = Color.Gray,
                 colorText = AppTheme.colorScheme.primary,
-                text = "Pass"
+                text = "Pass",
             )
             Spacer(modifier = Modifier.width(6.dp))
             SimpleButton(
@@ -425,7 +432,7 @@ fun UserInfo(
                 onClick = onClickLike,
                 colorButton = AppTheme.colorScheme.primary,
                 colorText = AppTheme.colorScheme.onPrimary,
-                text = "Like"
+                text = "Like",
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -436,7 +443,7 @@ fun UserInfo(
                     .fillMaxWidth()
                     .height(24.dp)
                     .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                onClick = onClickSuggest,
+                onClick = onClickReport,
                 colorText =  Color.Red,
                 text = "Report",
             )
@@ -843,14 +850,13 @@ fun ChangeSeekingScreen(
 
     var currentPreference by remember { mutableStateOf(currPref) }
 
-    val checkedItems = remember { mutableStateListOf<String>().apply { add(currPref) } }
-
     ChangePreferenceTopBar(
         nav = nav,
         title = title,
         changeSettings = {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
                     .fillMaxWidth()
             ) {
                 opts.forEach { option ->

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,11 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.DatingViewModel
+import com.threegroup.tobedated.composables.AlertDialogBox
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.composables.datingScreens.AgeSlider
 import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
 import com.threegroup.tobedated.composables.datingScreens.ChangeSeekingScreen
+import com.threegroup.tobedated.composables.datingScreens.Comeback
+import com.threegroup.tobedated.composables.datingScreens.CurrentUserInfo
 import com.threegroup.tobedated.composables.datingScreens.DistanceSlider
 import com.threegroup.tobedated.composables.datingScreens.EditProfile
 import com.threegroup.tobedated.composables.datingScreens.InsideMessages
@@ -72,7 +76,23 @@ class DatingActivity : ComponentActivity() {
 
 @Composable
 fun SearchingScreen(navController: NavHostController) {
-    val usersArray =  profiles.random()
+    var isNext by rememberSaveable { mutableStateOf(true) }
+    var showReport by rememberSaveable { mutableStateOf(false) }
+    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
+
+    val usersArray = remember { profiles.toMutableList() }
+    //val usersArray =  profiles.random()
+
+
+    fun nextProfile() {
+        if (currentProfileIndex < usersArray.size - 1) {
+            currentProfileIndex++
+        } else {
+            // Handle the case when all profiles have been viewed
+            // For example, you can reset the index to 0 or show a message
+            isNext = false
+        }
+    }
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -82,15 +102,29 @@ fun SearchingScreen(navController: NavHostController) {
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         currentScreen = {
-            UserInfo(
-                usersArray,
-                onClickLike = { /*TODO*/ },
-                onClickPass= { /*TODO*/ },
-                onClickReport = { /*TODO*/ },
-                onClickSuggest= { /*TODO*/ },
-            )
-        }
+            if(isNext) {
+                UserInfo(
+                    usersArray[currentProfileIndex],
+                    onClickLike = { nextProfile() /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                    onClickPass = { nextProfile() /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                    onClickReport = { showReport = true },
+                    onClickSuggest = { /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                )
+            }else{
+                Comeback()
+            }
+        },
+
     )
+    if(showReport){
+        AlertDialogBox(
+            dialogTitle = "Report!",
+            onDismissRequest = { showReport = false },
+            dialogText = "This account will be looked into and they will not be able to view your profile",
+            onConfirmation = { showReport = false
+                nextProfile()}
+        )
+    }
 }
 
 
@@ -152,7 +186,8 @@ fun ChangePreference(navController: NavHostController, title:String, index:Int, 
     }
 }
 @Composable
-fun ProfileScreen(navController: NavHostController){
+fun ProfileScreen(navController: NavHostController, vmDating:DatingViewModel){
+    val currentUser = vmDating.getUser()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -162,7 +197,9 @@ fun ProfileScreen(navController: NavHostController){
         selectedItemIndex = 4,
         settingsButton = { navController.navigate("EditProfileScreen") },
         currentScreen = {
-
+            CurrentUserInfo(
+                currentUser
+            )
         }
     )
 }

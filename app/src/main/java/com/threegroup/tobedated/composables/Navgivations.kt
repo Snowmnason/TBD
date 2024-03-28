@@ -280,7 +280,7 @@ fun DatingNav(dating:DatingActivity) {
             SearchingScreen(navController)
         }
         composable(route = Dating.ProfileScreen.name) {
-            ProfileScreen(navController)
+            ProfileScreen(navController, viewModelDating)
         }
         composable(route = Dating.EditProfileScreen.name) {
             EditProfileScreen(navController, dating)

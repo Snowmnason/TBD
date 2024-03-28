@@ -25,7 +25,10 @@ import androidx.navigation.NavHostController
 import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
+import com.threegroup.tobedated.composables.datingScreens.AgeSlider
 import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
+import com.threegroup.tobedated.composables.datingScreens.ChangeSeekingScreen
+import com.threegroup.tobedated.composables.datingScreens.DistanceSlider
 import com.threegroup.tobedated.composables.datingScreens.EditProfile
 import com.threegroup.tobedated.composables.datingScreens.InsideMessages
 import com.threegroup.tobedated.composables.datingScreens.InsideProfileSettings
@@ -37,8 +40,6 @@ import com.threegroup.tobedated.composables.datingScreens.TheirMessage
 import com.threegroup.tobedated.composables.datingScreens.TopAndBotBars
 import com.threegroup.tobedated.composables.datingScreens.UserInfo
 import com.threegroup.tobedated.composables.datingScreens.UserMessage
-import com.threegroup.tobedated.composables.datingScreens.ageSlider
-import com.threegroup.tobedated.composables.datingScreens.distanceSlider
 import com.threegroup.tobedated.models.profiles
 import com.threegroup.tobedated.ui.theme.AppTheme
 import kotlin.random.Random
@@ -99,7 +100,6 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
     val currentUser = vmDating.getUser()
     val searchPref by remember { mutableStateOf( currentUser.userPref) }
 
-
     val userPref= listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti,
         searchPref.children, searchPref.familyPlans, searchPref.education, searchPref.religion, searchPref.politicalViews,
         searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed)
@@ -115,12 +115,11 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
                     .padding(15.dp, 0.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                searchPref.ageRange = ageSlider(preferredMin = 18, preferredMax = 35)
+                AgeSlider(preferredMin = currentUser.userPref.ageRange.min, preferredMax = currentUser.userPref.ageRange.max, vmDating = vmDating, currentUser = currentUser)
                 Spacer(modifier = Modifier.height(14.dp))
-                searchPref.maxDistance = distanceSlider(preferredMax = 25)
+                DistanceSlider(preferredMax = currentUser.userPref.maxDistance, vmDating = vmDating, currentUser = currentUser)
                 Spacer(modifier = Modifier.height(14.dp))
-                //OtherPreferences(title = pref[i], navController = navController, searchPref = currentUser.seeking, clickable = true, index = i)
-                SeekingBox(desiredSex = currentUser.seeking, navController )//currentUser.seeking = /TODO dunno how to update it yet
+                SeekingBox(desiredSex = currentUser.seeking, navController )
                 Spacer(modifier = Modifier.height(14.dp))
                 HorizontalDivider(Modifier.fillMaxWidth(), color = AppTheme.colorScheme.onBackground, thickness = 2.dp)
                 Spacer(modifier = Modifier.height(6.dp))
@@ -138,11 +137,19 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
 }
 @Composable
 fun ChangePreference(navController: NavHostController, title:String, index:Int, vmDating:DatingViewModel){
-    ChangePreferenceScreen(navController,
-        title = title,
-        vmDating = vmDating,
-        index = index,
-    )
+    if(index == 69420){
+        ChangeSeekingScreen(navController,
+            title = title,
+            vmDating = vmDating,
+            index = index,
+        )
+    }else{
+        ChangePreferenceScreen(navController,
+            title = title,
+            vmDating = vmDating,
+            index = index,
+        )
+    }
 }
 @Composable
 fun ProfileScreen(navController: NavHostController){

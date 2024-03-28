@@ -36,7 +36,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
@@ -44,8 +44,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +71,7 @@ import com.threegroup.tobedated.composables.GenericBodyText
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.AgeRange
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import com.threegroup.tobedated.models.childrenList
 import com.threegroup.tobedated.models.drinkList
 import com.threegroup.tobedated.models.educationList
@@ -505,83 +504,89 @@ fun InsideSearchSettings(
     }
 }
 @Composable
-fun ageSlider(
-    preferredMin:Int,
-    preferredMax:Int,
-):AgeRange{
+fun AgeSlider(
+    preferredMin: Int,
+    preferredMax: Int,
+    vmDating: DatingViewModel,
+    currentUser: UserModel,
+) {
     var sliderPosition by remember { mutableStateOf(preferredMin.toFloat()..preferredMax.toFloat()) }
-    var min:Int by remember { mutableIntStateOf(preferredMin)    }
-    var max:Int by remember { mutableIntStateOf(preferredMax)    }
+
+    // Extracting min and max values from the slider position
+    val min = (sliderPosition.start.roundToInt())
+    val max = (sliderPosition.endInclusive.roundToInt())
+
     SimpleBox(
         whatsInsideTheBox = {
             Column(modifier = Modifier.padding(15.dp, 15.dp, 15.dp, 0.dp)) {
-                min = (sliderPosition.start.roundToInt())
-                max = (sliderPosition.endInclusive.roundToInt())
-
+                // Displaying the age range
                 GenericTitleSmall(text = "Age Range: $min - $max")
                 Spacer(modifier = Modifier.height(4.dp))
+
+                // Range slider for selecting age range
                 RangeSlider(
                     value = sliderPosition,
                     steps = 82,
                     onValueChange = { range -> sliderPosition = range },
                     valueRange = 18f..80f,
-                    onValueChangeFinished = { },
-                    colors = SliderColors(
+                    onValueChangeFinished = {
+                        currentUser.userPref.ageRange = AgeRange(min, max)
+                        vmDating.updateUserPreferences(currentUser.userPref)
+                    },
+                    colors = SliderDefaults.colors(
                         thumbColor = AppTheme.colorScheme.primary,
                         activeTrackColor = AppTheme.colorScheme.primary,
-                        activeTickColor = Color.Transparent,
                         inactiveTrackColor = Color.White,
-                        inactiveTickColor= Color.Transparent,
-                        disabledThumbColor= Color.Gray,
-                        disabledActiveTrackColor = Color.Gray,
-                        disabledActiveTickColor = Color.Gray,
-                        disabledInactiveTrackColor = Color.Gray,
-                        disabledInactiveTickColor = Color.Gray
+                        disabledThumbColor = Color.Gray,
+                        disabledActiveTrackColor = Color.Gray
                     )
                 )
             }
         }
     )
-    return AgeRange(min, max)
 }
-@Composable
-fun distanceSlider(
-    preferredMax:Int,
 
-):Int{
-    var sliderPosition by remember { mutableFloatStateOf(25F) }
-    var max:Int by remember { mutableIntStateOf(preferredMax)    }
+@Composable
+fun DistanceSlider(
+    preferredMax: Int,
+    vmDating: DatingViewModel,
+    currentUser: UserModel,
+) {
+    var sliderPosition by remember { mutableStateOf(preferredMax.toFloat()) }
+
     SimpleBox(
         whatsInsideTheBox = {
             Column(modifier = Modifier.padding(15.dp, 15.dp, 15.dp, 0.dp)) {
-                max = (sliderPosition.roundToInt())
+                val max = sliderPosition.roundToInt()
 
+                // Displaying the maximum distance
                 GenericTitleSmall(text = "Maximum Distance: $max")
                 Spacer(modifier = Modifier.height(4.dp))
+
+                // Slider for selecting maximum distance
                 Slider(
                     value = sliderPosition,
-                    steps = 99,
                     onValueChange = { sliderPosition = it },
                     valueRange = 1f..100f,
-                    onValueChangeFinished = {  },
-                    colors = SliderColors(
+                    onValueChangeFinished = {
+                        // Update user preferences with the selected maximum distance
+                        currentUser.userPref.maxDistance = max
+                        // Update user preferences via the view model
+                        vmDating.updateUserPreferences(currentUser.userPref)
+                    },
+                    colors = SliderDefaults.colors(
                         thumbColor = AppTheme.colorScheme.primary,
                         activeTrackColor = AppTheme.colorScheme.primary,
-                        activeTickColor = Color.Transparent,
                         inactiveTrackColor = Color.White,
-                        inactiveTickColor= Color.Transparent,
-                        disabledThumbColor= Color.Gray,
-                        disabledActiveTrackColor = Color.Gray,
-                        disabledActiveTickColor = Color.Gray,
-                        disabledInactiveTrackColor = Color.Gray,
-                        disabledInactiveTickColor = Color.Gray
+                        disabledThumbColor = Color.Gray,
+                        disabledActiveTrackColor = Color.Gray
                     )
                 )
             }
         }
     )
-    return max
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePreferenceTopBar(
@@ -652,7 +657,7 @@ fun SeekingBox(
             Column(
                 modifier = Modifier
                     .padding(15.dp, 15.dp, 15.dp, 0.dp)
-                    .clickable { navController.navigate("ChangePreference/Searching For/$lookingFor") }
+                    .clickable { navController.navigate("ChangePreference/Searching For/69420") }
                     .fillMaxWidth()) {
                 GenericTitleSmall(text = "Looking for:")
                 Spacer(modifier = Modifier.height(4.dp))
@@ -720,15 +725,17 @@ fun ChangePreferenceScreen(
         else -> listOf("Man", "Woman", "Everyone")
     }
     val currentUser = vmDating.getUser()
+    val currPref = currentUser.userPref
 
-    val currPref= currentUser.userPref
-
-    val userPrefList = listOf(currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
-        currPref.children, currPref.familyPlans, currPref.education, currPref.religion, currPref.politicalViews,
-        currPref.relationshipType, currPref.intentions, currPref.drink, currPref.smoke, currPref.weed)
+    val userPrefList = remember { mutableStateListOf(
+        currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
+        currPref.children, currPref.familyPlans, currPref.education, currPref.religion,
+        currPref.politicalViews, currPref.relationshipType, currPref.intentions,
+        currPref.drink, currPref.smoke, currPref.weed
+    )}
     var currentPreference by remember { mutableStateOf(userPrefList[index]) }
 
-    val checkedItems = remember { mutableStateListOf<String>() }
+    val checkedItems = remember { mutableStateListOf<String>().apply { addAll(currentPreference) } }
     ChangePreferenceTopBar(
         nav = nav,
         title = title,
@@ -739,34 +746,44 @@ fun ChangePreferenceScreen(
                     .fillMaxWidth()
             ) {
                 opts.forEach { option ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = currentPreference.contains(option),
-                                onCheckedChange = { isChecked ->
-                                    //TODO WEIRD FUCKING BUG
-                                    if (isChecked) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = currentPreference.contains(option),
+                            onCheckedChange = { isChecked ->
+                                if (isChecked) {
+                                    if (option == "Doesn't Matter") {
+                                        checkedItems.clear()
                                         checkedItems.add(option)
-                                        if(option == "Doesn't Matter"){
-                                            checkedItems.clear()
-                                            checkedItems.add(option)
-                                        }
-                                        currentPreference = checkedItems
+                                        userPrefList[index] = listOf(option)
                                     } else {
-
-                                        checkedItems.remove(option)
-                                        if(checkedItems.isEmpty()){
-                                            checkedItems.clear()
-                                            checkedItems.add("Doesn't Matter")
-                                        }
-                                            currentPreference = checkedItems
-
+                                        checkedItems.add(option)
+                                        checkedItems.remove("Doesn't Matter")
+                                        userPrefList[index] = checkedItems.toList()
                                     }
-                                },
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                            GenericTitleSmall(text = option)
-                        }
+                                } else {
+                                    checkedItems.remove(option)
+                                    if (checkedItems.isEmpty()) {
+                                        checkedItems.add("Doesn't Matter")
+                                        userPrefList[index] = listOf("Doesn't Matter")
+                                    } else {
+                                        userPrefList[index] = checkedItems.toList()
+                                    }
+                                }
+                                val allOptionsSelected = checkedItems.containsAll(opts.filter { it != "Doesn't Matter" })
+                                if (allOptionsSelected) {
+                                    checkedItems.clear()
+                                    checkedItems.add("Doesn't Matter")
+                                    userPrefList[index] = listOf("Doesn't Matter")
+                                }
+                                // Update currentPreference with checkedItems
+                                currentPreference = checkedItems
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        GenericTitleSmall(text = option)
+                    }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
         },
@@ -781,7 +798,24 @@ fun ChangePreferenceScreen(
                 modifier = Modifier.offset(y = 5.dp),
                 onClick = {
                     nav.popBackStack()
-                    currentPreference = checkedItems
+                    //userPrefList[index] = currentPreference
+                    userPrefList[index] = userPrefList[index].sorted()
+                    currentUser.userPref = UserSearchPreferenceModel(
+                        gender = userPrefList[0],
+                        zodiac = userPrefList[1],
+                        sexualOri = userPrefList[2],
+                        mbti = userPrefList[3],
+                        children = userPrefList[4],
+                        familyPlans = userPrefList[5],
+                        education = userPrefList[6],
+                        religion = userPrefList[7],
+                        politicalViews = userPrefList[8],
+                        relationshipType = userPrefList[9],
+                        intentions = userPrefList[10],
+                        drink = userPrefList[11],
+                        smoke = userPrefList[12],
+                        weed = userPrefList[13]
+                    )
                     vmDating.updateUserPreferences(currentUser.userPref)
                     checkedItems.clear()
                 }
@@ -795,4 +829,71 @@ fun ChangePreferenceScreen(
         }
     )
 }
+@Composable
+fun ChangeSeekingScreen(
+    nav: NavHostController,
+    vmDating: DatingViewModel,
+    title: String = "",
+    index: Int
+) {
+    val opts = listOf("Man", "Woman", "Everyone")
+
+    val currentUser = vmDating.getUser()
+    val currPref = currentUser.seeking
+
+    var currentPreference by remember { mutableStateOf(currPref) }
+
+    val checkedItems = remember { mutableStateListOf<String>().apply { add(currPref) } }
+
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = title,
+        changeSettings = {
+            Column(
+                modifier = Modifier.padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                opts.forEach { option ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = currentPreference == option,
+                            onCheckedChange = { isChecked ->
+                                if (isChecked) {
+                                    currentPreference = option
+                                }
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        GenericTitleSmall(text = option)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    nav.popBackStack()
+                    currentUser.seeking = currentPreference
+                    vmDating.updateUser(currentUser)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+        }
+    )
+}
+
 

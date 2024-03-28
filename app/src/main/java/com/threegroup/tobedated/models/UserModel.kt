@@ -41,7 +41,7 @@ data class UserModel(
     var userPref:UserSearchPreferenceModel = UserSearchPreferenceModel()
 )
 data class UserSearchPreferenceModel(
-    var ageRange: AgeRange = AgeRange(18, 45),
+    var ageRange: AgeRange = AgeRange(18, 35),
     var maxDistance: Int = 25,
     var gender: List<String> = listOf("Doesn't Matter"),
     var zodiac: List<String> = listOf("Doesn't Matter"),

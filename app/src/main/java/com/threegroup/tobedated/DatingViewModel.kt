@@ -20,11 +20,14 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         return userList
     }
 
-    private var miaModel = repository.getUser()
+    private var signedInUser = repository.getUser()
     fun updateUserPreferences(updatedPreferences: UserSearchPreferenceModel) {
-        miaModel.userPref = updatedPreferences
+        signedInUser.userPref = updatedPreferences
+    }
+    fun updateUser(updatedUser: UserModel) {
+        signedInUser = updatedUser
     }
     fun getUser(): UserModel {
-        return miaModel
+        return signedInUser
     }
 }

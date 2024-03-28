@@ -1,9 +1,11 @@
 package com.threegroup.tobedated.activities
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,12 +35,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.checkBirthDate
 import com.threegroup.tobedated.callclass.checkDay
 import com.threegroup.tobedated.callclass.checkMonth
 import com.threegroup.tobedated.callclass.checkYear
-import com.threegroup.tobedated.callclass.getCurrentLocation
 import com.threegroup.tobedated.composables.DialogWithImage
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.RadioButtonGroup
@@ -74,6 +76,11 @@ import com.threegroup.tobedated.models.smokeOptions
 import com.threegroup.tobedated.models.starOptions
 import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
 import java.util.Calendar
 
 var newUser = UserModel()
@@ -133,14 +140,48 @@ class SignUpActivity : ComponentActivity() {
             Toast.makeText(applicationContext, "User NOT authenticated or phone number is null", Toast.LENGTH_LONG).show()
         }
     }
-    fun uploadImage() {//, onComplete: (String) -> Unit
-        newUser.location = getCurrentLocation()
-    //TODO, URI does not store data. we need to take the URI and turn it into an image check if 4th is not null
+    private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver): String {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val databaseRef = FirebaseDatabase.getInstance().reference
+        val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
 
-        newUser.image1 = ""
-        newUser.image2 = ""
-        newUser. image3 = ""
-        newUser.image4 = ""
+        // Create a reference to the image in Firebase Storage
+        val imageRef = storageRef.child("images/${System.currentTimeMillis()}")
+
+        // Upload the image file
+        val file = Uri.fromFile(File(filePath))
+        val inputStream = withContext(Dispatchers.IO) {
+            FileInputStream(file.path)
+        }
+
+        val uploadTask = imageRef.putStream(inputStream).await()
+        val downloadUrl = imageRef.downloadUrl.await().toString()
+
+        // Once you have the download URL, store it in the database
+        databaseRef.child("images").push().setValue(downloadUrl)
+
+        return downloadUrl
+    }
+
+    // Function to get the file path from a content URI
+    private fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): String? {
+        var filePath: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        contentResolver.query(contentUri, projection, null, null, null)?.use { cursor ->
+            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            filePath = cursor.getString(columnIndex)
+        }
+        return filePath
+    }
+
+
+    // Modified uploadImage function
+    suspend fun uploadImage() {
+        newUser.image1 = storeImageAttempt(newUser.image1, contentResolver)
+        newUser.image2 = storeImageAttempt(newUser.image2, contentResolver)
+        newUser.image3 = storeImageAttempt(newUser.image3, contentResolver)
+        newUser.image4 = storeImageAttempt(newUser.image4, contentResolver)
     }
 }
 
@@ -523,8 +564,8 @@ fun ourTestScreen():Boolean{
                         //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
                         selectedIndex = selectedOptionIndex,
                         onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                            our = "our Test Answer"
-                            newUser.testResultTbd = "0.241"
+                            our = 12
+                            newUser.testResultTbd = 12
                         },
                         question = quest
                     )

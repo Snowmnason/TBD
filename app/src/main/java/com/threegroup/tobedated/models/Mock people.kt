@@ -12,7 +12,7 @@ val miaModel = UserModel(
     seeking        ="Everyone", // Seeking
     sex            ="Female", // Sex
     testResultsMbti="ENFP-T", // MBTI Test Results
-    testResultTbd  ="0.763", // Test Result TBD
+    testResultTbd  =63, // Test Result TBD
     children       ="Don't have", // Family
     family         ="Don't want", // Children
     education      ="Long-term", // Relationship
@@ -36,7 +36,7 @@ val miaModel = UserModel(
     image4         ="", // Image 4 (No fourth image)
     location       ="Miami, FL", // Location
     status         ="Online", // Status
-    number         ="+1 (555) 789-0123", // Phone Number
+    number         ="+15557890123", // Phone Number
     verified       =true
 )
 
@@ -52,7 +52,7 @@ val sophiaModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Female", // Sex
      testResultsMbti="ENFP-T", // MBTI Test Results
-     testResultTbd  ="0.582", // Test Result TBD
+     testResultTbd  =22, // Test Result TBD
      children       ="Don't have", // Children
      family         ="No Children",
      education      ="Long-term", // Relationship
@@ -76,7 +76,7 @@ val sophiaModel = UserModel(
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216758663939620864/snowmanson_Sophia_is_a_creative_soul_who_finds_joy_in_the_arts__740fc45b-c2be-4ee7-bced-a666f538cbc2.png?ex=66018dcf&is=65ef18cf&hm=ba68a68e77d74738fec76552d0d33fcdb1ca2a1e83c68b61c8be81c6eccfb79d&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
      location       ="New York City, NY", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 789-0123", // Phone Number
+     number         ="+15554890123", // Phone Number
      verified       =true
 )
 
@@ -92,7 +92,7 @@ val liamModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Male", // Sex
      testResultsMbti="ENTJ-T", // MBTI Test Results
-     testResultTbd  ="0.731", // Test Result TBD
+     testResultTbd  =73, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
@@ -116,7 +116,7 @@ val liamModel = UserModel(
      image4         ="", // Image 4
      location       ="Austin, TX", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 890-1234", // Phone Number
+     number         ="+15551901234", // Phone Number
      verified       =false
 )
 
@@ -132,7 +132,7 @@ val jackModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Male", // Sex
      testResultsMbti="ENTP-T", // MBTI Test Results
-     testResultTbd  ="-0.189", // Test Result TBD
+     testResultTbd  =89, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
@@ -156,7 +156,7 @@ val jackModel = UserModel(
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216763051068358666/snowmanson_Jack_is_an_adventurous_soul_with_a_curious_mind_and__72d0cf3b-5192-4bc0-92ed-3788e9614661.png?ex=660191e5&is=65ef1ce5&hm=c564f7024d0e88ebb7b82eb69ff4e1ce8cd4535a1abbbea06ac564625fa3f2c3&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
      location       ="Denver, CO", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 345-6789", // Phone Number
+     number         ="+15553456789", // Phone Number
      verified       =true
 )
 
@@ -172,7 +172,7 @@ val emmaModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Female", // Sex
      testResultsMbti="INFJ-T", // MBTI Test Results
-     testResultTbd  ="0.394", // Test Result TBD
+     testResultTbd  =94, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
@@ -196,7 +196,7 @@ val emmaModel = UserModel(
      image4         ="", // Image 4 (No fourth image)
      location       ="San Francisco, CA", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 234-5678", // Phone Number
+     number         ="+15552345678", // Phone Number
      verified       =false
 )
 
@@ -212,7 +212,7 @@ val AmirModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Male", // Sex
      testResultsMbti="ENTP-J", // MBTI Test Results
-     testResultTbd  ="-0.587", // Test Result TBD
+     testResultTbd  =58, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Life Partner", // Relationship
@@ -236,7 +236,7 @@ val AmirModel = UserModel(
      image4         ="", // Image 4 (No fourth image)
      location       ="Toronto, Canada", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 901-2345", // Phone Number
+     number         ="+15559012345", // Phone Number
      verified       =true
 )
 
@@ -252,7 +252,7 @@ val LaylaModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Female", // Sex
      testResultsMbti="INFJ-T", // MBTI Test Results
-     testResultTbd  ="0.428", // Test Result TBD
+     testResultTbd  =28, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Life Partner", // Relationship
@@ -276,7 +276,7 @@ val LaylaModel = UserModel(
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216765873042231336/snowmanson_Layla_is_a_creative_spirit_with_a_love_for_storytell_ce982885-6b55-40c6-a23b-75eed157370f.png?ex=66019486&is=65ef1f86&hm=09e04af750ac3db1c38f6bd26370ae55d50f77729f4cd0fddb4db91877330e39&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
      location       ="New York City, NY", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 678-9012", // Phone Number
+     number         ="+15556789012", // Phone Number
      verified       =false
 )
 
@@ -292,7 +292,7 @@ val MalikModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Male", // Sex
      testResultsMbti="ENFP-T", // MBTI Test Results
-     testResultTbd  ="0.731", // Test Result TBD
+     testResultTbd  =75, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
@@ -316,7 +316,7 @@ val MalikModel = UserModel(
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216767011418542110/snowmanson_Malik_is_a_charming_individual_with_a_warm_smile_and_1ed4da8c-fae8-4217-8a6f-5776193cfe22.png?ex=66019595&is=65ef2095&hm=552dd6216752b18b0b2bd5fcf3b66ff85dde926676664d04e2cde09385293128&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
      location       ="Miami, FL", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 789-0123", // Phone Number
+     number         ="+15587890123", // Phone Number
      verified       =false
 )
 
@@ -332,7 +332,7 @@ val MeiModel = UserModel(
      seeking        ="Everyone", // Seeking
      sex            ="Female", // Sex
      testResultsMbti="ISFJ-T", // MBTI Test Results
-     testResultTbd  ="0.256", // Test Result TBD
+     testResultTbd  =10, // Test Result TBD
      children       ="Don't have", // Family
      family         ="Don't want", // Children
      education      ="Long-term", // Relationship
@@ -356,7 +356,7 @@ val MeiModel = UserModel(
      image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216767386028347442/snowmanson_Mei_is_a_gentle_soul_with_a_serene_presence_and_a_lo_7c1f7926-4888-4c34-931e-7c78c7ce1737.png?ex=660195ef&is=65ef20ef&hm=d0043edfe85a0791329265f1f728cd3c73567ea5af1682ff2320034c78ebd6b6&=&format=webp&quality=lossless&width=291&height=437", // Image 4
      location       ="Tokyo, Japan", // Location
      status         ="Online", // Status
-     number         ="+1 (555) 890-1234", // Phone Number
+     number         ="+15558901234", // Phone Number
      verified       =false
 )
 
@@ -372,7 +372,7 @@ val AshaModel = UserModel(
     seeking        ="Everyone", // Seeking
     sex            ="Female", // Sex
     testResultsMbti="ENTP-J", // MBTI Test Results
-    testResultTbd  ="-0.421", // Test Result TBD
+    testResultTbd  =21, // Test Result TBD
     children       ="Don't have", // Family
     family         ="Don't want", // Children
     education      ="Long-term", // Relationship
@@ -396,7 +396,7 @@ val AshaModel = UserModel(
     image4         ="https://media.discordapp.net/attachments/1091674973841657856/1216768055019835412/snowmanson_Asha_is_a_dynamic_individual_with_a_passion_for_expl_c36be00d-dd88-438b-be28-b8d03d990b96.png?ex=6601968e&is=65ef218e&hm=e6e7dcbd156ad81e9e24b0660e603e4b92b6bfe587270d8444e23a28dbd2a126&=&format=webp&quality=lossless&width=291&height=437", // Image 4
     location       ="Cape Town, South Africa", // Location
     status         ="Online", // Status
-    number         ="+1 (555) 234-5678", // Phone Number
+    number         ="+15552325678", // Phone Number
     verified       =false
 )
 
@@ -412,7 +412,7 @@ val jasonModel = UserModel(
     seeking ="Everyone", // Seeking
     sex ="Male", // Sex
     testResultsMbti="INTP-T", // MBTI Test Results
-    testResultTbd ="0.081", // Test Result TBD
+    testResultTbd =51, // Test Result TBD
     children ="Don't have", // Family
     family ="Don't want", // Children
     education ="Long-term", // Relationship
@@ -436,7 +436,7 @@ val jasonModel = UserModel(
     image4 ="https://media.discordapp.net/attachments/1091674973841657856/1216768756492275803/snowmanson_Jack_is_a_down-to-earth_guy_with_a_love_for_lifes_si_85ee31b1-a16a-405b-8f6b-f2a49c4280b1.png?ex=66019736&is=65ef2236&hm=d944fb47dacce85821bace8d12eff6eb7fa3e82c47875c910c8f975e80960228&=&format=webp&quality=lossless&width=935&height=1403", // Image 4
     location ="Portland, OR", // Location
     status ="Online", // Status
-    number ="+1 (555) 678-9012", // Phone Number
+    number ="+15536789012", // Phone Number
     verified =true // Phone Number
 )
 
@@ -452,7 +452,7 @@ val anaModel = UserModel(
     seeking        = "Everyone",
     sex            = "Female",
     testResultsMbti= "ENFP-T",
-    testResultTbd  = "0.435",
+    testResultTbd  = 35,
     children       = "Don't have",
     family         = "Don't want",
     education      = "Long-term",
@@ -476,7 +476,7 @@ val anaModel = UserModel(
     image4         = "https://media.discordapp.net/attachments/1091674973841657856/1216769251847704576/snowmanson_Sofia_is_a_free-spirited_soul_with_a_passion_for_cre_b71b9275-350a-4ea2-9023-e602c6cb1ae4.png?ex=660197ac&is=65ef22ac&hm=3f36475a819478b22c10d1b7a49d8e63c4061aec4b5ca506ceb1df467cbf0c01&=&format=webp&quality=lossless&width=291&height=437", // Image 4
     location       = "Miami, FL",
     status         = "Online",
-    number         = "+1 (555) 789-0123",
+    number         = "+15557590123",
     verified       = true
 )
 
@@ -492,7 +492,7 @@ val samuelModel = UserModel(
     seeking        = "Everyone",
     sex            = "Male",
     testResultsMbti= "ISTJ-T",
-    testResultTbd  = "0.612",
+    testResultTbd  = 52,
     children       = "Don't have",
     family         = "Don't want",
     education      = "Bachelor's degree",
@@ -516,7 +516,7 @@ val samuelModel = UserModel(
     image4         = "https://media.discordapp.net/attachments/1091674973841657856/1217872382757175316/snowmanson_Samuel_is_a_tall_athletic_man_with_dark_skin_and_a_f_56787fa9-d4ee-419c-a6ec-4163ed5c6969.png?ex=66059b0b&is=65f3260b&hm=e71b98a2940c2b047481e4936a0631e230cdcf8d98604c50c73229c3938daba6&=&format=webp&quality=lossless&width=291&height=437", // Image 4
     location       = "New York City, NY",
     status         = "Online",
-    number         = "+1 (555) 890-1234",
+    number         = "+15558902234",
     verified       = true
 )
 

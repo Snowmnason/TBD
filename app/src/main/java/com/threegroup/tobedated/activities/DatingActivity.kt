@@ -1,9 +1,7 @@
 package com.threegroup.tobedated.activities
 
-import android.hardware.usb.UsbRequest
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -14,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +28,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composables.DatingNav
@@ -47,10 +45,7 @@ import com.threegroup.tobedated.composables.datingScreens.UserMessage
 import com.threegroup.tobedated.composables.datingScreens.ageSlider
 import com.threegroup.tobedated.composables.datingScreens.distanceSlider
 import com.threegroup.tobedated.models.UserModel
-import com.threegroup.tobedated.models.profiles
 import com.threegroup.tobedated.ui.theme.AppTheme
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 
@@ -58,38 +53,39 @@ val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 //val notifiSearching = Random.nextBoolean()
 
-fun getUserData(): ArrayList<UserModel>? { //TODO look into converting from DataSnapshot to Flow and StateFLow
-    var list: ArrayList<UserModel>? = null
+fun getUserData(callback: (ArrayList<UserModel>) -> Unit) {
+    val list = ArrayList<UserModel>()
+
     try {
         FirebaseDatabase.getInstance().getReference("users")
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("MYTAG", "onDataChange: ${snapshot.toString()}")
-                    // println("Crashed before if statement")
                     if (snapshot.exists()) {
-                        // println("Crashed after if statement")
-                        list = arrayListOf()
-                        // println("Crashed after list = arrayListOf")
                         for (data in snapshot.children) {
-                            println("Crashed after $data")
-
-                            // issue
                             val model = data.getValue(UserModel::class.java)
 
-                            if (model!!.number != FirebaseAuth.getInstance().currentUser!!.phoneNumber) { // TODO check this; not sure if it works
-                                list!!.add(model)
+                            if (model?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
+                                model?.let {
+                                    list.add(it)
+                                }
                             }
                         }
                     }
+                    // Invoke the callback with the fetched list
+                    callback(list)
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                     Log.d("MY_DEBUGGER", "ERROR")
+                    // Handle error, maybe invoke the callback with an empty list
+                    callback(ArrayList())
                 }
             })
     } catch (e: Exception) {
         Log.d("MY_DEBUGGER", "ERROR")
+        // Handle error, maybe invoke the callback with an empty list
+        callback(ArrayList())
     }
-    return list
 }
 
 class DatingActivity : ComponentActivity() {
@@ -106,8 +102,18 @@ class DatingActivity : ComponentActivity() {
 @Composable
 fun SearchingScreen(navController: NavHostController) {
     val vm = viewModel { DatingViewModel(MyApp.x) }
-    // val user = getUserData()
-    val usersArray = profiles.random()
+
+    // State to hold the list of user profiles
+    val currentUser = remember { mutableStateOf<UserModel?>(null) }
+
+    // Fetch user data and update the state when data is available
+    LaunchedEffect(Unit) {
+        getUserData { profiles ->
+            // Update the state with the fetched user profiles
+            currentUser.value = profiles.random()
+        }
+    }
+
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -117,13 +123,16 @@ fun SearchingScreen(navController: NavHostController) {
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         currentScreen = {
-            UserInfo(
-                usersArray,
-                onClickLike = { /*TODO*/ },
-                onClickPass = { /*TODO*/ },
-                onClickReport = { /*TODO*/ },
-                onClickSuggest = { /*TODO*/ },
-            )
+            // Display the user info once the profile is fetched
+            currentUser.value?.let { user ->
+                UserInfo(
+                    user,
+                    onClickLike = { /*TODO*/ },
+                    onClickPass = { /*TODO*/ },
+                    onClickReport = { /*TODO*/ },
+                    onClickSuggest = { /*TODO*/ },
+                )
+            }
         }
     )
 }

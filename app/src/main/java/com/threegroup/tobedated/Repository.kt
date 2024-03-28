@@ -1,9 +1,5 @@
 package com.threegroup.tobedated
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import com.google.firebase.auth.PhoneAuthCredential
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.models.miaModel
@@ -37,10 +33,9 @@ class Repository (
     suspend fun displayChats() {
         return firebaseDataSource.displayChats()
     }
-    @Composable
-    fun getUser() :UserModel{
-    val currentUser by remember { mutableStateOf( miaModel) }
-        return currentUser
+
+    fun getUser(): UserModel {
+        return miaModel
     }
 
 

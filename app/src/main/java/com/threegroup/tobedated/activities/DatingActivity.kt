@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,7 @@ import com.threegroup.tobedated.composables.datingScreens.TheirMessage
 import com.threegroup.tobedated.composables.datingScreens.TopAndBotBars
 import com.threegroup.tobedated.composables.datingScreens.UserInfo
 import com.threegroup.tobedated.composables.datingScreens.UserMessage
-import com.threegroup.tobedated.models.profiles
+import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import kotlin.random.Random
 
@@ -52,6 +53,7 @@ import kotlin.random.Random
 val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 //val notifiSearching = Random.nextBoolean()
+
 class DatingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,24 +77,23 @@ class DatingActivity : ComponentActivity() {
 }
 
 @Composable
-fun SearchingScreen(navController: NavHostController) {
+fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel) {
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(true) }
+
+    var newPotential:UserModel
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
-
-    val usersArray = remember { profiles.toMutableList() }
-    //val usersArray =  profiles.random()
-
-
-    fun nextProfile() {
-        if (currentProfileIndex < usersArray.size - 1) {
-            currentProfileIndex++
-        } else {
-            // Handle the case when all profiles have been viewed
-            // For example, you can reset the index to 0 or show a message
-            isNext = false
+    val currentPotential = remember { mutableStateOf<UserModel?>(null) }
+    LaunchedEffect(Unit) {
+        vmDating.getPotentialUserData {
+            //currentPotential.value = profiles.random()
+            currentPotential.value = vmDating.getNextPotential(currentProfileIndex)
+            isLoading.value = false // Set loading state to false after data is fetched
         }
     }
+
+
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -102,16 +103,35 @@ fun SearchingScreen(navController: NavHostController) {
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         currentScreen = {
-            if(isNext) {
-                UserInfo(
-                    usersArray[currentProfileIndex],
-                    onClickLike = { nextProfile() /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
-                    onClickPass = { nextProfile() /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
-                    onClickReport = { showReport = true },
-                    onClickSuggest = { /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
-                )
-            }else{
-                Comeback()
+            currentPotential.value?.let { user ->
+                if (isNext || isLoading.value) {
+                    UserInfo(
+                        user,//usersArray[currentProfileIndex]
+                        onClickLike = {
+                            currentProfileIndex++
+                            newPotential = vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!)
+                            if(newPotential.name.isNotEmpty()){
+                                currentPotential.value = newPotential
+                            }else{
+                                isNext = false
+                            }
+
+                                      /*nextProfile()TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                        onClickPass = {
+                            currentProfileIndex++
+                            newPotential = vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!)
+                            if(newPotential.name.isNotEmpty()){
+                                currentPotential.value = newPotential
+                            }else{
+                                isNext = false
+                            }
+                                      /*nextProfile()TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                        onClickReport = { showReport = true },
+                        onClickSuggest = { /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                    )
+                } else {
+                    Comeback()
+                }
             }
         },
 
@@ -122,7 +142,13 @@ fun SearchingScreen(navController: NavHostController) {
             onDismissRequest = { showReport = false },
             dialogText = "This account will be looked into and they will not be able to view your profile",
             onConfirmation = { showReport = false
-                nextProfile()}
+                currentProfileIndex++
+                newPotential = vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!)
+                if(newPotential.name.isNotEmpty()){
+                    currentPotential.value = newPotential
+                }else{
+                    isNext = false
+                }}
         )
     }
 }

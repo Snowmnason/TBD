@@ -277,7 +277,7 @@ fun DatingNav(dating:DatingActivity) {
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-            SearchingScreen(navController)
+            SearchingScreen(navController, viewModelDating)
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController, viewModelDating)

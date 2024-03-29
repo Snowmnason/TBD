@@ -1,12 +1,6 @@
 package com.threegroup.tobedated.composables
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,12 +41,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -71,7 +63,6 @@ import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlin.math.ceil
 
 @Composable
 fun baseAppTextTheme(): TextStyle {
@@ -233,50 +224,7 @@ fun ProgressBar(
         )
     }
 }
-/*
-@Composable
-fun TextEnters( //FOR SIGN UP
-    title:String,
-    input: String,
-    max: Int,
-    onInputChanged: (String) -> Unit,
-    type: KeyboardOptions,
-){
-    val customTextStyle = TextStyle(
-        color = AppTheme.colorScheme.onBackground,
-        fontFamily = JoseFinSans,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 26.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp,
-    )
-    val customTextStyleLabel = TextStyle(
-        color = AppTheme.colorScheme.onBackground,
-        fontFamily = JoseFinSans,
-        fontWeight = FontWeight.Normal,
-        fontStyle = FontStyle.Italic,
-        fontSize = 26.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.5.sp,
-    )
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        value = input,
-        onValueChange = onInputChanged,
-        //modifier = Modifier.weight(2.0f),
-        placeholder = { Text(text = title, style = customTextStyleLabel) },
-        textStyle = customTextStyle,
-        colors = OutlinedTextFieldDefaults.colors(
-            cursorColor = AppTheme.colorScheme.primary, // Set cursor color
-            focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
-            unfocusedBorderColor = AppTheme.colorScheme.onSurface, // Set unfocused border color
-        ),
-        maxLines = max,
-        keyboardOptions = type
-    )
-}*/
+
 @Composable
 fun RadioButtonGroup(
     options: List<String>,
@@ -307,48 +255,6 @@ fun RadioButtonGroup(
                     color = AppTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(start = 16.dp)
                 )
-            }
-        }
-    }
-}
-@Composable
-fun PolkaDotCanvas() {
-    val color12 = AppTheme.colorScheme.secondary.copy(alpha = 0.45f)
-    val infiniteTransition = rememberInfiniteTransition(label = "")
-    val cir1 by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 100f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000),
-            repeatMode = RepeatMode.Reverse
-        ), label = ""
-    )
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(AppTheme.colorScheme.background)) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = 2.dp.toPx()
-            val gap = 40.dp.toPx()
-            val canvasWidth = size.width
-            val canvasHeight = size.height
-
-            val rows = ceil((canvasHeight + gap) / gap).toInt()
-            val cols = ceil((canvasWidth + gap) / gap).toInt()
-            for (row in 0 until rows) {
-                for (col in 0 until cols) {
-                    val offset = (if (row % 2 == 0) gap / 2 else 0).toInt()
-                    val x = col * gap + gap / 2 + offset - gap / 2
-                    val y = row * gap + gap / 2 - gap / 2
-                    val location = Offset(x, y)
-                    drawCircle(
-                        color = color12,
-                        style = Stroke(
-                            width = strokeWidth,
-                        ),
-                        center = location,
-                        radius = cir1 * 0.1f
-                    )
-                }
             }
         }
     }

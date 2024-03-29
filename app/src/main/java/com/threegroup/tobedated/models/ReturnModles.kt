@@ -1,9 +1,12 @@
 package com.threegroup.tobedated.models
 
 data class AgeRange(
-    var min: Int,
-    val max: Int
-)
+    var min: Int = 0,
+    var max: Int = 0
+) {
+    // Empty constructor required by Firebase
+    constructor() : this(0, 0)
+}
 
 val genderList = listOf("Cis-Gender", "Transgender", "Non-binary", "Doesn't Matter")
 val zodiacList = listOf("Aries", "Taurus", "Gemini", "Cancer",  "Leo", "Virgo", "Libra",  "Scorpio",  "Sagittarius",  "Capricorn", "Aquarius", "Pisces", "Doesn't Matter")

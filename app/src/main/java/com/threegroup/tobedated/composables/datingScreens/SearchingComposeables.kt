@@ -543,9 +543,9 @@ fun AgeSlider(
                     colors = SliderDefaults.colors(
                         thumbColor = AppTheme.colorScheme.primary,
                         activeTrackColor = AppTheme.colorScheme.primary,
+                        activeTickColor = Color.Transparent,
+                        inactiveTickColor = Color.Transparent,
                         inactiveTrackColor = Color.White,
-                        disabledThumbColor = Color.Gray,
-                        disabledActiveTrackColor = Color.Gray
                     )
                 )
             }

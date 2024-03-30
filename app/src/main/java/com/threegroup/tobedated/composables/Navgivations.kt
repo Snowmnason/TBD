@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +20,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.activities.ChangePreference
 import com.threegroup.tobedated.activities.ChatsScreen
@@ -66,8 +66,7 @@ import com.threegroup.tobedated.activities.starScreen
 import com.threegroup.tobedated.activities.weedScreen
 import com.threegroup.tobedated.activities.welcomeScreen
 import com.threegroup.tobedated.composables.signUp.BigButton
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import com.threegroup.tobedated.viewModels.DatingViewModel
 
 @Composable
 fun LoginNav(loginActivity: LoginActivity) {
@@ -252,12 +251,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
                 ?.let { it1 -> navController.navigate(it1) } }
 
             if(buttonText == "Finish"){
-                runBlocking {
-                    val hold = async { signUpActivity.uploadImage() }
-                    hold.await()
-                    signUpActivity.storeData()
-                    signUpActivity.goNextScreen()
-                }
+                signUpActivity.finishingUp()
             }
             //println(userInfoArray.joinToString(separator = ", "))
             println("$newUser in fun")
@@ -267,10 +261,12 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 }
 
 @Composable
-fun DatingNav(dating:DatingActivity) {
+fun DatingNav(dating:DatingActivity, token:String) {
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
-
+    LaunchedEffect(Unit) {
+        viewModelDating.setLoggedInUser(token)
+    }
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },

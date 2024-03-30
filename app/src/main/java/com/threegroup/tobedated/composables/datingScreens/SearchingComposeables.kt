@@ -30,6 +30,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -64,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.composables.GenericBodyText
@@ -89,6 +89,7 @@ import com.threegroup.tobedated.models.zodiacList
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.zodiac
+import com.threegroup.tobedated.viewModels.DatingViewModel
 import kotlin.math.roundToInt
 
 @Composable
@@ -343,6 +344,8 @@ fun UserInfo(
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
                 Text(text = user.promptQ1, style = AppTheme.typography.titleSmall)//Prompt question
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA1, style = AppTheme.typography.bodyLarge) //Prompt Answer
             }
@@ -365,6 +368,8 @@ fun UserInfo(
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
                 Text(text = user.promptQ2, style = AppTheme.typography.titleSmall)///Prompt Questions2
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA2, style = AppTheme.typography.bodyLarge) //Prompt Answer 2
             }
@@ -380,6 +385,8 @@ fun UserInfo(
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()){
                 Text(text = user.promptQ3, style = AppTheme.typography.titleSmall)//Prompt Question 3
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
             }
@@ -709,7 +716,7 @@ fun OtherPreferences(
 @Composable
 fun ChangePreferenceScreen(
     nav: NavHostController,
-    vmDating:DatingViewModel,
+    vmDating: DatingViewModel,
     title: String = "",
     index:Int
 ) {

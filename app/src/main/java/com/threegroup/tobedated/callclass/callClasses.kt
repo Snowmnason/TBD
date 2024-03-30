@@ -3,7 +3,6 @@ package com.threegroup.tobedated.callclass
 import java.util.Calendar
 
 
-
 fun calcAge(birth: List<String>?): String{
     val month = (birth?.getOrNull(0)?.substring(0, 2))?.toInt()
     val day = birth?.getOrNull(1)?.substring(0, 2)?.toInt()
@@ -109,4 +108,9 @@ fun formatPhone(phone: String, cCode:String): String {
         }
     }
     return formatted
+}
+fun formatPhoneNumber(code: String, userPhoneNumber: String): String {
+    var formattedPhoneNumber = userPhoneNumber.filter { it.isDigit() }
+    formattedPhoneNumber = code + formattedPhoneNumber
+    return formattedPhoneNumber
 }

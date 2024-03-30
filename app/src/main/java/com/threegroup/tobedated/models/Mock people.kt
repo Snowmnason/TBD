@@ -1,7 +1,7 @@
 package com.threegroup.tobedated.models
 
 val miaModel = UserModel(
-    name           ="Mia", // Name
+    name           ="Miala", // Name
     birthday       ="08/15/1995", // Birthday
     pronoun        ="She/Her", // Pronoun
     gender         ="Female", // Gender

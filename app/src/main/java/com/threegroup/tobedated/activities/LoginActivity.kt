@@ -45,6 +45,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.callclass.formatPhone
+import com.threegroup.tobedated.callclass.formatPhoneNumber
 import com.threegroup.tobedated.composables.BackButton
 import com.threegroup.tobedated.composables.LoginNav
 import com.threegroup.tobedated.composables.PolkaDotCanvas
@@ -74,7 +75,6 @@ class LoginActivity : ComponentActivity() {
             }
         }
     }
-
     fun sendOtp(code:String, number: String) {
         userPhoneNumber = formatPhoneNumber(code, number)
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -103,21 +103,19 @@ class LoginActivity : ComponentActivity() {
 
     fun verifyOtp(otp: String) {
         try {
-            if (verificationId != null) {
+            if (verificationId != null) { //TODO small bug here, might not be a problem in the future ask dom idk
                 val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
                 signInWithPhoneAuthCredential(credential)
             } else {
                 // Handle case where verificationId is null
-                this@LoginActivity.showToast("Verification Code expired")
+                showToast("Verification Code expired")
             }
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             // Handle invalid credentials exception
-            this@LoginActivity.showToast("Incorrect verification code")
+            showToast("Incorrect verification code")
         }
     }
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
+
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
@@ -127,21 +125,30 @@ class LoginActivity : ComponentActivity() {
                     user?.getIdToken(true)
                         ?.addOnCompleteListener { task2 ->
                             if (task2.isSuccessful) {
-                                val idToken = task2.result?.token
-                                val sharedPreferences =
-                                    getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
-                                val editor = sharedPreferences.edit()
-                                editor.putString("firebase_user_token", idToken)
-                                editor.apply()
+                                checkUserExist()
                             } else {
                                 // Handle error getting user token
                             }
                         }
-                    checkUserExist()
                 } else {
-                    Toast.makeText(this, "Incorrect code", Toast.LENGTH_SHORT).show()
+                    showToast("Incorrect code")
                 }
             }
+    }
+
+    private fun checkUserExist() {
+        FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
+            .addValueEventListener(object :
+                ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {}
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (p0.exists()) {
+                        switchAct(1) //Goes to main
+                    } else {
+                        switchAct(0) //Goes to sign up
+                    }
+                }
+            })
     }
     fun resendOtp() {
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -168,29 +175,18 @@ class LoginActivity : ComponentActivity() {
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-
-    private fun checkUserExist() {
-        FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
-            .addValueEventListener(object :
-                ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    //Toast.makeText(this@LoginActivity, p0.message, Toast.LENGTH_SHORT).show()
-                }
-                override fun onDataChange(p0: DataSnapshot) {
-                    if (p0.exists()) {
-                        switchAct(1) //Goes to main
-                    } else {
-                        switchAct(0) //Goes to sign up
-                    }
-                }
-            })
-    }
-
     private fun switchAct(exists: Int) {
         if (exists == 1) {
+            saveTokenToSharedPreferences(userPhoneNumber)
             val intent = Intent(this, DatingActivity::class.java)
+            intent.putExtra("token", userPhoneNumber)
             startActivity(intent)
             finish()
+//        val viewModelDating =  DatingViewModel(MyApp.x)
+//        lifecycleScope.launch {
+//            viewModelDating.setUser(userToken!!)
+//
+//        }
         } else {
             val i = Intent(this, SignUpActivity::class.java)
             i.putExtra("userPhone", userPhoneNumber)
@@ -198,11 +194,14 @@ class LoginActivity : ComponentActivity() {
             finish()
         }
     }
-
-    private fun formatPhoneNumber(code: String, userPhoneNumber: String): String {
-        var formattedPhoneNumber = userPhoneNumber.filter { it.isDigit() }
-        formattedPhoneNumber = code + formattedPhoneNumber
-        return formattedPhoneNumber
+    private fun saveTokenToSharedPreferences(token: String?) {
+        val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("firebase_user_token", token)
+        editor.apply()
+    }
+    private fun showToast(message: String, ) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -351,11 +350,6 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
         onClick = {
             controller?.hide()
             loginActivity.verifyOtp(codeString)
-//            if (codeString == "694200") { // Correct verification code
-//                loginActivity.checkUserExist()
-//            }else{
-//                loginActivity.verifyOtp(codeString)
-//            }
         },
         isUse = codeString.length == 6
     )

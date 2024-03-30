@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -32,6 +33,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -76,7 +78,9 @@ import com.threegroup.tobedated.models.smokeOptions
 import com.threegroup.tobedated.models.starOptions
 import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -104,13 +108,30 @@ class SignUpActivity : ComponentActivity() {
         finish()
     }
 
-    fun goNextScreen() {
+    fun finishingUp(){
+        lifecycleScope.launch {
+            uploadImage()
+            val userToken = storeData()
+            goNextScreen(userToken)
+
+        }
+    }
+    private fun goNextScreen(userToken: String?) {
+
         val intent = Intent(this, DatingActivity::class.java)
+        intent.putExtra("token", userToken)
         startActivity(intent)
         finish()
+//        val viewModelDating =  DatingViewModel(MyApp.x)
+//        lifecycleScope.launch {
+//            viewModelDating.setUser(userToken!!)
+//
+//        }
     }
 
-    fun storeData() {
+    private suspend fun storeData(): String? {
+        val deferredToken = CompletableDeferred<String?>()
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null && currentUser.phoneNumber != null) {
             FirebaseDatabase.getInstance().getReference("users")
@@ -121,45 +142,63 @@ class SignUpActivity : ComponentActivity() {
                     user?.getIdToken(true)
                         ?.addOnCompleteListener { task2 ->
                             if (task2.isSuccessful) {
-                                val idToken = task2.result?.token
-                                val sharedPreferences =
-                                    getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
-                                val editor = sharedPreferences.edit()
-                                editor.putString("firebase_user_token", idToken)
-                                editor.apply()
+                                //val idToken = task2.result?.token
+                                saveTokenToSharedPreferences(currentUser.phoneNumber)
+                                // Resolve the deferred with the token value
+                                deferredToken.complete(currentUser.phoneNumber)
                             } else {
                                 // Handle error getting user token
+                                deferredToken.complete(null)
                             }
                         }
-                    Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
+                    showToast("Success!")
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(applicationContext, "Failed ${e.message}", Toast.LENGTH_LONG).show()
+                    showToast("Failed ${e.message}")
+                    deferredToken.complete(null)
                 }
         } else {
-            Toast.makeText(applicationContext, "User NOT authenticated or phone number is null", Toast.LENGTH_LONG).show()
+            showToast("User NOT authenticated or phone number is null")
+            deferredToken.complete(null)
         }
+
+        // Wait for the token to be resolved and return it
+        return deferredToken.await()
     }
     private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver): String {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val databaseRef = FirebaseDatabase.getInstance().reference
-        val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
+        var downloadUrl = ""
+        try {
+            val storageRef = FirebaseStorage.getInstance().reference
+            val databaseRef = FirebaseDatabase.getInstance().reference
+            val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
 
-        // Create a reference to the image in Firebase Storage
-        val imageRef = storageRef.child("images/${System.currentTimeMillis()}")
+            // Create a reference to the image in Firebase Storage
+            val imageRef = storageRef.child("images/${System.currentTimeMillis()}")
 
-        // Upload the image file
-        val file = Uri.fromFile(File(filePath))
-        val inputStream = withContext(Dispatchers.IO) {
-            FileInputStream(file.path)
+            // Upload the image file
+            val file = Uri.fromFile(File(filePath))
+            val inputStream = withContext(Dispatchers.IO) {
+                FileInputStream(file.path)
+            }
+
+            val uploadTask = imageRef.putStream(inputStream).await()
+            downloadUrl = imageRef.downloadUrl.await().toString()
+
+            // Once you have the download URL, store it in the database
+            databaseRef.child("images").push().setValue(downloadUrl)
+
+            // Delete the local image file after successful upload
+            val localFile = File(filePath)
+            if (localFile.exists()) {
+                val deleted = localFile.delete()
+                if (!deleted) {
+                    Log.e("storeImageAttempt", "Failed to delete local image file: $filePath")
+                }
+            }
+        } catch (e: Exception) {
+            // Handle the exception gracefully
+            Log.e("storeImageAttempt", "Error uploading image: ${e.message}")
         }
-
-        val uploadTask = imageRef.putStream(inputStream).await()
-        val downloadUrl = imageRef.downloadUrl.await().toString()
-
-        // Once you have the download URL, store it in the database
-        databaseRef.child("images").push().setValue(downloadUrl)
-
         return downloadUrl
     }
 
@@ -174,16 +213,28 @@ class SignUpActivity : ComponentActivity() {
         }
         return filePath
     }
-
-
     // Modified uploadImage function
-    suspend fun uploadImage() {
+    private suspend fun uploadImage() {
         newUser.image1 = storeImageAttempt(newUser.image1, contentResolver)
         newUser.image2 = storeImageAttempt(newUser.image2, contentResolver)
         newUser.image3 = storeImageAttempt(newUser.image3, contentResolver)
         newUser.image4 = storeImageAttempt(newUser.image4, contentResolver)
     }
+    private fun showToast(message: String) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun saveTokenToSharedPreferences(token: String?) {
+        val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("firebase_user_token", token)
+        editor.apply()
+    }
 }
+
 
 @Composable
 fun welcomeScreen():Boolean {

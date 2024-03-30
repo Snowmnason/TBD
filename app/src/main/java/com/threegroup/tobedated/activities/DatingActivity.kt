@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated.DatingViewModel
 import com.threegroup.tobedated.composables.AlertDialogBox
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
@@ -47,6 +46,7 @@ import com.threegroup.tobedated.composables.datingScreens.UserInfo
 import com.threegroup.tobedated.composables.datingScreens.UserMessage
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
+import com.threegroup.tobedated.viewModels.DatingViewModel
 import kotlin.random.Random
 
 
@@ -55,11 +55,14 @@ val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 a
 //val notifiSearching = Random.nextBoolean()
 
 class DatingActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val token = intent.getStringExtra("token").toString()
+
         setContent {
             AppTheme {
-                DatingNav(this@DatingActivity)
+                DatingNav(this@DatingActivity, token)
             }
         }
     }
@@ -72,7 +75,6 @@ class DatingActivity : ComponentActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
-
     }
 }
 
@@ -196,7 +198,7 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
     )
 }
 @Composable
-fun ChangePreference(navController: NavHostController, title:String, index:Int, vmDating:DatingViewModel){
+fun ChangePreference(navController: NavHostController, title:String, index:Int, vmDating: DatingViewModel){
     if(index == 69420){
         ChangeSeekingScreen(navController,
             title = title,
@@ -212,8 +214,14 @@ fun ChangePreference(navController: NavHostController, title:String, index:Int, 
     }
 }
 @Composable
-fun ProfileScreen(navController: NavHostController, vmDating:DatingViewModel){
+fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
     val currentUser = vmDating.getUser()
+    val isLoading = remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        if (currentUser.name.isNotEmpty()) {
+                isLoading.value = false
+        }
+    }
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,

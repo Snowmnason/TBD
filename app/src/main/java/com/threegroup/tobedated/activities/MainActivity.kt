@@ -9,38 +9,43 @@ import androidx.lifecycle.lifecycleScope
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.SplashScreen
 import com.threegroup.tobedated.ui.theme.AppTheme
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme{
-                    PolkaDotCanvas()
-                    SplashScreen()
-                }
+            AppTheme {
+                PolkaDotCanvas()
+                SplashScreen()
+            }
         }
         lifecycleScope.launch {
             val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
-            val userTokenDeferred = async { sharedPreferences.getString("firebase_user_token", null) }
+            val userToken = sharedPreferences.getString("firebase_user_token", null)
 
-            val userToken = userTokenDeferred.await()
-            val check: Boolean = userToken != null
-            checkLogin(check)//1 goes to sign up for testing
+            if (userToken != null) {
+//                println(userToken)
+//                val viewModelDating = DatingViewModel(MyApp.x)
+//                viewModelDating.setUser(userToken)
+                navigateToDatingActivity(userToken)
+            } else {
+                navigateToLoginActivity()
+            }
         }
     }
 
-    private fun checkLogin(check:Boolean){
-        if (check){
-            val intent = Intent(this, DatingActivity::class.java)
-            startActivity(intent)
-            finish()
-        }else{
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+    private fun navigateToDatingActivity(userToken:String) {
+        val intent = Intent(this, DatingActivity::class.java)
+        intent.putExtra("token", userToken)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 

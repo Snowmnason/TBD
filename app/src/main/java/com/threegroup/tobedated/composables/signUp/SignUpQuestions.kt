@@ -2,8 +2,11 @@ package com.threegroup.tobedated.composables.signUp
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +30,14 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,10 +53,17 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composables.BasicPicker
 import com.threegroup.tobedated.composables.PickerState
+import com.threegroup.tobedated.composables.baseAppTextTheme
+import com.threegroup.tobedated.models.curiositiesANDImaginations
+import com.threegroup.tobedated.models.insightsANDReflections
+import com.threegroup.tobedated.models.passionsANDInterests
+import com.threegroup.tobedated.models.tabs
 import com.threegroup.tobedated.ui.theme.AppTheme
+import com.threegroup.tobedated.viewModels.SignUpViewModel
 
 @Composable
 fun NameQuestion( //FOR SIGN UP
@@ -122,6 +135,52 @@ fun BioQuestion(
             LabelText(
                 label = "Tell us about yourself",
             )
+            // Character count
+            LabelText(
+                label = "$remainingChars/$maxLength",
+                color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
+            )
+        }
+    }
+}
+@Composable
+fun PromptAnswer(
+    input: String,
+    onInputChanged: (String) -> Unit,
+    isEnables:Boolean,
+) {
+    val maxLength = 200
+    val remainingChars = maxLength - input.length
+    val customTextStyle = baseAppTextTheme()
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        // MultiAutoCompleteTextView
+        TextField(
+            enabled = isEnables,
+            value = input,
+            onValueChange = onInputChanged,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp)
+                .height(80.dp),
+            textStyle = customTextStyle,
+            maxLines = 4,
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = AppTheme.colorScheme.primary, // Set cursor color
+                focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
+                unfocusedBorderColor = AppTheme.colorScheme.onSurface, // Set unfocused border color
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = true,
+            )
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             // Character count
             LabelText(
                 label = "$remainingChars/$maxLength",
@@ -435,3 +494,116 @@ fun HeightQuestion(
         }
     }
 }
+@Composable
+fun PromptQuestions(nav:NavController, signUpVM: SignUpViewModel, questionNumber:Int){
+    var tabIndex by remember { mutableIntStateOf(0) }
+    val state = ScrollState(0)
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        ScrollableTabRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .scrollable(state, orientation = Orientation.Horizontal),
+            selectedTabIndex = tabIndex,
+            contentColor = AppTheme.colorScheme.secondary,
+            containerColor = Color(0xFFB39DB7)
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    text = { Text(text = title, style = AppTheme.typography.bodySmall) },
+                    selected = tabIndex == index,
+                    onClick = { tabIndex = index }
+                )
+            }
+        }
+        var questionsToUse=  insightsANDReflections
+        when (tabIndex) {
+            0 -> questionsToUse = insightsANDReflections
+            1 -> questionsToUse = passionsANDInterests
+            2 -> questionsToUse = curiositiesANDImaginations
+        }
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 25.dp, vertical = 15.dp)
+                .scrollable(state, orientation = Orientation.Vertical)
+        ) {
+            questionsToUse.forEach { quest ->
+                if(quest == signUpVM.getQuestion1() || quest == signUpVM.getQuestion2() || quest == signUpVM.getQuestion3()){
+                    PlainTextButton(
+                        question = quest,
+                        onClick  = { },
+                        enabled = false
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                }else{
+                    PlainTextButton(
+                        question = quest,
+                        onClick  = { nav.popBackStack()
+                            when(questionNumber){
+                                1-> signUpVM.setQuestion1(quest)
+                                2-> signUpVM.setQuestion2(quest)
+                                3-> signUpVM.setQuestion3(quest)
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlainTextButton(
+    onClick : () -> Unit,
+    question:String,
+    enabled:Boolean = true
+){
+    Button(
+        onClick = onClick ,
+        contentPadding = PaddingValues(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = AppTheme.colorScheme.surface,
+            contentColor = AppTheme.colorScheme.onSurface,
+            disabledContainerColor = Color.Gray
+        ),
+        enabled = enabled
+    ){
+        Text(text = question, style = AppTheme.typography.body)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

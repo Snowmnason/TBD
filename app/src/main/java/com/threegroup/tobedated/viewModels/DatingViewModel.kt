@@ -98,7 +98,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                         signedInUser.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
                         signedInUser.seeking = userDataMap["seeking"] as? String ?: ""
                         signedInUser.sex = userDataMap["sex"] as? String ?: ""
-                        signedInUser.testResultsMbti = userDataMap["testResultsMbti"] as? String ?: ""
+                        signedInUser.testResultsMbti = userDataMap["testResultsMbti"] as? String ?: "Not Taken"
                         signedInUser.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
                         signedInUser.children = userDataMap["children"] as? String ?: ""
                         signedInUser.family = userDataMap["family"] as? String ?: ""
@@ -129,20 +129,20 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                             UserSearchPreferenceModel(
                                 ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18,35),
                                 maxDistance = map["maxDistance"] as? Int ?: 25,
-                                gender = map["gender"] as? List<String> ?: listOf("Doesn't Matter"),
-                                zodiac=map["zodiac"] as? List<String> ?: listOf("Doesn't Matter"),
-                                sexualOri=map["sexualOri"] as? List<String> ?: listOf("Doesn't Matter"),
-                                mbti=map["mbti"] as? List<String> ?: listOf("Doesn't Matter"),
-                                children=map["children"] as? List<String> ?: listOf("Doesn't Matter"),
-                                familyPlans=map["familyPlans"] as? List<String> ?: listOf("Doesn't Matter"),
-                                education=map["education"] as? List<String> ?: listOf("Doesn't Matter"),
-                                religion=map["religion"] as? List<String> ?: listOf("Doesn't Matter"),
-                                politicalViews=map["politicalViews"] as? List<String> ?: listOf("Doesn't Matter"),
-                                relationshipType=map["relationshipType"] as? List<String> ?: listOf("Doesn't Matter"),
-                                intentions=map["intentions"] as? List<String> ?: listOf("Doesn't Matter"),
-                                drink=map["drink"] as? List<String> ?: listOf("Doesn't Matter"),
-                                smoke=map["smoke"] as? List<String> ?: listOf("Doesn't Matter"),
-                                weed=map["weed"] as? List<String> ?: listOf("Doesn't Matter"),
+                                gender = (map["gender"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                children = (map["children"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                education = (map["education"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                religion = (map["religion"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                drink = (map["drink"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                weed = (map["weed"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                             )
                         } ?: UserSearchPreferenceModel()
                     } else {

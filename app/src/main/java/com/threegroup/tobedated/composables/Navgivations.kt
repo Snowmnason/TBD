@@ -51,10 +51,10 @@ import com.threegroup.tobedated.activities.heightScreen
 import com.threegroup.tobedated.activities.intentionsScreen
 import com.threegroup.tobedated.activities.mbtiScreen
 import com.threegroup.tobedated.activities.nameScreen
-import com.threegroup.tobedated.activities.newUser
 import com.threegroup.tobedated.activities.ourTestScreen
 import com.threegroup.tobedated.activities.photoScreen
 import com.threegroup.tobedated.activities.politicsScreen
+import com.threegroup.tobedated.activities.promptQuestionsScreen
 import com.threegroup.tobedated.activities.pronounScreen
 import com.threegroup.tobedated.activities.relationshipScreen
 import com.threegroup.tobedated.activities.religiousScreen
@@ -66,7 +66,9 @@ import com.threegroup.tobedated.activities.starScreen
 import com.threegroup.tobedated.activities.weedScreen
 import com.threegroup.tobedated.activities.welcomeScreen
 import com.threegroup.tobedated.composables.signUp.BigButton
+import com.threegroup.tobedated.composables.signUp.PromptQuestions
 import com.threegroup.tobedated.viewModels.DatingViewModel
+import com.threegroup.tobedated.viewModels.SignUpViewModel
 
 @Composable
 fun LoginNav(loginActivity: LoginActivity) {
@@ -98,6 +100,8 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
     var showDialog by remember { mutableStateOf(false) }
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
+    var noShow by rememberSaveable { mutableStateOf(true) }
+    val signUpVM = viewModel { SignUpViewModel(MyApp.x) }
     val screenOrder = listOf(
         SignUp.WelcomeScreen.name,
         SignUp.NameScreen.name,
@@ -123,20 +127,26 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         SignUp.SmokeScreen.name,
         SignUp.WeedScreen.name,
         SignUp.BioScreen.name,
+        SignUp.promptQuestionsScreen.name,
         SignUp.PhotoScreen.name
     )
 
+
     val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
     val nextDestinationIndex = currentDestinationIndex?.plus(1)
+    if(noShow){
+        BackButton(onClick = {
+            if(isFirstScreen){
+                showDialog = true
+            }else{
+                questionIndex--
+                navController.popBackStack()
+            }
+        })
+    }
 
-    BackButton(onClick = {
-        if(isFirstScreen){
-            showDialog = true
-        }else{
-            questionIndex--
-            navController.popBackStack()
-        }
-    })
+
+
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
@@ -192,7 +202,15 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
             isButtonEnabled = sexScreen()
         }
         composable(route = SignUp.MbtiScreen.name) {
-            isButtonEnabled = mbtiScreen()
+            isButtonEnabled = mbtiScreen(onNavigate = {
+                // Code to navigate to the next screen or perform any other action
+                questionIndex++
+                nextDestinationIndex?.let { nextIndex ->
+                    screenOrder.getOrNull(nextIndex)?.let { nextScreen ->
+                        navController.navigate(nextScreen)
+                    }
+                }
+            })
         }
         composable(route = SignUp.OurTestScreen.name) {
             isButtonEnabled = ourTestScreen()
@@ -230,6 +248,18 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         composable(route = SignUp.WeedScreen.name) {
             isButtonEnabled = weedScreen()
         }
+
+        composable(route = SignUp.promptQuestionsScreen.name) {
+            noShow = true
+            isButtonEnabled = promptQuestionsScreen(navController, signUpVM)
+        }
+        composable(route = "PromptQuestions/{index}", arguments = listOf(
+            navArgument("index") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
+            noShow = false
+            PromptQuestions(navController, signUpVM, myIndex)
+        }
         composable(route = SignUp.BioScreen.name) {
             isButtonEnabled = bioScreen()
         }
@@ -239,25 +269,27 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 
     }
     val buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
+    if(noShow){
+        BigButton(
+            text = buttonText,
+            onClick = {
+                if(!isFirstScreen){
+                    questionIndex++
+                }
 
-    BigButton(
-        text = buttonText,
-        onClick = {
-            if(!isFirstScreen){
-                questionIndex++
-            }
+                nextDestinationIndex?.let { screenOrder.getOrNull(it)
+                    ?.let { it1 -> navController.navigate(it1) } }
 
-            nextDestinationIndex?.let { screenOrder.getOrNull(it)
-                ?.let { it1 -> navController.navigate(it1) } }
+                if(buttonText == "Finish"){
+                    signUpActivity.finishingUp()
+                }
+                //println(userInfoArray.joinToString(separator = ", "))
+                //println("$newUser in fun")
+            },
+            isUse = isButtonEnabled
+        )
+    }
 
-            if(buttonText == "Finish"){
-                signUpActivity.finishingUp()
-            }
-            //println(userInfoArray.joinToString(separator = ", "))
-            println("$newUser in fun")
-        },
-        isUse = isButtonEnabled
-    )
 }
 
 @Composable

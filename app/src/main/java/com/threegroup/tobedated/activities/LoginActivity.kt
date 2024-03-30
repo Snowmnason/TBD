@@ -290,7 +290,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(25.dp, 20.dp, 25.dp, 0.dp)
+            .padding(10.dp, 20.dp, 10.dp, 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -308,6 +308,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
                 val focusManager = LocalFocusManager.current
                 val modifier = Modifier
                     .height(65.dp)
+                    .width(40.dp)
                     .weight(1f) // Equal weight for all fields
                     .padding(0.dp)
                 for (i in codeList.indices) {

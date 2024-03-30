@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -90,6 +92,28 @@ fun BackButton(onClick: () -> Unit) {
     }
 }
 @Composable
+fun GenTextOnlyButton(
+    color:Color,
+    text: String,
+    onClick: () -> Unit
+){
+    Button(
+        onClick = onClick,
+        colors = ButtonColors(
+            contentColor = color,
+            disabledContentColor = color,
+            containerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent
+        )
+    ) {
+       Text(text = text,
+           style = AppTheme.typography.titleLarge)
+    }
+
+}
+
+
+@Composable
 fun AlertDialogBox(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
@@ -142,6 +166,14 @@ fun GenericBodyText(
 ){
     Text(text = text,
         style = AppTheme.typography.body,
+        color = AppTheme.colorScheme.onBackground)
+}
+@Composable
+fun GenericLabelText(
+    text:String
+){
+    Text(text = text,
+        style = AppTheme.typography.labelSmall,
         color = AppTheme.colorScheme.onBackground)
 }
 @Composable

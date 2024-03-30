@@ -21,9 +21,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.activities.LoginActivity
+import com.threegroup.tobedated.composables.baseAppTextTheme
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.shadowWithOpacity
@@ -96,6 +99,10 @@ fun DropDown(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
+    val countryCodes = listOf(
+        "USA +1", "UK +44", "Canada +1", "Australia +61", "Germany +49", "France +33",
+        "Italy +39", "Spain +34", "Japan +81", "Brazil +55"
+    )
     Box(
         modifier = Modifier.width(85.dp),
         contentAlignment = Alignment.Center
@@ -105,31 +112,46 @@ fun DropDown(
                 value = selectedCode,
                 onValueChange = {},
                 readOnly = true,
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor(),
+                colors =  TextFieldDefaults.colors(
+                    focusedContainerColor = AppTheme.colorScheme.secondary,
+                    unfocusedContainerColor = AppTheme.colorScheme.secondary
+                ),
+                textStyle = baseAppTextTheme(),
             )
             ExposedDropdownMenu(
                 expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }) {
-                DropdownMenuItem(text = { Text("USA +1") }, onClick = {
-                    onCodeSelected("+1")
-                    isExpanded = false
-                    onPhoneNumberChange("")
-                })
-                DropdownMenuItem(text = { Text("UK +44") }, onClick = {
-                    onCodeSelected("+44")
-                    isExpanded = false
-                    onPhoneNumberChange("")
-                })
-                DropdownMenuItem(text = { Text("Germany +49") }, onClick = {
-                    onCodeSelected("+49")
-                    isExpanded = false
-                    onPhoneNumberChange("")
-                })
-                DropdownMenuItem(text = { Text("Japan +81") }, onClick = {
-                    onCodeSelected("+81")
-                    isExpanded = false
-                    onPhoneNumberChange("")
-                })
+                onDismissRequest = { isExpanded = false },
+                modifier = Modifier.background(AppTheme.colorScheme.secondary).height(250.dp)
+            ) {
+                countryCodes.forEach { code ->
+                    DropdownMenuItem(text = { Text(text = code, style = baseAppTextTheme()) }, onClick = {
+                        val countryCodeWithoutPlus = code.substringAfter("+")
+                        onCodeSelected(countryCodeWithoutPlus)
+                        isExpanded = false
+                        onPhoneNumberChange("")
+                    })
+                }
+                //DropdownMenuItem(text = { Text("USA +1") }, onClick = {
+//                    onCodeSelected("+1")
+//                    isExpanded = false
+//                    onPhoneNumberChange("")
+//                })
+//                DropdownMenuItem(text = { Text("UK +44") }, onClick = {
+//                    onCodeSelected("+44")
+//                    isExpanded = false
+//                    onPhoneNumberChange("")
+//                })
+//                DropdownMenuItem(text = { Text("Germany +49") }, onClick = {
+//                    onCodeSelected("+49")
+//                    isExpanded = false
+//                    onPhoneNumberChange("")
+//                })
+//                DropdownMenuItem(text = { Text("Japan +81") }, onClick = {
+//                    onCodeSelected("+81")
+//                    isExpanded = false
+//                    onPhoneNumberChange("")
+//                })
             }
         }
     }
@@ -165,7 +187,6 @@ fun VerifyField(
     modifier: Modifier,
     enterCode: String,
     onValueChange: (String) -> Unit,
-    //actionDone: KeyboardActions,
     options: ImeAction = ImeAction.Next
 ){
     val customTextStyle = TextStyle(
@@ -181,8 +202,8 @@ fun VerifyField(
             blurRadius = 4f
         )
     )
-    TextField(
-        modifier = modifier,
+    OutlinedTextField(
+        modifier = modifier, // Add padding horizontally
         value = enterCode,
         textStyle = customTextStyle,
         colors = OutlinedTextFieldDefaults.colors(
@@ -195,6 +216,7 @@ fun VerifyField(
             keyboardType = KeyboardType.Number,
             imeAction = options
         ),
+        singleLine = true, // Ensure single line
         keyboardActions = KeyboardActions()//actionDone
     )
 }

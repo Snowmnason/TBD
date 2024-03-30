@@ -12,7 +12,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -30,10 +33,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -44,6 +49,8 @@ import com.threegroup.tobedated.callclass.checkDay
 import com.threegroup.tobedated.callclass.checkMonth
 import com.threegroup.tobedated.callclass.checkYear
 import com.threegroup.tobedated.composables.DialogWithImage
+import com.threegroup.tobedated.composables.GenTextOnlyButton
+import com.threegroup.tobedated.composables.GenericLabelText
 import com.threegroup.tobedated.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composables.RadioButtonGroup
 import com.threegroup.tobedated.composables.SignUpNav
@@ -51,10 +58,12 @@ import com.threegroup.tobedated.composables.rememberPickerState
 import com.threegroup.tobedated.composables.signUp.BioQuestion
 import com.threegroup.tobedated.composables.signUp.BirthdateQuestion
 import com.threegroup.tobedated.composables.signUp.BodyText
+import com.threegroup.tobedated.composables.signUp.DropdownAlertBox
 import com.threegroup.tobedated.composables.signUp.HeightQuestion
 import com.threegroup.tobedated.composables.signUp.NameQuestion
 import com.threegroup.tobedated.composables.signUp.PersonalityTest
 import com.threegroup.tobedated.composables.signUp.PhotoQuestion
+import com.threegroup.tobedated.composables.signUp.PromptAnswer
 import com.threegroup.tobedated.composables.signUp.SignUpFormat
 import com.threegroup.tobedated.composables.signUp.TitleText
 import com.threegroup.tobedated.composables.signUp.getCustomButtonStyle
@@ -78,6 +87,7 @@ import com.threegroup.tobedated.models.smokeOptions
 import com.threegroup.tobedated.models.starOptions
 import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
+import com.threegroup.tobedated.viewModels.SignUpViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -253,6 +263,10 @@ fun welcomeScreen():Boolean {
         TitleText(title = "Be Safe")
             Spacer(modifier = Modifier.height(5.dp))
         BodyText(label = "Don't jump into things too quick")
+        Spacer(modifier = Modifier.height(25.dp))
+        TitleText(title = "Be Dated")
+            Spacer(modifier = Modifier.height(5.dp))
+        BodyText(label = "Have fun an be yourself")
     }
     return true
 }
@@ -561,9 +575,22 @@ fun sexScreen():Boolean{
     return sex.isNotEmpty()
 }
 @Composable
-fun mbtiScreen():Boolean{
+fun mbtiScreen(onNavigate: () -> Unit):Boolean{
     var mbti by rememberSaveable { mutableStateOf(newUser.testResultsMbti) }
     val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3", "MBTI TEST QUESTION 4", "MBTI QUESTION 5", "MBTI 6")
+    var isSkip by rememberSaveable { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.End
+    ){
+        GenTextOnlyButton(
+            onClick = { isSkip = true },
+            text = "Skip",
+            color = Color.Gray
+        )
+    }
     SignUpFormat(
         title = "MBTI",
         label = "What does your personality say about you?",
@@ -581,8 +608,8 @@ fun mbtiScreen():Boolean{
                         selectedIndex = selectedOptionIndex,
                         onSelectionChange = { newIndex ->
                             selectedOptionIndex = newIndex
-                            mbti = "MBTI Text answer"
-                            newUser.testResultsMbti = "ENTP-T"
+                            mbti = "Not Taken"
+                            newUser.testResultsMbti = "Not Taken"
                         },
                         question = quest
                     )
@@ -590,7 +617,22 @@ fun mbtiScreen():Boolean{
             }
         },
     )
-    return true//mbti.isNotEmpty()
+
+    if(isSkip){
+        var selectedResult by rememberSaveable { mutableStateOf("Not Taken") }
+        DropdownAlertBox(
+            onConfirmation = { isSkip = false
+                newUser.testResultsMbti = selectedResult
+                onNavigate()},
+            onDismissRequest = { isSkip = false
+                newUser.testResultsMbti = "Not Taken"
+                onNavigate()},
+            selectedMBTI = selectedResult,
+            onMBTISelect = { newResult -> selectedResult = newResult }
+        )
+    }
+
+    return mbti.isNotEmpty()//TODO
 }
 @Composable
 fun ourTestScreen():Boolean{
@@ -838,6 +880,80 @@ fun weedScreen():Boolean{
 }
 
 @Composable
+fun promptQuestionsScreen(nav:NavController, signUpVM:SignUpViewModel):Boolean{
+    var promptQ1 by rememberSaveable { mutableStateOf(newUser.promptQ1) }
+    var promptA1 by rememberSaveable { mutableStateOf(newUser.promptA1) }
+    var promptQ2 by rememberSaveable { mutableStateOf(newUser.promptQ2) }
+    var promptA2 by rememberSaveable { mutableStateOf(newUser.promptA2) }
+    var promptQ3 by rememberSaveable { mutableStateOf(newUser.promptQ3) }
+    var promptA3 by rememberSaveable { mutableStateOf(newUser.promptA3) }
+    var isEnable1 by rememberSaveable { mutableStateOf(false) }
+    var isEnable2 by rememberSaveable { mutableStateOf(false) }
+    var isEnable3 by rememberSaveable { mutableStateOf(false) }
+    promptQ1 = signUpVM.getQuestion1()
+    promptQ2 = signUpVM.getQuestion2()
+    promptQ3 = signUpVM.getQuestion3()
+    SignUpFormat(
+        title = "Some Ice breakers!",
+        label = "Don't be shy, the ice will melt anyway!",
+        enterField = {
+
+            OutlinedButton(
+                onClick = {
+                    nav.navigate("PromptQuestions/1")
+                    newUser.promptQ1 = promptQ1
+                    isEnable1 = true
+                })
+            {
+                GenericLabelText(text = promptQ1)
+            }
+            PromptAnswer(
+                isEnables = isEnable1,
+                input = promptA1,
+                onInputChanged = { input  ->  promptA1 = input
+                    newUser.promptA1 = input
+                },
+            )
+                Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    nav.navigate("PromptQuestions/2")
+                    newUser.promptQ2 = promptQ2
+                    isEnable2 = true
+                })
+            {
+                GenericLabelText(text = promptQ2)
+            }
+            PromptAnswer(
+                isEnables = isEnable2,
+                input = promptA2,
+                onInputChanged = { input  ->  promptA2 = input
+                    newUser.promptA2 = input
+                },
+            )
+                Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    nav.navigate("PromptQuestions/3")
+                    newUser.promptQ3 = promptQ3
+                    isEnable3 = true
+                })
+            {
+                GenericLabelText(text = promptQ3)
+            }
+            PromptAnswer(
+                isEnables = isEnable3,
+                input = promptA3,
+                onInputChanged = { input  ->  promptA3 = input
+                    newUser.promptA3 = input
+                },
+            )
+        },
+    )
+    return (promptA1.isNotEmpty() && promptA2.isNotEmpty() && promptA3.isNotEmpty())
+}
+
+@Composable
 fun bioScreen():Boolean{
     var bio by rememberSaveable { mutableStateOf(newUser.bio) }
     SignUpFormat(
@@ -948,6 +1064,7 @@ enum class SignUp {
     SmokeScreen,//
     WeedScreen,//
     BioScreen,//
+    promptQuestionsScreen,
     PhotoScreen,
 }
 /* Cool multiSelect

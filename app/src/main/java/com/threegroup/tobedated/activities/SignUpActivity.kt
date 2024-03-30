@@ -118,8 +118,11 @@ class SignUpActivity : ComponentActivity() {
         finish()
     }
 
-    fun finishingUp(){
+    fun finishingUp(signUpVM: SignUpViewModel){
         lifecycleScope.launch {
+            newUser.promptQ1 = signUpVM.getQuestion1()
+            newUser.promptQ2 = signUpVM.getQuestion2()
+            newUser.promptQ3 = signUpVM.getQuestion3()
             uploadImage()
             val userToken = storeData()
             goNextScreen(userToken)

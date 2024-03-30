@@ -126,8 +126,8 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         SignUp.DrinkScreen.name,
         SignUp.SmokeScreen.name,
         SignUp.WeedScreen.name,
-        SignUp.BioScreen.name,
         SignUp.promptQuestionsScreen.name,
+        SignUp.BioScreen.name,
         SignUp.PhotoScreen.name
     )
 
@@ -268,7 +268,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         }
 
     }
-    val buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
+    var buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
     if(noShow){
         BigButton(
             text = buttonText,
@@ -281,7 +281,9 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
                     ?.let { it1 -> navController.navigate(it1) } }
 
                 if(buttonText == "Finish"){
-                    signUpActivity.finishingUp()
+                    isButtonEnabled = false
+                    buttonText = "Loading..."
+                    signUpActivity.finishingUp(signUpVM)
                 }
                 //println(userInfoArray.joinToString(separator = ", "))
                 //println("$newUser in fun")

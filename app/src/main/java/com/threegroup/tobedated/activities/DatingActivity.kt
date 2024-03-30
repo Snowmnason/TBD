@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,17 +85,30 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
     var showReport by rememberSaveable { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(true) }
 
-    var newPotential:UserModel
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
     val currentPotential = remember { mutableStateOf<UserModel?>(null) }
-    LaunchedEffect(Unit) {
+    var resetScrollState by remember { mutableStateOf(false) }
+    val state = rememberScrollState()
+    LaunchedEffect(resetScrollState, Unit) {
         vmDating.getPotentialUserData {
             //currentPotential.value = profiles.random()
             currentPotential.value = vmDating.getNextPotential(currentProfileIndex)
             isLoading.value = false // Set loading state to false after data is fetched
         }
+        if (resetScrollState) {
+            state.scrollTo(0)
+            // After resetting, reset the state variable to false
+            resetScrollState = false
+        }
     }
-
+    fun nextProfile(newPotential:UserModel){
+        if(newPotential.name.isNotEmpty()){
+            currentPotential.value = newPotential
+        }else{
+            isNext = false
+        }
+        resetScrollState = true
+    }
 
     TopAndBotBars(
         notifiChat = notifiChat,
@@ -104,6 +118,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         nav = navController,
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
+        state = state,
         currentScreen = {
             currentPotential.value?.let { user ->
                 if (isNext || isLoading.value) {
@@ -111,25 +126,16 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
                         user,//usersArray[currentProfileIndex]
                         onClickLike = {
                             currentProfileIndex++
-                            newPotential = vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!)
-                            if(newPotential.name.isNotEmpty()){
-                                currentPotential.value = newPotential
-                            }else{
-                                isNext = false
-                            }
-
-                                      /*nextProfile()TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                            nextProfile(vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                            /*TODO Add an animation or something*/
+                        },
                         onClickPass = {
                             currentProfileIndex++
-                            newPotential = vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!)
-                            if(newPotential.name.isNotEmpty()){
-                                currentPotential.value = newPotential
-                            }else{
-                                isNext = false
-                            }
-                                      /*nextProfile()TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
-                        onClickReport = { showReport = true },
-                        onClickSuggest = { /*TODO NEED TO SCROLL TO TOP WHEN CLICKED*/ },
+                            nextProfile(vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                            /*TODO Add an animation or something*/
+                        },
+                        onClickReport = { showReport = true /*TODO Add an animation or something*/},
+                        onClickSuggest = { /*TODO Add an animation or something*/  },
                     )
                 } else {
                     Comeback()
@@ -138,6 +144,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         },
 
     )
+
     if(showReport){
         AlertDialogBox(
             dialogTitle = "Report!",
@@ -145,14 +152,11 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
             dialogText = "This account will be looked into and they will not be able to view your profile",
             onConfirmation = { showReport = false
                 currentProfileIndex++
-                newPotential = vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!)
-                if(newPotential.name.isNotEmpty()){
-                    currentPotential.value = newPotential
-                }else{
-                    isNext = false
-                }}
+                nextProfile(vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+            }
         )
     }
+
 }
 
 
@@ -222,6 +226,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
                 isLoading.value = false
         }
     }
+    val state = rememberScrollState()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -230,6 +235,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
         nav = navController,
         selectedItemIndex = 4,
         settingsButton = { navController.navigate("EditProfileScreen") },
+        state = state,
         currentScreen = {
             CurrentUserInfo(
                 currentUser
@@ -249,7 +255,7 @@ fun EditProfileScreen(navController: NavHostController, dating:DatingActivity){
 @Composable
 fun ChatsScreen(navController: NavHostController){
     //val inChat by rememberSaveable { mutableStateOf(false)}
-
+    val state = rememberScrollState()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -258,7 +264,10 @@ fun ChatsScreen(navController: NavHostController){
         nav = navController,
         selectedItemIndex = 1,
         settingsButton = { },
+        state = state,
         currentScreen = {
+
+
             MessageStart(
                 noMatches = false,
                 userPhoto = "https://media.vanityfair.com/photos/63765577474812eb37ec70bc/master/w_1600,c_limit/Headshot%20-%20credit%20%E2%80%9CNational%20Geographic%20for%20Disney+%E2%80%9D.jpg", //Need this to accept URI
@@ -298,6 +307,8 @@ fun MessagerScreen(navController: NavHostController){
 }
 @Composable
 fun GroupsScreen(navController: NavHostController){
+
+    val state = rememberScrollState()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -306,6 +317,7 @@ fun GroupsScreen(navController: NavHostController){
         nav = navController,
         selectedItemIndex = 3,
         settingsButton = { },
+        state = state,
         currentScreen = {
 
         }
@@ -313,6 +325,7 @@ fun GroupsScreen(navController: NavHostController){
 }
 @Composable
 fun SomeScreen(navController: NavHostController){
+    val state = rememberScrollState()
     TopAndBotBars(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
@@ -321,6 +334,7 @@ fun SomeScreen(navController: NavHostController){
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { },
+        state = state,
         currentScreen = {
 
         }

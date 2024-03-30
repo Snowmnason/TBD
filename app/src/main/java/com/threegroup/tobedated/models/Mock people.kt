@@ -1,44 +1,44 @@
 package com.threegroup.tobedated.models
 
-val miaModel = UserModel(
-    name           ="Miala", // Name
-    birthday       ="08/15/1995", // Birthday
-    pronoun        ="She/Her", // Pronoun
-    gender         ="Female", // Gender
-    height         ="5'5\"", // Height
-    ethnicity      ="Hispanic/Latino", // Ethnicity
-    star           ="Leo", // Star
-    sexOrientation ="Bisexual", // Sex Orientation
-    seeking        ="Everyone", // Seeking
-    sex            ="Female", // Sex
-    testResultsMbti="ENFP-T", // MBTI Test Results
-    testResultTbd  =63, // Test Result TBD
-    children       ="Don't have", // Family
-    family         ="Don't want", // Children
-    education      ="Long-term", // Relationship
-    religion      ="Undergrad", // Education
-    politics       ="Atheist", // Religious
-    relationship   ="Liberal", // Politics
-    intentions     ="Long-term", // Intentions
-    drink          ="Sometimes", // Drink
-    smoke          ="No", // Smoke
-    weed           ="No", // Weed
-    promptQ1       ="What's your favorite hobby?", // PromptQ1
-    promptA1       ="My favorite hobby is painting. It allows me to express myself creatively and unwind after a long day.", // PromptA1
-    promptQ2       ="If you could learn any new skill, what would it be?", // PromptQ2
-    promptA2       ="I would love to learn how to play the piano. Music has always been a passion of mine, and being able to create beautiful melodies would be incredible.", // PromptA2
-    promptQ3       ="What's your dream travel destination?", // PromptQ3
-    promptA3       ="My dream travel destination is Machu Picchu in Peru. The ancient ruins and breathtaking mountain landscapes fascinate me.", // PromptA3
-    bio            ="I'm Mia, a creative soul with a love for art and adventure. When I'm not painting or exploring new places, you can find me curled up with a good book or spending time with loved ones.", // Bio
-    image1         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 1
-    image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 2
-    image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 3
-    image4         ="", // Image 4 (No fourth image)
-    location       ="Miami, FL", // Location
-    status         ="Online", // Status
-    number         ="+15557890123", // Phone Number
-    verified       =true
-)
+//val miaModel = UserModel(
+//    name           ="Miala", // Name
+//    birthday       ="08/15/1995", // Birthday
+//    pronoun        ="She/Her", // Pronoun
+//    gender         ="Female", // Gender
+//    height         ="5'5\"", // Height
+//    ethnicity      ="Hispanic/Latino", // Ethnicity
+//    star           ="Leo", // Star
+//    sexOrientation ="Bisexual", // Sex Orientation
+//    seeking        ="Everyone", // Seeking
+//    sex            ="Female", // Sex
+//    testResultsMbti="ENFP-T", // MBTI Test Results
+//    testResultTbd  =63, // Test Result TBD
+//    children       ="Don't have", // Family
+//    family         ="Don't want", // Children
+//    education      ="Long-term", // Relationship
+//    religion      ="Undergrad", // Education
+//    politics       ="Atheist", // Religious
+//    relationship   ="Liberal", // Politics
+//    intentions     ="Long-term", // Intentions
+//    drink          ="Sometimes", // Drink
+//    smoke          ="No", // Smoke
+//    weed           ="No", // Weed
+//    promptQ1       ="What's your favorite hobby?", // PromptQ1
+//    promptA1       ="My favorite hobby is painting. It allows me to express myself creatively and unwind after a long day.", // PromptA1
+//    promptQ2       ="If you could learn any new skill, what would it be?", // PromptQ2
+//    promptA2       ="I would love to learn how to play the piano. Music has always been a passion of mine, and being able to create beautiful melodies would be incredible.", // PromptA2
+//    promptQ3       ="What's your dream travel destination?", // PromptQ3
+//    promptA3       ="My dream travel destination is Machu Picchu in Peru. The ancient ruins and breathtaking mountain landscapes fascinate me.", // PromptA3
+//    bio            ="I'm Mia, a creative soul with a love for art and adventure. When I'm not painting or exploring new places, you can find me curled up with a good book or spending time with loved ones.", // Bio
+//    image1         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 1
+//    image2         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 2
+//    image3         ="https://media.discordapp.net/attachments/1091674973841657856/1216764283648475227/snowmanson_Mia_is_a_creative_soul_with_a_love_for_art_and_adven_923278e1-2eb3-46c3-abed-e9723501846f.png?ex=6601930b&is=65ef1e0b&hm=2819bda6329a086e6a7516ce87f7f3b27a1fa833a89905a05fb74acab0a81b05&=&format=webp&quality=lossless&width=291&height=437", // Image 3
+//    image4         ="", // Image 4 (No fourth image)
+//    location       ="Miami, FL", // Location
+//    status         ="Online", // Status
+//    number         ="+15557890123", // Phone Number
+//    verified       =true
+//)
 //)
 //
 //val sophiaModel = UserModel(

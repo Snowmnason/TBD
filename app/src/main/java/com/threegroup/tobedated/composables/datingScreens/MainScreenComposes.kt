@@ -1,6 +1,7 @@
 package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -56,7 +56,8 @@ fun TopAndBotBars(
     isPhoto:Boolean,
     nav: NavHostController,
     selectedItemIndex: Int,
-    settingsButton: () -> Unit
+    settingsButton: () -> Unit,
+    state:ScrollState,
 ) {
     val items = listOf(
         BotNavItem(
@@ -171,7 +172,6 @@ fun TopAndBotBars(
             }
         ) {
            paddingValues ->
-            val state = rememberScrollState()
             LaunchedEffect(Unit) { state.animateScrollTo(0) }
             Column(
                 Modifier

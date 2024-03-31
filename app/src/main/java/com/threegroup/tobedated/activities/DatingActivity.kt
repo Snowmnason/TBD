@@ -40,6 +40,7 @@ import com.threegroup.tobedated.composables.datingScreens.InsideProfileSettings
 import com.threegroup.tobedated.composables.datingScreens.InsideSearchSettings
 import com.threegroup.tobedated.composables.datingScreens.MessageStart
 import com.threegroup.tobedated.composables.datingScreens.OtherPreferences
+import com.threegroup.tobedated.composables.datingScreens.SearchingButtons
 import com.threegroup.tobedated.composables.datingScreens.SeekingBox
 import com.threegroup.tobedated.composables.datingScreens.TheirMessage
 import com.threegroup.tobedated.composables.datingScreens.TopAndBotBars
@@ -78,7 +79,9 @@ class DatingActivity : ComponentActivity() {
         finish()
     }
 }
-
+/*
+Start of Seeking Screen
+ */
 @Composable
 fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel) {
     var isNext by rememberSaveable { mutableStateOf(true) }
@@ -124,18 +127,22 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
                 if (isNext || isLoading.value) {
                     UserInfo(
                         user,//usersArray[currentProfileIndex]
-                        onClickLike = {
-                            currentProfileIndex++
-                            nextProfile(vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!))
-                            /*TODO Add an animation or something*/
+                        bottomButtons = {
+                            SearchingButtons(
+                                onClickLike = {
+                                    currentProfileIndex++
+                                    nextProfile(vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                                    /*TODO Add an animation or something*/
+                                },
+                                onClickPass = {
+                                    currentProfileIndex++
+                                    nextProfile(vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                                    /*TODO Add an animation or something*/
+                                },
+                                onClickReport = { showReport = true /*TODO Add an animation or something*/},
+                                onClickSuggest = { /*TODO Add an animation or something*/  },
+                            )
                         },
-                        onClickPass = {
-                            currentProfileIndex++
-                            nextProfile(vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!))
-                            /*TODO Add an animation or something*/
-                        },
-                        onClickReport = { showReport = true /*TODO Add an animation or something*/},
-                        onClickSuggest = { /*TODO Add an animation or something*/  },
                     )
                 } else {
                     Comeback()
@@ -158,8 +165,6 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
     }
 
 }
-
-
 
 @Composable
 fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingViewModel){
@@ -217,6 +222,10 @@ fun ChangePreference(navController: NavHostController, title:String, index:Int, 
         )
     }
 }
+/*
+End of Seeking Screens
+Start of Profile Screens
+ */
 @Composable
 fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
     val currentUser = vmDating.getUser()
@@ -252,6 +261,10 @@ fun EditProfileScreen(navController: NavHostController, dating:DatingActivity){
         }
     )
 }
+/*
+End of Profile Screens
+Start of Message Screens
+ */
 @Composable
 fun ChatsScreen(navController: NavHostController){
     //val inChat by rememberSaveable { mutableStateOf(false)}
@@ -294,7 +307,11 @@ fun MessagerScreen(navController: NavHostController){
         value = message,
         onValueChange = { message = it},
         sendMessage = {/* TODO Send Message*/ },
-        titleButton = {/* TODO Go to Profile from name*/ },
+        goToProfile = {/* TODO Go to Profile from name*/ },
+        chatSettings = {},
+        startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
+        startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
+        sendAttachment = {/* TODO photos or attachements Message...advise if we should keep*/},
         messages = {
             UserMessage("Oh my god I totally agree")
             TheirMessage(replyMessage = "That's crazy because I don't nerd...",
@@ -305,6 +322,10 @@ fun MessagerScreen(navController: NavHostController){
         }
     )
 }
+/*
+End of Message Screens
+Start of Groups Screens
+ */
 @Composable
 fun GroupsScreen(navController: NavHostController){
 

@@ -1,8 +1,12 @@
 package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,17 +14,24 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,32 +44,126 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.activities.DatingActivity
 import com.threegroup.tobedated.callclass.calcAge
-import com.threegroup.tobedated.composables.signUp.BigButton
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.ui.theme.zodiac
 
+data class BotNavItem(
+    val title:String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+    val hasNew: Boolean = false,
+    val badgeCount:Int? = null
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InsideProfileSettings(
+fun TopAndBotBars(
+    notifiChat:Int = 0,
+    notifiGroup:Boolean = false,
+    notifiSearching:Boolean = false,
+    currentScreen: @Composable () -> Unit = {},
+    titleText:String = "To Be Dated",
+    isPhoto:Boolean,
     nav: NavHostController,
-    editProfile: @Composable () -> Unit = {},
+    selectedItemIndex: Int,
+    settingsButton: () -> Unit,
+    state:ScrollState,
 ) {
+    val items = listOf(
+        BotNavItem(
+            title = "SomeScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.some_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.some_outlined),
+        ),
+        BotNavItem(
+            title = "ChatsScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.chats_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.chats_outlined),
+            badgeCount = notifiChat,
+        ),
+        BotNavItem(
+            title = "SearchingScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.logo_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.logo_outlined),
+            hasNew = notifiSearching,
+        ),
+        BotNavItem(
+            title = "GroupsScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
+            hasNew = notifiGroup,
+        ),
+        BotNavItem(
+            title = "ProfileScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.profile_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.profile_outlined),
+        ),
+    )
+
+    //var selectedItemIndex by rememberSaveable { mutableIntStateOf(2) }
     Surface(
         modifier = Modifier
             .fillMaxSize(),
-        color = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+        color = Color.Transparent,
     ) {
         Scaffold(
-            containerColor = Color.Transparent,
+            containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+            bottomBar = {
+                NavigationBar(
+                    containerColor = AppTheme.colorScheme.onTertiary,
+                    modifier = Modifier.height(46.dp)
+                ) {
+                    items.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            colors =  NavigationBarItemColors(
+                                selectedIconColor = AppTheme.colorScheme.primary,
+                                selectedTextColor = AppTheme.colorScheme.primary,
+                                selectedIndicatorColor = Color.Transparent,
+                                unselectedIconColor = AppTheme.colorScheme.onBackground,
+                                unselectedTextColor = AppTheme.colorScheme.onBackground,
+                                disabledIconColor = Color.Black,
+                                disabledTextColor = Color.Black
+                            ),
+                            selected = selectedItemIndex == index,
+                            onClick = { //selectedItemIndex = index
+                                        nav.navigate(item.title)
+                                      },//HANDLE NAVIGATION
+                            label = {  },
+                            alwaysShowLabel = false,
+                            icon = {
+                                BadgedBox(
+                                    badge = {
+                                        if (item.badgeCount != null) {
+                                            Badge {
+                                                Text(text = item.badgeCount.toString())
+                                            }
+                                        } else if (item.hasNew) {
+                                            Badge()
+                                        }
+                                    }) {
+                                    Icon(
+                                        imageVector = if (index == selectedItemIndex) {
+                                            item.selectedIcon
+                                        } else {
+                                            item.unselectedIcon
+                                        },
+                                        contentDescription = item.title
+                                    )
+                                }
+                            })
+                    }
+                }
+            },
             topBar = {
                 CenterAlignedTopAppBar(
                     modifier = Modifier.height(46.dp),
@@ -69,18 +174,24 @@ fun InsideProfileSettings(
                         actionIconContentColor = AppTheme.colorScheme.primary,
                         scrolledContainerColor = AppTheme.colorScheme.background
                     ),
-                    title = { TopBarText(title= "Edit Profile", isPhoto = false) },
+                    title = { TopBarText(title= titleText, isPhoto = isPhoto) },//TitleTextGen(title= titleText)},
                     navigationIcon = {
-                        IconButton(onClick = { nav.popBackStack() }) { //Showing in stuff like messages, editing profile and stuff
-                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back), contentDescription = "Go back")
-                        }
+                            IconButton(onClick = { /*TODO*/ }) {//Show my default
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.hamburger),
+                                    contentDescription = "Change Looking tab"
+                                )
+                            }
                     },
-                    actions = {}
+                    actions = {
+                        IconButton(onClick = settingsButton) {
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.settings), contentDescription = "Settings")
+                        }
+                    }
                 )
-            },
+            }
         ) {
-                paddingValues ->
-            val state = rememberScrollState()
+           paddingValues ->
             LaunchedEffect(Unit) { state.animateScrollTo(0) }
             Column(
                 Modifier
@@ -89,39 +200,133 @@ fun InsideProfileSettings(
                     .fillMaxSize()
             ){
                 Spacer(modifier = Modifier.height(24.dp))
-                editProfile()
+                    currentScreen() //All 5 screens go here
             }
         }
     }
 }
 @Composable
-fun EditProfile(dating: DatingActivity){
-    BigButton(
-        text = "Log Out",
-        onClick = {
-            dating.clearUserToken()
-    }, isUse = true)
+fun TopBarText(
+    title:String,
+    size: TextStyle = AppTheme.typography.titleLarge,
+    isPhoto:Boolean
+){
+    if(isPhoto){
+        val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
+        Box(modifier = Modifier
+            .height(30.dp)
+            .offset(y = (8).dp)){
+            Image(painter = photo, contentDescription = "Logo")
+        }
+    }else{
+        Text(
+            modifier = Modifier.offset(y = (16).dp),
+            text = title,
+            style = size,
+            color = AppTheme.colorScheme.onBackground,
+        )
+    }
 }
+
+@Composable
+fun SimpleBox(
+    whatsInsideTheBox: @Composable () -> Unit = {},
+    verify:Boolean = false,
+){
+    var thickness = 1
+    var boardColor= Color(0xFFB39DB7)
+    if(verify){
+        thickness = 3
+        boardColor = Color(0xFF729CBD)
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(thickness.dp, boardColor, shape = RoundedCornerShape(4.dp)),
+        color = AppTheme.colorScheme.background,
+        contentColor = AppTheme.colorScheme.onBackground,
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Box(modifier = Modifier.padding(4.dp, 8.dp)) {
+            whatsInsideTheBox()
+        }
+    }
+}
+
+@Composable
+fun SimpleIconBox(
+    //whatsInsideTheBox: @Composable () -> Unit = {},
+    verify:String = "false",
+    answerList: List<String>,
+    iconList: List<ImageVector?>
+){
+    var thickness = 1
+    var boardColor= Color(0xFFB39DB7)
+    if(verify == "true"){
+        thickness = 3
+        boardColor = Color(0xFF729CBD)
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(thickness.dp, boardColor, shape = RoundedCornerShape(4.dp)),
+        color = AppTheme.colorScheme.background,
+        contentColor = AppTheme.colorScheme.onBackground,
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Box(modifier = Modifier.padding(4.dp, 8.dp)) {
+            //whatsInsideTheBox()
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                for (index in answerList.indices) {
+                    iconList[index]?.let {
+                        Icon(
+                            imageVector = it, contentDescription = "icon", modifier = Modifier
+                                .offset(y = (-4).dp)
+                                .size(25.dp), tint = AppTheme.colorScheme.primary
+                        )
+                    }
+                    Text(
+                        text = answerList[index],
+                        style = getSmallerTextStyle(),
+                        modifier = Modifier.offset(y = 3.dp)
+                    )
+                    if (index != answerList.size - 1) {
+                        VerticalDivider(
+                            modifier = Modifier.height(20.dp),
+                            color = Color(0xFFB39DB7),
+                            thickness = 2.dp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CurrentUserInfo(
+fun UserInfo(
     user: UserModel,
-) {
+    bottomButtons: @Composable () -> Unit = {},
+){
     val photos = listOf(user.image1, user.image2, user.image3, user.image4)
     var subtract = 0
-    if (photos[3] == "") {
+    if(photos[3] == ""){
         subtract = 1
     }
-    val mbtiColor: Color = if (user.testResultsMbti != "Not Taken") {
+    val mbtiColor: Color = if(user.testResultsMbti != "Not Taken"){
         val parts = user.testResultsMbti.split("-")
         val mainType = parts.first()
         mbtiColors[mbtiColorMap[mainType]!!]
-    } else {
+    }else {
         AppTheme.colorScheme.onSurface
     }
     //Sign Sign MBTI
     val starSymbol = zodiacToLetterMap[user.star]!!
-    val oppositeIndex = (starColorMap[starSymbol]!! + 2) % starColorMap.size
+    val oppositeIndex = (starColorMap[starSymbol]!! + 2)  % starColorMap.size
     Column(
         Modifier
             .fillMaxSize()
@@ -179,7 +384,11 @@ fun CurrentUserInfo(
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(text = user.promptQ1, style = AppTheme.typography.titleSmall)//Prompt question
                 Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFB39DB7),
+                    thickness = 2.dp
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA1, style = AppTheme.typography.bodyLarge) //Prompt Answer
             }
@@ -225,7 +434,11 @@ fun CurrentUserInfo(
                     style = AppTheme.typography.titleSmall
                 )///Prompt Questions2
                 Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFB39DB7),
+                    thickness = 2.dp
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA2, style = AppTheme.typography.bodyLarge) //Prompt Answer 2
             }
@@ -248,7 +461,12 @@ fun CurrentUserInfo(
                     style = AppTheme.typography.titleSmall
                 )//Prompt Question 3
                 Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFB39DB7),
+                    thickness = 2.dp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
             }
         })
@@ -290,5 +508,8 @@ fun CurrentUserInfo(
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
+        bottomButtons()
+        Spacer(modifier = Modifier.height(12.dp))
     }
+
 }

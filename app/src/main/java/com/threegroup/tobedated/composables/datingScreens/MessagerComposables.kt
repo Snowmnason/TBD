@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -17,8 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -27,10 +26,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -121,8 +120,12 @@ fun InsideMessages(
     value:String,
     onValueChange: (String) -> Unit,
     sendMessage: () -> Unit,
-    titleButton: () -> Unit,
-    nav: NavHostController
+    goToProfile: () -> Unit,
+    nav: NavHostController,
+    startVideoCall: () -> Unit,
+    startCall:() -> Unit,
+    chatSettings:() -> Unit,
+    sendAttachment:() -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -141,7 +144,7 @@ fun InsideMessages(
                         actionIconContentColor = AppTheme.colorScheme.primary,
                         scrolledContainerColor = AppTheme.colorScheme.background
                     ),
-                    title = { Button(onClick = titleButton,
+                    title = { Button(onClick = goToProfile,
                         colors = ButtonColors(
                             contentColor = AppTheme.colorScheme.onBackground,
                             containerColor = Color.Transparent,
@@ -156,7 +159,13 @@ fun InsideMessages(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = startVideoCall) {
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.videocall), contentDescription = "Settings")
+                        }
+                        IconButton(onClick = startCall) {
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.call), contentDescription = "Settings")
+                        }
+                        IconButton(onClick = chatSettings) {
                             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.settings), contentDescription = "Settings")
                         }
                     }
@@ -169,27 +178,37 @@ fun InsideMessages(
                     .padding(12.dp)){
                     Row (
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        //horizontalArrangement = Arrangement.SpaceEvenly
                     ){
-                        TextField(
-//                            modifier = Modifier.fillMaxWidth(),
+                        IconButton(onClick = sendAttachment,
+                            modifier = Modifier.offset(y=5.dp).weight(1.0F),
+                            colors= IconButtonDefaults.iconButtonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = AppTheme.colorScheme.secondary,
+                            ),
+                        ) {
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
+                        }
+                        OutlinedTextField(
+                           modifier = Modifier.fillMaxWidth().weight(7.5F),
                             value = value, onValueChange = onValueChange,
                             textStyle = baseAppTextTheme(),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 capitalization = KeyboardCapitalization.Sentences,
                                 autoCorrect = true,
-                            )
+                            ),
+                            maxLines = 4,
+
                         )
                         IconButton(onClick = sendMessage,
+                            modifier = Modifier.offset(y=5.dp).weight(1.0F),
                             colors= IconButtonDefaults.iconButtonColors(
-                                containerColor = AppTheme.colorScheme.secondary,
-                                contentColor = AppTheme.colorScheme.onBackground,
-                                disabledContainerColor = Color.Black,
-                                disabledContentColor = Color.Black,
+                                containerColor = Color.Transparent,
+                                contentColor = AppTheme.colorScheme.secondary,
                             ),
                         ) {
-                            Icon(imageVector = Icons.Default.Done, contentDescription = "Send")
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.send), contentDescription = "Send")
                         }
                     }
                 }
@@ -274,3 +293,4 @@ fun TheirMessage(
         Spacer(modifier = Modifier.height(6.dp))
     }
 }
+

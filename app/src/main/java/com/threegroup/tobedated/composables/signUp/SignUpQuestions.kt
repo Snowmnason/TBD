@@ -560,6 +560,7 @@ fun PlainTextButton(
     enabled:Boolean = true
 ){
     Button(
+        shape = RoundedCornerShape(4.dp),
         onClick = onClick ,
         contentPadding = PaddingValues(16.dp),
         colors = ButtonDefaults.buttonColors(

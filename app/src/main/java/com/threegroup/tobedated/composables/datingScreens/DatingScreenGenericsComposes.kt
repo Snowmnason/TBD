@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,9 +52,12 @@ import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.getMBTIColor
+import com.threegroup.tobedated.models.getSmallerTextStyle
+import com.threegroup.tobedated.models.getStarSymbol
+import com.threegroup.tobedated.models.starColorMap
+import com.threegroup.tobedated.models.starColors
 import com.threegroup.tobedated.ui.theme.AppTheme
-import com.threegroup.tobedated.ui.theme.JoseFinSans
-import com.threegroup.tobedated.ui.theme.zodiac
 
 data class BotNavItem(
     val title:String,
@@ -258,7 +260,7 @@ fun SimpleIconBox(
     //whatsInsideTheBox: @Composable () -> Unit = {},
     verify:String = "false",
     answerList: List<String>,
-    iconList: List<ImageVector?>
+    iconList: List<ImageVector?>,
 ){
     var thickness = 1
     var boardColor= Color(0xFFB39DB7)
@@ -290,7 +292,7 @@ fun SimpleIconBox(
                     }
                     Text(
                         text = answerList[index],
-                        style = getSmallerTextStyle(),
+                        style = getSmallerTextStyle(AppTheme.colorScheme.onBackground),
                         modifier = Modifier.offset(y = 3.dp)
                     )
                     if (index != answerList.size - 1) {
@@ -311,22 +313,16 @@ fun SimpleIconBox(
 fun UserInfo(
     user: UserModel,
     bottomButtons: @Composable () -> Unit = {},
+    location:String = "X Miles"
 ){
     val photos = listOf(user.image1, user.image2, user.image3, user.image4)
     var subtract = 0
     if(photos[3] == ""){
         subtract = 1
     }
-    val mbtiColor: Color = if(user.testResultsMbti != "Not Taken"){
-        val parts = user.testResultsMbti.split("-")
-        val mainType = parts.first()
-        mbtiColors[mbtiColorMap[mainType]!!]
-    }else {
-        AppTheme.colorScheme.onSurface
-    }
     //Sign Sign MBTI
-    val starSymbol = zodiacToLetterMap[user.star]!!
-    val oppositeIndex = (starColorMap[starSymbol]!! + 2)  % starColorMap.size
+    val mbtiColor = getMBTIColor(user.testResultsMbti)
+    val starSymbol = getStarSymbol(user.star)
     Column(
         Modifier
             .fillMaxSize()
@@ -366,8 +362,8 @@ fun UserInfo(
         })
         Spacer(modifier = Modifier.height(12.dp))
         SimpleIconBox(
-            answerList = listOf(user.location, "24 miles"),
-            iconList = listOf(null, ImageVector.vectorResource(id = R.drawable.location))
+            answerList = listOf(user.meetUp, location),
+            iconList = listOf(ImageVector.vectorResource(id = R.drawable.first_date), ImageVector.vectorResource(id = R.drawable.location))
         )
         //relationship type, Intentions
         Spacer(modifier = Modifier.height(12.dp))
@@ -395,36 +391,17 @@ fun UserInfo(
         })
         //Star Sign, MBTI
         Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Row {
-                    Text(
-                        text = starSymbol,
-                        style = getStarTextStyle(oppositeIndex, zodiac),
-                        color = starColors[starColorMap[starSymbol]!!]
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = user.star,
-                        style = getStarTextStyle(oppositeIndex, JoseFinSans),
-                        color = starColors[starColorMap[starSymbol]!!]
-                    )//Star Sign
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.star, icon = starSymbol, divider = true, color= starColors[starColorMap[user.star]!!])
+                    SimpleIconEditBox(answer = user.testResultsMbti, icon = null, color = mbtiColor)
                 }
-                VerticalDivider(
-                    modifier = Modifier.height(20.dp),
-                    color = Color(0xFFB39DB7),
-                    thickness = 2.dp
-                )
-                Text(
-                    text = user.testResultsMbti,
-                    style = AppTheme.typography.titleLarge,
-                    color = mbtiColor
-                ) //MBTI Results
             }
-        })
+        )
         //Second prompt question
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {

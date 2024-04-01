@@ -1,6 +1,10 @@
 package com.threegroup.tobedated.callclass
 
 import java.util.Calendar
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 fun calcAge(birth: List<String>?): String{
@@ -23,11 +27,32 @@ fun calcAge(birth: List<String>?): String{
     return age.toString()
     //return "calculatedAge"
 }
+fun calcDistance(potential:String, current:String):String{
+    val distance: String
+    if(potential != "error/" && current != "error/"){
+        val potentialParts = potential.split("/")
+        val currentParts = current.split("/")
+        val latitudePotential = potentialParts.first().toDouble()
+        val longitudePotential = potentialParts.last().toDouble()
+        val latitudeCurrent = currentParts.first().toDouble()
+        val longitudeCurrent = currentParts.last().toDouble()
+        val earthRadius = 3958.8 // Earth radius in miles
 
-fun getCurrentLocation(): String {
-    return "userLocation"
+        val latDistance = Math.toRadians(latitudePotential - latitudeCurrent)
+        val lonDistance = Math.toRadians(longitudePotential - longitudeCurrent)
+        val a = sin(latDistance / 2) * sin(latDistance / 2) +
+                cos(Math.toRadians(latitudeCurrent)) * cos(Math.toRadians(latitudePotential)) *
+                sin(lonDistance / 2) * sin(lonDistance / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        val distanceInMiles = earthRadius * c
+
+        distance = "%.2f miles".format(distanceInMiles)
+
+    }else{
+        distance = "x miles"
+    }
+    return distance
 }
-
 fun checkDay(month:Int, year:Int) :Int {
     val maxDays = when (month) {
         1, 3, 5, 7, 8, 10, 12 -> 31

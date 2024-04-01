@@ -1,10 +1,14 @@
 package com.threegroup.tobedated.activities
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.threegroup.tobedated.callclass.calcDistance
 import com.threegroup.tobedated.composables.AlertDialogBox
 import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
@@ -57,17 +66,87 @@ val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 a
 //val notifiSearching = Random.nextBoolean()
 
 class DatingActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                getLastLocation()
+            } else {
+                // Handle permission denied
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val token = intent.getStringExtra("token").toString()
+        var location = "error"
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        // Request location permission if not granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestLocationPermission()
+        } else {
+            location = getLastLocation()
+        }
         setContent {
             AppTheme {
-                DatingNav(this@DatingActivity, token)
+                DatingNav(this@DatingActivity, token, location)
             }
         }
     }
+
+    private fun requestLocationPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private fun getLastLocation():String {
+        var latitude = ""
+        var longitude = ""
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return "error"
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                // Handle the retrieved location
+                if (location != null) {
+                    // Got last known location
+                    latitude = location.latitude.toString()
+                    longitude = location.longitude.toString()
+                } else {
+                    // Last location is null
+                    // Handle this situation
+                    latitude = "error"
+                    longitude = ""
+                }
+            }
+            .addOnFailureListener { e ->
+                // Handle failure to retrieve location
+
+            }
+        return "$latitude/$longitude"
+    }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+    }
+
     fun clearUserToken() {
         val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -124,9 +203,11 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         state = state,
         currentScreen = {
             currentPotential.value?.let { user ->
+                val location = calcDistance(user.location, vmDating.getUser().location)
                 if (isNext || isLoading.value) {
                     UserInfo(
-                        user,//usersArray[currentProfileIndex]
+                        user = user,//usersArray[currentProfileIndex]
+                        location = location,
                         bottomButtons = {
                             SearchingButtons(
                                 onClickLike = {
@@ -172,10 +253,10 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
     val searchPref by remember { mutableStateOf( currentUser.userPref) }
 
     val userPref= listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti,
-        searchPref.children, searchPref.familyPlans, searchPref.education, searchPref.religion, searchPref.politicalViews,
+        searchPref.children, searchPref.familyPlans, searchPref.meetUp, searchPref.education, searchPref.religion, searchPref.politicalViews,
         searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed)
 
-    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans",
+    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Meeting Up",
         "Education", "Religion", "Political Views", "Relationship Type","Intentions", "Drink", "Smokes", "Weed")
     InsideSearchSettings(
         nav = navController,

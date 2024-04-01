@@ -81,7 +81,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun getUser(): UserModel {
         return signedInUser
     }
-    fun setLoggedInUser(userPhoneNumber: String) {
+    fun setLoggedInUser(userPhoneNumber: String, location:String) {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -121,7 +121,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                         signedInUser.image2 = userDataMap["image2"] as? String ?: ""
                         signedInUser.image3 = userDataMap["image3"] as? String ?: ""
                         signedInUser.image4 = userDataMap["image4"] as? String ?: ""
-                        signedInUser.location = userDataMap["location"] as? String ?: ""
+                        signedInUser.location = if (location == "error/" || location == "/") {
+                            // If location is 'error', retrieve location from Firebase
+                            userDataMap["location"] as? String ?: ""
+                        } else {
+                            // Otherwise, use the provided location value
+                            location
+                        }
                         signedInUser.status = userDataMap["status"] as? String ?: ""
                         signedInUser.number = userDataMap["number"] as? String ?: ""
                         signedInUser.verified = userDataMap["verified"] as? Boolean ?: false

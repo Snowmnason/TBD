@@ -23,6 +23,7 @@ data class UserModel(
     var drink           : String = "",
     var smoke           : String = "",
     var weed            : String = "",
+    var meetUp          : String = "",
     var promptQ1        : String = "",
     var promptA1        : String = "",
     var promptQ2        : String = "",
@@ -34,7 +35,7 @@ data class UserModel(
     var image2          : String = "",
     var image3          : String = "",
     var image4          : String = "",
-    var location        : String = "",
+    var location        : String = "24 miles",
     var status          : String = "",
     var number          :String = "",
     var verified        :Boolean = false,
@@ -57,6 +58,7 @@ data class UserSearchPreferenceModel(
     var drink               : List<String> = listOf("Doesn't Matter"),
     var smoke               : List<String> = listOf("Doesn't Matter"),
     var weed                : List<String> = listOf("Doesn't Matter"),
+    var meetUp                : List<String> = listOf("Doesn't Matter"),
 )
 
 data class PreferenceIndexModel(
@@ -84,5 +86,6 @@ data class PreferenceIndexModel(
     var promptA2 : Int = -1,
     var promptQ3 : Int = -1,
     var promptA3 : Int = -1,
+    var meetUp  : Int = -1
 )
 

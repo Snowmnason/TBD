@@ -1,8 +1,10 @@
 package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +12,14 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,9 +47,12 @@ import com.threegroup.tobedated.activities.DatingActivity
 import com.threegroup.tobedated.callclass.calcAge
 import com.threegroup.tobedated.composables.signUp.BigButton
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.getMBTIColor
+import com.threegroup.tobedated.models.getSmallerTextStyle
+import com.threegroup.tobedated.models.getStarSymbol
+import com.threegroup.tobedated.models.starColorMap
+import com.threegroup.tobedated.models.starColors
 import com.threegroup.tobedated.ui.theme.AppTheme
-import com.threegroup.tobedated.ui.theme.JoseFinSans
-import com.threegroup.tobedated.ui.theme.zodiac
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,6 +110,70 @@ fun EditProfile(dating: DatingActivity){
             dating.clearUserToken()
     }, isUse = true)
 }
+
+@Composable
+fun SimpleEditBox(
+    whatsInsideTheBox: @Composable () -> Unit = {},
+){
+    val thickness = 1
+    val boardColor= Color(0xFFB39DB7)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(thickness.dp, boardColor, shape = RoundedCornerShape(4.dp)),
+        color = AppTheme.colorScheme.background,
+        contentColor = AppTheme.colorScheme.onBackground,
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Box(modifier = Modifier.padding(4.dp, 8.dp)) {
+            whatsInsideTheBox()
+        }
+    }
+}
+
+@Composable
+fun SimpleIconEditBox(
+    //whatsInsideTheBox: @Composable () -> Unit = {},
+    verify:String = "false",
+    answer: String,
+    icon: ImageVector?,
+    divider:Boolean = false,
+    color:Color = AppTheme.colorScheme.onBackground
+){
+
+    Box() {
+        if (icon != null) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Icon(
+                    imageVector = icon, contentDescription = "icon", modifier = Modifier
+                        .offset(y = (-2).dp)
+                        .size(25.dp), tint = AppTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = answer,
+                    style = getSmallerTextStyle(color),
+                    modifier = Modifier.offset(y = 3.dp),
+                )
+            }
+        } else {
+            Text(
+                text = answer,
+                style = getSmallerTextStyle(color),
+                modifier = Modifier.offset(y = 3.dp)
+            )
+        }
+    }
+    if(divider){
+        VerticalDivider(
+            modifier = Modifier.height(20.dp),
+            color = Color(0xFFB39DB7),
+            thickness = 2.dp
+        )
+    }
+}
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CurrentUserInfo(
@@ -112,23 +184,14 @@ fun CurrentUserInfo(
     if (photos[3] == "") {
         subtract = 1
     }
-    val mbtiColor: Color = if (user.testResultsMbti != "Not Taken") {
-        val parts = user.testResultsMbti.split("-")
-        val mainType = parts.first()
-        mbtiColors[mbtiColorMap[mainType]!!]
-    } else {
-        AppTheme.colorScheme.onSurface
-    }
     //Sign Sign MBTI
-    val starSymbol = zodiacToLetterMap[user.star]!!
-    val oppositeIndex = (starColorMap[starSymbol]!! + 2) % starColorMap.size
+    val mbtiColor = getMBTIColor(user.testResultsMbti)
+    val starSymbol = getStarSymbol(user.star)
     Column(
         Modifier
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ) {
-
-
         //Name
         SimpleBox(verify = user.verified, whatsInsideTheBox = {
             Column(
@@ -139,43 +202,73 @@ fun CurrentUserInfo(
             }
         })
         //Age, Ethnicity
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(calcAge(user.birthday.split("/")), user.ethnicity, user.pronoun),
-            iconList = listOf(null, null, null)
+                        Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = calcAge(user.birthday.split("/")), icon = null, divider = true)
+                    SimpleIconEditBox(answer = user.ethnicity, icon = null, divider = true)
+                    SimpleIconEditBox(answer = user.pronoun, icon = ImageVector.vectorResource(id = R.drawable.height))
+                }
+            }
         )
         //Sexual orientation, Pronouns, Gender
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.gender, user.sexOrientation, user.height),
-            iconList = listOf(null, null, ImageVector.vectorResource(id = R.drawable.height)),
+                        Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.gender, icon = null, divider = true)
+                    SimpleIconEditBox(answer = user.sexOrientation, icon = null, divider = true)
+                    SimpleIconEditBox(answer = user.height, icon = ImageVector.vectorResource(id = R.drawable.height))
+                }
+            }
         )
+
+
         //BIO
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
+                        Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
 //                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
             }
         })
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.location, "24 miles"),
-            iconList = listOf(null, ImageVector.vectorResource(id = R.drawable.location))
+        //MEET UP AND LOCATION
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.meetUp, icon = ImageVector.vectorResource(id = R.drawable.first_date), divider = true)
+                    SimpleIconEditBox(answer = user.location, icon = ImageVector.vectorResource(id = R.drawable.location))//TODO Change to "0 miles"
+                }
+            }
         )
         //relationship type, Intentions
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.relationship, user.intentions),
-            iconList = listOf(
-                ImageVector.vectorResource(id = R.drawable.relationship_type),
-                ImageVector.vectorResource(id = R.drawable.intentions)
-            )
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.relationship, icon =  ImageVector.vectorResource(id = R.drawable.relationship_type), divider = true)
+                    SimpleIconEditBox(answer = user.intentions, icon = ImageVector.vectorResource(id = R.drawable.intentions))
+                }
+            }
         )
         //First prompt question
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(text = user.promptQ1, style = AppTheme.typography.titleSmall)//Prompt question
                 Spacer(modifier = Modifier.height(4.dp))
@@ -185,40 +278,21 @@ fun CurrentUserInfo(
             }
         })
         //Star Sign, MBTI
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Row {
-                    Text(
-                        text = starSymbol,
-                        style = getStarTextStyle(oppositeIndex, zodiac),
-                        color = starColors[starColorMap[starSymbol]!!]
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = user.star,
-                        style = getStarTextStyle(oppositeIndex, JoseFinSans),
-                        color = starColors[starColorMap[starSymbol]!!]
-                    )//Star Sign
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.star, icon = starSymbol, divider = true, color= starColors[starColorMap[user.star]!!])
+                    SimpleIconEditBox(answer = user.testResultsMbti, icon = null, color = mbtiColor)
                 }
-                VerticalDivider(
-                    modifier = Modifier.height(20.dp),
-                    color = Color(0xFFB39DB7),
-                    thickness = 2.dp
-                )
-                Text(
-                    text = user.testResultsMbti,
-                    style = AppTheme.typography.titleLarge,
-                    color = mbtiColor
-                ) //MBTI Results
             }
-        })
+        )
         //Second prompt question
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = user.promptQ2,
@@ -231,17 +305,21 @@ fun CurrentUserInfo(
             }
         })
         //Family, Kids
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.children, user.family),
-            iconList = listOf(
-                ImageVector.vectorResource(id = R.drawable.children),
-                ImageVector.vectorResource(id = R.drawable.family)
-            ),
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.children, icon =  ImageVector.vectorResource(id = R.drawable.children), divider = true)
+                    SimpleIconEditBox(answer = user.family, icon = ImageVector.vectorResource(id = R.drawable.family))
+                }
+            }
         )
         //Third Prompt Question
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleBox(whatsInsideTheBox = {
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = user.promptQ3,
@@ -249,18 +327,23 @@ fun CurrentUserInfo(
                 )//Prompt Question 3
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
             }
         })
         //Smokes, drinks, weeds
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.drink, user.smoke, user.weed),
-            iconList = listOf(
-                ImageVector.vectorResource(id = R.drawable.smoking),
-                ImageVector.vectorResource(id = R.drawable.drinking),
-                ImageVector.vectorResource(id = R.drawable.weeds)
-            ),
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.drink, icon = ImageVector.vectorResource(id = R.drawable.smoking), divider = true)
+                    SimpleIconEditBox(answer = user.smoke, icon = ImageVector.vectorResource(id = R.drawable.drinking), divider = true)
+                    SimpleIconEditBox(answer = user.weed, icon = ImageVector.vectorResource(id = R.drawable.weeds))
+                }
+            }
         )
         /*
         TODO add another breaker it will look nicer
@@ -270,14 +353,18 @@ fun CurrentUserInfo(
         TODO add another breaker it will look nicer
          */
         //Politics Religion School
-        Spacer(modifier = Modifier.height(12.dp))
-        SimpleIconBox(
-            answerList = listOf(user.politics, user.religion, user.education),
-            iconList = listOf(
-                ImageVector.vectorResource(id = R.drawable.politics),
-                ImageVector.vectorResource(id = R.drawable.religion),
-                ImageVector.vectorResource(id = R.drawable.school)
-            ),
+                Spacer(modifier = Modifier.height(12.dp))
+        SimpleEditBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconEditBox(answer = user.politics, icon = ImageVector.vectorResource(id = R.drawable.politics), divider = true)
+                    SimpleIconEditBox(answer = user.religion, icon = ImageVector.vectorResource(id = R.drawable.religion), divider = true)
+                    SimpleIconEditBox(answer = user.education, icon = ImageVector.vectorResource(id = R.drawable.school))
+                }
+            }
         )
         Spacer(modifier = Modifier.height(12.dp))
         val pagerState = rememberPagerState(pageCount = { photos.size - subtract })

@@ -1,8 +1,11 @@
 package com.threegroup.tobedated.activities
 
+import android.Manifest
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -37,9 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -76,6 +83,7 @@ import com.threegroup.tobedated.models.ethnicityOptions
 import com.threegroup.tobedated.models.familyOptions
 import com.threegroup.tobedated.models.genderOptions
 import com.threegroup.tobedated.models.intentionsOptions
+import com.threegroup.tobedated.models.meetUpOptions
 import com.threegroup.tobedated.models.politicsOptions
 import com.threegroup.tobedated.models.pronounOptions
 import com.threegroup.tobedated.models.relationshipOptions
@@ -100,9 +108,29 @@ import java.util.Calendar
 var newUser = UserModel()
 var newUserIndex = PreferenceIndexModel()
 class SignUpActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                getLastLocation()
+            } else {
+                // Handle permission denied
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         newUser.number = intent.getStringExtra("userPhone").toString()
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // Request location permission if not granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestLocationPermission()
+        } else {
+            newUser.location = getLastLocation()
+        }
         setContent {
             AppTheme {
                 PolkaDotCanvas()
@@ -111,6 +139,55 @@ class SignUpActivity : ComponentActivity() {
             }
         }
     }
+    private fun requestLocationPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private fun getLastLocation():String {
+        var latitude = ""
+        var longitude = ""
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return "error"
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                // Handle the retrieved location
+                if (location != null) {
+                    // Got last known location
+                    latitude = location.latitude.toString()
+                    longitude = location.longitude.toString()
+                } else {
+                    // Last location is null
+                    // Handle this situation
+                    latitude = "error"
+                    longitude = ""
+                }
+            }
+            .addOnFailureListener { e ->
+                // Handle failure to retrieve location
+
+            }
+        return "$latitude/$longitude"
+    }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+    }
+
 
     fun switchBack() {
         val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
@@ -672,6 +749,27 @@ fun ourTestScreen():Boolean{
     return true //our.isNotEmpty()
 }
 @Composable
+fun meetUpScreen():Boolean{
+    var metUp by rememberSaveable { mutableStateOf(newUser.meetUp) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.meetUp) }
+    SignUpFormat(
+        title = "How comfortable are you meeting up?",
+        label = "Whens the first date?",
+        enterField = {
+            RadioButtonGroup(
+                options = meetUpOptions,
+                selectedIndex = selectedOptionIndex,
+                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                    metUp = meetUpOptions[selectedOptionIndex]
+                    newUser.meetUp = meetUpOptions[selectedOptionIndex]
+                },
+                style = getCustomButtonStyle()
+            )
+        },
+    )
+    return metUp.isNotEmpty()
+}
+@Composable
 fun childrenScreen():Boolean{
     var children by rememberSaveable { mutableStateOf(newUser.children) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.children) }
@@ -1063,11 +1161,12 @@ enum class SignUp {
     PoliticsScreen,//
     RelationshipScreen,//
     IntentionsScreen,//
+    MeetUpScreen,
     DrinkScreen,//
     SmokeScreen,//
     WeedScreen,//
     BioScreen,//
-    promptQuestionsScreen,
+    PromptQuestionsScreen,
     PhotoScreen,
 }
 /* Cool multiSelect

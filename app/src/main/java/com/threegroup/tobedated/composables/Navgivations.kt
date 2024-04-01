@@ -50,6 +50,7 @@ import com.threegroup.tobedated.activities.genderScreen
 import com.threegroup.tobedated.activities.heightScreen
 import com.threegroup.tobedated.activities.intentionsScreen
 import com.threegroup.tobedated.activities.mbtiScreen
+import com.threegroup.tobedated.activities.meetUpScreen
 import com.threegroup.tobedated.activities.nameScreen
 import com.threegroup.tobedated.activities.ourTestScreen
 import com.threegroup.tobedated.activities.photoScreen
@@ -126,7 +127,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         SignUp.DrinkScreen.name,
         SignUp.SmokeScreen.name,
         SignUp.WeedScreen.name,
-        SignUp.promptQuestionsScreen.name,
+        SignUp.PromptQuestionsScreen.name,
         SignUp.BioScreen.name,
         SignUp.PhotoScreen.name
     )
@@ -239,6 +240,9 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         composable(route = SignUp.IntentionsScreen.name) {
             isButtonEnabled = intentionsScreen()
         }
+        composable(route = SignUp.MeetUpScreen.name){
+            isButtonEnabled = meetUpScreen()
+        }
         composable(route = SignUp.DrinkScreen.name) {
             isButtonEnabled = drinkScreen()
         }
@@ -249,7 +253,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
             isButtonEnabled = weedScreen()
         }
 
-        composable(route = SignUp.promptQuestionsScreen.name) {
+        composable(route = SignUp.PromptQuestionsScreen.name) {
             noShow = true
             isButtonEnabled = promptQuestionsScreen(navController, signUpVM)
         }
@@ -295,11 +299,11 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
 }
 
 @Composable
-fun DatingNav(dating:DatingActivity, token:String) {
+fun DatingNav(dating:DatingActivity, token:String, location:String) {
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     LaunchedEffect(Unit) {
-        viewModelDating.setLoggedInUser(token)
+        viewModelDating.setLoggedInUser(token, location)
     }
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },

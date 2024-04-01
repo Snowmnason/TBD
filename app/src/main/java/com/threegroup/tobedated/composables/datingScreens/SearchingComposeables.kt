@@ -34,22 +34,17 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.R
@@ -65,6 +60,7 @@ import com.threegroup.tobedated.models.familyPlansList
 import com.threegroup.tobedated.models.genderList
 import com.threegroup.tobedated.models.intentionsList
 import com.threegroup.tobedated.models.mbtiList
+import com.threegroup.tobedated.models.meetUpList
 import com.threegroup.tobedated.models.politicalViewsList
 import com.threegroup.tobedated.models.relationshipTypeList
 import com.threegroup.tobedated.models.religionList
@@ -73,77 +69,10 @@ import com.threegroup.tobedated.models.smokeList
 import com.threegroup.tobedated.models.weedList
 import com.threegroup.tobedated.models.zodiacList
 import com.threegroup.tobedated.ui.theme.AppTheme
-import com.threegroup.tobedated.ui.theme.JoseFinSans
 import com.threegroup.tobedated.viewModels.DatingViewModel
 import kotlin.math.roundToInt
 
-@Composable
-fun getStarTextStyle(oppositeIndex:Int, font: FontFamily): TextStyle {
-    return TextStyle(
-        fontFamily = font,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        shadow = Shadow(
-            color = starColors[oppositeIndex],
-            offset = Offset(3f, 4f),
-            blurRadius = 4f
-        )
-    )
-}
-@Composable
-fun getSmallerTextStyle(): TextStyle {
-    return TextStyle(
-        fontFamily = JoseFinSans,
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
-        lineHeight = 26.sp,
-        letterSpacing = 0.sp
-    )
-}
-/*
-A=Aries         Orange          0xFFf07019
-B=Taurus        Brown           0xFF874b2f
-C=Capricorn     Yellow          0xFFecab2b
-D=Aquarius      Purple          0xFF9a68bf
-E=Gemini        Light Green     0xFF6ca169
-F=Pisces        Blue            0xFF0e4caf
-G=Cancer        Grey            0xFF5c5463
-H=Leo           Red             0xFFb9361a
-I=Virgo         Dark Green      0xFF345c42
-J=Libra         light Blue      0xFF366b8d
-K=Scorpio       Blue            0xFF0a434c
-L=Sagittarius   Pink            0xFFa0467c
 
-INTJ INTP ENTJ ENTP 834e69
-ENFP ENFJ INFP INFJ 617c44
-ESFJ ESTJ ISFJ ISTJ 176363
-ISTP ISFP ESTP ESFP 71531e
-
-*/
-val starColors = listOf(Color(0xFFf07019), Color(0xFF874b2f), Color(0xFFecab2b),
-    Color(0xFF9a68bf), Color(0xFF6ca169), Color(0xFF0e4caf),
-    Color(0xFF5c5463), Color(0xFFb9361a), Color(0xFF345c42),
-    Color(0xFF366b8d), Color(0xFF0a434c), Color(0xFFa0467c), Color.Gray
-)
-val starColorMap = mapOf(
-    "a" to 0, "b" to 1, "c" to 2, "d" to 3, "e" to 4, "f" to 5,
-    "g" to 6, "h" to 7, "i" to 8, "j" to 9, "k" to 10, "l" to 11, "m" to 12
-)
-val mbtiColors = listOf(
-    Color(0xFF834e69), Color(0xFF617c44), Color(0xFF176363), Color(0xFFD1A00C)
-)
-val mbtiColorMap = mapOf(
-    "INTJ" to 0, "INTP" to 0, "ENTJ" to 0, "ENTP" to 0,
-    "ENFP" to 1, "ENFJ" to 1, "INFP" to 1, "INFJ" to 1,
-    "ESFJ" to 2, "ESTJ" to 2, "ISFJ" to 2, "ISTJ" to 2,
-    "ISTP" to 3, "ISFP" to 3, "ESTP" to 3, "ESFP" to 3
-)
-val zodiacToLetterMap = mapOf(
-    "Aries" to "a", "Taurus" to "b", "Capricorn" to "c", "Aquarius" to "d",
-    "Gemini" to "e", "Pisces" to "f", "Cancer" to "g", "Leo" to "h",
-    "Virgo" to "i", "Libra" to "j", "Scorpio" to "k", "Sagittarius" to "l", "Ask me" to "m"
-)
 @Composable
 fun SimpleButton(
     modifier: Modifier,
@@ -197,7 +126,7 @@ fun SearchingButtons(
     onClickReport: () -> Unit,
     onClickSuggest: () -> Unit,
     ){
-    Column(){
+    Column {
         Row {
             SimpleButton(
                 modifier = Modifier
@@ -347,7 +276,7 @@ fun DistanceSlider(
     vmDating: DatingViewModel,
     currentUser: UserModel,
 ) {
-    var sliderPosition by remember { mutableStateOf(preferredMax.toFloat()) }
+    var sliderPosition by remember { mutableFloatStateOf(preferredMax.toFloat()) }
 
     SimpleBox(
         whatsInsideTheBox = {
@@ -517,6 +446,7 @@ fun ChangePreferenceScreen(
         "Drink" -> drinkList
         "Smokes" -> smokeList
         "Weed" -> weedList
+        "Meeting Up" -> meetUpList
         else -> listOf("Man", "Woman", "Everyone")
     }
     val currentUser = vmDating.getUser()
@@ -524,9 +454,9 @@ fun ChangePreferenceScreen(
 
     val userPrefList = remember { mutableStateListOf(
         currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
-        currPref.children, currPref.familyPlans, currPref.education, currPref.religion,
+        currPref.children, currPref.familyPlans, currPref.meetUp, currPref.education, currPref.religion,
         currPref.politicalViews, currPref.relationshipType, currPref.intentions,
-        currPref.drink, currPref.smoke, currPref.weed
+        currPref.drink, currPref.smoke, currPref.weed,
     )}
     var currentPreference by remember { mutableStateOf(userPrefList[index]) }
 

@@ -154,17 +154,21 @@ fun AlertDialogBox(
 }
 @Composable
 fun GenericTitleSmall(
-    text:String
+    text:String,
+    color: Color = AppTheme.colorScheme.onBackground
 ){
     Text(text = text,
         style = AppTheme.typography.titleSmall,
-        color = AppTheme.colorScheme.onBackground)
+        color = color)
 }
 @Composable
 fun GenericBodyText(
-    text:String
+    text:String,
+    modifier: Modifier = Modifier
 ){
-    Text(text = text,
+    Text(
+        modifier= modifier,
+        text = text,
         style = AppTheme.typography.body,
         color = AppTheme.colorScheme.onBackground)
 }

@@ -1,7 +1,12 @@
 package com.threegroup.tobedated.composables.datingScreens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,39 +25,85 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.activities.DatingActivity
 import com.threegroup.tobedated.callclass.calcAge
+import com.threegroup.tobedated.composables.GenericBodyText
+import com.threegroup.tobedated.composables.GenericTitleSmall
+import com.threegroup.tobedated.composables.baseAppTextTheme
 import com.threegroup.tobedated.composables.signUp.BigButton
+import com.threegroup.tobedated.composables.signUp.LabelText
+import com.threegroup.tobedated.composables.signUp.PlainTextButton
+import com.threegroup.tobedated.composables.signUp.PromptAnswer
 import com.threegroup.tobedated.models.UserModel
+import com.threegroup.tobedated.models.childrenOptions
+import com.threegroup.tobedated.models.curiositiesANDImaginations
+import com.threegroup.tobedated.models.drinkOptions
+import com.threegroup.tobedated.models.educationOptions
+import com.threegroup.tobedated.models.ethnicityOptions
+import com.threegroup.tobedated.models.familyOptions
+import com.threegroup.tobedated.models.genderOptions
 import com.threegroup.tobedated.models.getMBTIColor
 import com.threegroup.tobedated.models.getSmallerTextStyle
 import com.threegroup.tobedated.models.getStarSymbol
+import com.threegroup.tobedated.models.insightsANDReflections
+import com.threegroup.tobedated.models.intentionsOptions
+import com.threegroup.tobedated.models.meetUpOptions
+import com.threegroup.tobedated.models.passionsANDInterests
+import com.threegroup.tobedated.models.politicsOptions
+import com.threegroup.tobedated.models.pronounOptions
+import com.threegroup.tobedated.models.relationshipOptions
+import com.threegroup.tobedated.models.religionOptions
+import com.threegroup.tobedated.models.sexOrientationOptions
+import com.threegroup.tobedated.models.smokeOptions
 import com.threegroup.tobedated.models.starColorMap
 import com.threegroup.tobedated.models.starColors
+import com.threegroup.tobedated.models.starOptions
+import com.threegroup.tobedated.models.tabs
+import com.threegroup.tobedated.models.weedOptions
 import com.threegroup.tobedated.ui.theme.AppTheme
+import com.threegroup.tobedated.viewModels.DatingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,17 +154,41 @@ fun InsideProfileSettings(
     }
 }
 @Composable
-fun EditProfile(dating: DatingActivity){
+fun LogOut(dating: DatingActivity){
     BigButton(
         text = "Log Out",
         onClick = {
             dating.clearUserToken()
     }, isUse = true)
 }
+@Composable
+fun DeleteAccount(
+    onClick: () -> Unit
+){
+    OutlinedButton(onClick = onClick,
+        border = BorderStroke(2.dp , Color.Red)
+
+    ) {
+        GenericTitleSmall(text = "Delete Account", color = Color.Red)
+    }
+}
+@Composable
+fun DeactivateAccount(
+    onClick: () -> Unit
+){
+    OutlinedButton(
+        onClick = onClick,
+        border = BorderStroke(2.dp , Color.Red)
+    ) {
+        GenericTitleSmall(text = "Deactivate Account")
+    }
+}
 
 @Composable
 fun SimpleEditBox(
     whatsInsideTheBox: @Composable () -> Unit = {},
+    edit:Boolean = false,
+    onClick: () -> Unit = {}
 ){
     val thickness = 1
     val boardColor= Color(0xFFB39DB7)
@@ -125,7 +200,9 @@ fun SimpleEditBox(
         contentColor = AppTheme.colorScheme.onBackground,
         shape = RoundedCornerShape(4.dp)
     ) {
-        Box(modifier = Modifier.padding(4.dp, 8.dp)) {
+        Box(modifier = Modifier
+            .padding(4.dp, 8.dp)
+            .clickable(enabled = edit, onClick = onClick)) {
             whatsInsideTheBox()
         }
     }
@@ -138,10 +215,10 @@ fun SimpleIconEditBox(
     answer: String,
     icon: ImageVector?,
     divider:Boolean = false,
-    color:Color = AppTheme.colorScheme.onBackground
+    color:Color = AppTheme.colorScheme.onBackground,
 ){
 
-    Box() {
+    Box(modifier = Modifier) {
         if (icon != null) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -178,6 +255,10 @@ fun SimpleIconEditBox(
 @Composable
 fun CurrentUserInfo(
     user: UserModel,
+    bioClick: () -> Unit = {},
+    prompt1Click: () -> Unit = {},
+    prompt2Click: () -> Unit = {},
+    prompt3Click: () -> Unit = {},
 ) {
     val photos = listOf(user.image1, user.image2, user.image3, user.image4)
     var subtract = 0
@@ -233,13 +314,18 @@ fun CurrentUserInfo(
 
         //BIO
                         Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(whatsInsideTheBox = {
+        SimpleEditBox(
+            whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
 //                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
+
             }
-        })
+        },
+            edit = true,
+            onClick = bioClick
+        )
         //MEET UP AND LOCATION
                 Spacer(modifier = Modifier.height(12.dp))
         SimpleEditBox(
@@ -249,7 +335,7 @@ fun CurrentUserInfo(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     SimpleIconEditBox(answer = user.meetUp, icon = ImageVector.vectorResource(id = R.drawable.first_date), divider = true)
-                    SimpleIconEditBox(answer = user.location, icon = ImageVector.vectorResource(id = R.drawable.location))//TODO Change to "0 miles"
+                    SimpleIconEditBox(answer = "0 miles", icon = ImageVector.vectorResource(id = R.drawable.location))
                 }
             }
         )
@@ -276,7 +362,10 @@ fun CurrentUserInfo(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA1, style = AppTheme.typography.bodyLarge) //Prompt Answer
             }
-        })
+        },
+            edit = true,
+            onClick = prompt1Click
+        )
         //Star Sign, MBTI
                 Spacer(modifier = Modifier.height(12.dp))
         SimpleEditBox(
@@ -303,7 +392,10 @@ fun CurrentUserInfo(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA2, style = AppTheme.typography.bodyLarge) //Prompt Answer 2
             }
-        })
+        },
+            edit = true,
+            onClick = prompt2Click
+        )
         //Family, Kids
                 Spacer(modifier = Modifier.height(12.dp))
         SimpleEditBox(
@@ -330,7 +422,10 @@ fun CurrentUserInfo(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
             }
-        })
+        },
+            edit = true,
+            onClick = prompt3Click
+        )
         //Smokes, drinks, weeds
                 Spacer(modifier = Modifier.height(12.dp))
         SimpleEditBox(
@@ -379,3 +474,331 @@ fun CurrentUserInfo(
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
+@Composable
+fun EditProfile(
+    title: String,
+    navController: NavController,
+    userSetting: String,
+    clickable: Boolean = false,
+    index:Int
+) {
+
+    val modifier = if (clickable) {
+        Modifier.clickable { navController.navigate("ChangeProfileScreen/$title/$index") }
+    } else {
+        Modifier
+    }
+
+    SimpleBox(
+        whatsInsideTheBox = {
+            Row(
+                modifier = Modifier
+                    .padding(15.dp, 15.dp, 15.dp, 0.dp)
+                    .fillMaxWidth()
+                    .then(modifier),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                GenericTitleSmall(text = "$title:")
+                //Spacer(modifier = Modifier.height(4.dp))
+                GenericBodyText(text = userSetting, modifier.offset(y=0.dp))
+            }
+        }
+    )
+}
+@Composable
+fun ChangeProfile(
+    nav: NavHostController,
+    vmDating: DatingViewModel,
+    title: String = "",
+    index:Int
+) {
+    val currentUser = vmDating.getUser()
+    val (opts, userSet) = when (title) {
+        "Ethnicity" -> ethnicityOptions to currentUser.ethnicity
+        "Pronoun" -> pronounOptions to currentUser.pronoun
+        "Gender" -> genderOptions to currentUser.gender
+        "Sexual Orientation" -> sexOrientationOptions to currentUser.sexOrientation
+        "Meeting Up" -> meetUpOptions to currentUser.meetUp
+        "Relationship Type" -> relationshipOptions to currentUser.relationship
+        "Intentions" -> intentionsOptions to currentUser.intentions
+        "Zodiac Sign" -> starOptions to currentUser.star
+        "Children" -> childrenOptions to currentUser.children
+        "Family" -> familyOptions to currentUser.family
+        "Drink" -> drinkOptions to currentUser.drink
+        "Smokes" -> smokeOptions to currentUser.smoke
+        "Weed" -> weedOptions to currentUser.weed
+        "Political Views" -> politicsOptions to currentUser.politics
+        "Education" -> educationOptions to currentUser.education
+        "Religion" -> religionOptions to currentUser.religion
+        else -> listOf("") to ""
+    }
+    var userSettings by remember { mutableStateOf(userSet) }
+    val checkedItems = remember { mutableStateListOf<String>().apply { add(userSettings) } }
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = title,
+        changeSettings = {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                opts.forEach { option ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+                        .clickable(onClick = {
+                            if (!userSettings.contains(option)) {
+                                checkedItems.clear()
+                                checkedItems.add(option)
+                                userSettings = option
+                            }
+                        }),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        GenericTitleSmall(text = option)
+                        Checkbox(
+                            checked = userSettings.contains(option),
+                            onCheckedChange = {},
+                        )
+                    }
+                }
+            }
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    nav.popBackStack()
+                    when (title) {
+                        "Ethnicity" -> currentUser.ethnicity = userSettings
+                        "Pronoun" -> currentUser.pronoun = userSettings
+                        "Gender" -> currentUser.gender = userSettings
+                        "Sexual Orientation" -> currentUser.sexOrientation = userSettings
+                        "Meeting Up" -> currentUser.meetUp = userSettings
+                        "Relationship Type" -> currentUser.relationship = userSettings
+                        "Intentions" -> currentUser.intentions = userSettings
+                        "Zodiac Sign" -> currentUser.star = userSettings
+                        "Children" -> currentUser.children = userSettings
+                        "Family" -> currentUser.family = userSettings
+                        "Drink" -> currentUser.drink = userSettings
+                        "Smokes" -> currentUser.smoke = userSettings
+                        "Weed" -> currentUser.weed = userSettings
+                        "Political Views" -> currentUser.politics = userSettings
+                        "Education" -> currentUser.education = userSettings
+                        "Religion" -> currentUser.religion = userSettings
+                    }
+                    vmDating.updateUser(currentUser)
+                    checkedItems.clear()
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+        }
+    )
+}
+@Composable
+fun BioEdit(
+    nav: NavHostController,
+    vmDating: DatingViewModel,
+) {
+    val currentUser = vmDating.getUser()
+    var bio by rememberSaveable { mutableStateOf(currentUser.bio) }
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = "Edit Bio",
+        changeSettings = {
+            Spacer(modifier = Modifier.height(24.dp))
+            SimpleBox(
+                whatsInsideTheBox = {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                    ) {
+                        val maxLength = 500
+                        val remainingChars = maxLength - bio.length
+                        TextField(
+                            value = bio,
+                            onValueChange = { input -> bio = input },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 5.dp)
+                                .height(200.dp),
+                            textStyle = baseAppTextTheme(),
+                            maxLines = 10,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = AppTheme.colorScheme.primary, // Set cursor color
+                                focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
+                                unfocusedBorderColor = AppTheme.colorScheme.onSurface, // Set unfocused border color
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = true,
+                            )
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            LabelText(
+                                label = "$remainingChars/$maxLength",
+                                color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                }
+            )
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    nav.popBackStack()
+                    currentUser.bio = bio
+                    vmDating.updateUser(currentUser)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun PromptEdit(nav:NavHostController, vmDating: DatingViewModel, questionNumber:Int){
+    var question by rememberSaveable { mutableStateOf(true) }
+    val currentUser = vmDating.getUser()
+    var tabIndex by remember { mutableIntStateOf(0) }
+    val state = ScrollState(0)
+    var prompt by rememberSaveable { mutableStateOf("" ) }
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = "IceBreaker $questionNumber",
+        changeSettings = {
+            if(question) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    ScrollableTabRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .scrollable(state, orientation = Orientation.Horizontal),
+                        selectedTabIndex = tabIndex,
+                        contentColor = AppTheme.colorScheme.secondary,
+                        containerColor = Color(0xFFB39DB7)
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = title,
+                                        style = AppTheme.typography.bodySmall
+                                    )
+                                },
+                                selected = tabIndex == index,
+                                onClick = { tabIndex = index }
+                            )
+                        }
+                    }
+                    var questionsToUse = insightsANDReflections
+                    when (tabIndex) {
+                        0 -> questionsToUse = insightsANDReflections
+                        1 -> questionsToUse = passionsANDInterests
+                        2 -> questionsToUse = curiositiesANDImaginations
+                    }
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 25.dp, vertical = 15.dp)
+                        //.scrollable(state, orientation = Orientation.Vertical)
+                    ) {
+                        questionsToUse.forEach { quest ->
+                            if (quest == currentUser.promptQ1 || quest == currentUser.promptQ2 || quest == currentUser.promptQ3) {
+                                PlainTextButton(
+                                    question = quest,
+                                    onClick = { },
+                                    enabled = false
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                            } else {
+                                PlainTextButton(
+                                    question = quest,
+                                    onClick = {
+                                        //nav.popBackStack()
+                                        question = false
+                                        when (questionNumber) {
+                                            1 -> currentUser.promptQ1 = quest
+                                            2 -> currentUser.promptQ2 = quest
+                                            3 -> currentUser.promptQ3 = quest
+                                        }
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                            }
+                        }
+                    }
+                }
+            }else{
+                //prompt = ""
+                SimpleBox(
+                    whatsInsideTheBox = {
+                        PromptAnswer(
+                            input = prompt,
+                            onInputChanged = { input  ->  prompt = input },
+                            isEnables = true
+                        )
+                    }
+                )
+            }
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                enabled = prompt.isNotEmpty(),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    when (questionNumber) {
+                        1 -> currentUser.promptA1 = prompt
+                        2 -> currentUser.promptA2 = prompt
+                        3 -> currentUser.promptA3 = prompt
+                    }
+                    nav.popBackStack()
+                    vmDating.updateUser(currentUser)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+    }
+    )
+}
+
+

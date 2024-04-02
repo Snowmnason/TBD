@@ -72,14 +72,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     private var signedInUser:UserModel = UserModel() //= repository.getUser()
 
-    fun updateUserPreferences(updatedPreferences: UserSearchPreferenceModel) {
-        signedInUser.userPref = updatedPreferences
-    }
-    fun updateUser(updatedUser: UserModel) {
-        signedInUser = updatedUser
-    }
     fun getUser(): UserModel {
         return signedInUser
+    }
+
+
+    fun updateUser(updatedUser: UserModel) {
+        signedInUser = updatedUser
     }
     fun setLoggedInUser(userPhoneNumber: String, location:String) {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)

@@ -9,13 +9,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,18 +43,23 @@ import com.threegroup.tobedated.composables.DatingNav
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.composables.datingScreens.AgeSlider
 import com.threegroup.tobedated.composables.datingScreens.ChangePreferenceScreen
+import com.threegroup.tobedated.composables.datingScreens.ChangeProfile
 import com.threegroup.tobedated.composables.datingScreens.ChangeSeekingScreen
 import com.threegroup.tobedated.composables.datingScreens.Comeback
 import com.threegroup.tobedated.composables.datingScreens.CurrentUserInfo
+import com.threegroup.tobedated.composables.datingScreens.DeactivateAccount
+import com.threegroup.tobedated.composables.datingScreens.DeleteAccount
 import com.threegroup.tobedated.composables.datingScreens.DistanceSlider
 import com.threegroup.tobedated.composables.datingScreens.EditProfile
 import com.threegroup.tobedated.composables.datingScreens.InsideMessages
 import com.threegroup.tobedated.composables.datingScreens.InsideProfileSettings
 import com.threegroup.tobedated.composables.datingScreens.InsideSearchSettings
+import com.threegroup.tobedated.composables.datingScreens.LogOut
 import com.threegroup.tobedated.composables.datingScreens.MessageStart
 import com.threegroup.tobedated.composables.datingScreens.OtherPreferences
 import com.threegroup.tobedated.composables.datingScreens.SearchingButtons
 import com.threegroup.tobedated.composables.datingScreens.SeekingBox
+import com.threegroup.tobedated.composables.datingScreens.SimpleBox
 import com.threegroup.tobedated.composables.datingScreens.TheirMessage
 import com.threegroup.tobedated.composables.datingScreens.TopAndBotBars
 import com.threegroup.tobedated.composables.datingScreens.UserInfo
@@ -328,22 +337,79 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
         state = state,
         currentScreen = {
             CurrentUserInfo(
-                currentUser
+                currentUser,
+                bioClick = { navController.navigate("BioEdit") },
+                prompt1Click = {navController.navigate("PromptEdit/1")},
+                prompt2Click = {navController.navigate("PromptEdit/2")},
+                prompt3Click = {navController.navigate("PromptEdit/3")},
             )
         }
     )
 }
 @Composable
-fun EditProfileScreen(navController: NavHostController, dating:DatingActivity){
+fun EditProfileScreen(navController: NavHostController, dating:DatingActivity, vmDating: DatingViewModel){
+    var seen by remember { mutableStateOf(false)    }
+    val currentUser = vmDating.getUser()
+    val userSettings= listOf(currentUser.ethnicity, currentUser.pronoun, currentUser.gender, currentUser.sexOrientation,
+        currentUser.meetUp, currentUser.relationship,  currentUser.intentions, currentUser.star, //currentUser.mbti,
+        currentUser.children, currentUser.family,  currentUser.drink, currentUser.smoke, currentUser.weed,
+        currentUser.politics, currentUser.education, currentUser.religion,)
+
+    val pref = listOf("Ethnicity", "Pronoun", "Gender", "Sexual Orientation",
+        "Meeting Up", "Relationship Type", "Intentions", "Zodiac Sign", //"Mbti",
+        "Children", "Family",  "Drink", "Smokes", "Weed", "Political Views", "Education", "Religion")
     InsideProfileSettings(
         nav = navController,
         editProfile = {
-            EditProfile(dating)
+            SimpleBox(
+                whatsInsideTheBox = {
+                    Row(
+                        modifier = Modifier
+                            .padding(15.dp, 0.dp, 15.dp, 0.dp)
+                            .fillMaxWidth()
+                            .clickable { seen = !seen },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        GenericTitleSmall(text = "Been seen by people you like")
+                        Checkbox(checked = seen,
+                            onCheckedChange = {})
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            for (i in pref.indices){
+                EditProfile(title = pref[i], navController = navController, userSetting = userSettings[i], clickable = true, index = i)
+                Spacer(modifier = Modifier.height(14.dp))
+            }
+            LogOut(dating)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(25.dp, 0.dp)
+            ) {
+                DeactivateAccount(onClick = {   })
+                Spacer(modifier = Modifier.height(8.dp))
+                DeleteAccount(onClick = {   })
+            }
         }
     )
 }
 /*
 End of Profile Screens
+*/
+@Composable
+fun ChangeProfileScreen(navController: NavHostController, title:String, index:Int, vmDating: DatingViewModel){
+    ChangeProfile(navController,
+            title = title,
+            vmDating = vmDating,
+            index = index,
+        )
+}
+/*
 Start of Message Screens
  */
 @Composable

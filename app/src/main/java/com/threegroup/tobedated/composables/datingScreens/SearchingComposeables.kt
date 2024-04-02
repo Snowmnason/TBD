@@ -2,10 +2,10 @@ package com.threegroup.tobedated.composables.datingScreens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,7 +52,6 @@ import com.threegroup.tobedated.composables.GenericBodyText
 import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.models.AgeRange
 import com.threegroup.tobedated.models.UserModel
-import com.threegroup.tobedated.models.UserSearchPreferenceModel
 import com.threegroup.tobedated.models.childrenList
 import com.threegroup.tobedated.models.drinkList
 import com.threegroup.tobedated.models.educationList
@@ -255,7 +254,7 @@ fun AgeSlider(
                     valueRange = 18f..80f,
                     onValueChangeFinished = {
                         currentUser.userPref.ageRange = AgeRange(min, max)
-                        vmDating.updateUserPreferences(currentUser.userPref)
+                        vmDating.updateUser(currentUser)
                     },
                     colors = SliderDefaults.colors(
                         thumbColor = AppTheme.colorScheme.primary,
@@ -296,7 +295,7 @@ fun DistanceSlider(
                         // Update user preferences with the selected maximum distance
                         currentUser.userPref.maxDistance = max
                         // Update user preferences via the view model
-                        vmDating.updateUserPreferences(currentUser.userPref)
+                        vmDating.updateUser(currentUser)
                     },
                     colors = SliderDefaults.colors(
                         thumbColor = AppTheme.colorScheme.primary,
@@ -311,65 +310,7 @@ fun DistanceSlider(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChangePreferenceTopBar(
-    nav: NavHostController,
-    title:String = "",
-    changeSettings: @Composable () -> Unit = {},
-    save: @Composable RowScope.() -> Unit = {}
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize(),
-        color = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
-    ) {
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                CenterAlignedTopAppBar(
-                    modifier = Modifier.height(46.dp),
-                    colors = TopAppBarColors(
-                        containerColor = AppTheme.colorScheme.onTertiary,
-                        navigationIconContentColor = AppTheme.colorScheme.primary,
-                        titleContentColor = AppTheme.colorScheme.secondary,
-                        actionIconContentColor = AppTheme.colorScheme.primary,
-                        scrolledContainerColor = AppTheme.colorScheme.background
-                    ),
-                    title = { TopBarText(title= title, isPhoto = false) },
-                    /*
-                    navigationIcon = {
-                        Button(onClick = { nav.popBackStack() },
-                            colors = ButtonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                disabledContentColor = Color.Transparent
-                            ))  { //Showing in stuff like messages, editing profile and stuff
-                            Text(text = "Cancel",
-                                style = AppTheme.typography.titleSmall,
-                                color = Color(0xFFB45A76))
-                        }
-                    }, */
-                    actions = save
-                )
-            },
-        ) {
-                paddingValues ->
-            val state = rememberScrollState()
-            LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .verticalScroll(state)
-                    .fillMaxSize()
-            ){
-                Spacer(modifier = Modifier.height(24.dp))
-                changeSettings()
-            }
-        }
-    }
-}
+
 @Composable
 fun SeekingBox(
     desiredSex:String,
@@ -430,37 +371,29 @@ fun ChangePreferenceScreen(
     title: String = "",
     index:Int
 ) {
-
-    val opts = when (title) {
-        "Gender" -> genderList
-        "Zodiac Sign" -> zodiacList
-        "Sexual Orientation" -> sexualOriList
-        "Mbti" -> mbtiList
-        "Children" -> childrenList
-        "Family Plans" -> familyPlansList
-        "Education" -> educationList
-        "Religion" -> religionList
-        "Political Views" -> politicalViewsList
-        "Relationship Type" -> relationshipTypeList
-        "Intentions" -> intentionsList
-        "Drink" -> drinkList
-        "Smokes" -> smokeList
-        "Weed" -> weedList
-        "Meeting Up" -> meetUpList
-        else -> listOf("Man", "Woman", "Everyone")
-    }
     val currentUser = vmDating.getUser()
-    val currPref = currentUser.userPref
+    //val currPref = currentUser.userPref
+    val (opts, userSet) = when (title) {
+        "Gender" -> genderList to currentUser.userPref.gender
+        "Zodiac Sign" -> zodiacList to currentUser.userPref.zodiac
+        "Sexual Orientation" -> sexualOriList to currentUser.userPref.sexualOri
+        "Mbti" -> mbtiList to currentUser.userPref.mbti
+        "Children" -> childrenList to currentUser.userPref.children
+        "Family Plans" -> familyPlansList to currentUser.userPref.familyPlans
+        "Education" -> educationList to currentUser.userPref.education
+        "Religion" -> religionList to currentUser.userPref.religion
+        "Political Views" -> politicalViewsList to currentUser.userPref.politicalViews
+        "Relationship Type" -> relationshipTypeList to currentUser.userPref.relationshipType
+        "Intentions" -> intentionsList to currentUser.userPref.intentions
+        "Drink" -> drinkList to currentUser.userPref.drink
+        "Smokes" -> smokeList to currentUser.userPref.smoke
+        "Weed" -> weedList to currentUser.userPref.weed
+        "Meeting Up" -> meetUpList to currentUser.userPref.meetUp
+        else -> listOf("") to listOf("")
+    }
+    var userPrefList by remember { mutableStateOf(userSet)   }
 
-    val userPrefList = remember { mutableStateListOf(
-        currPref.gender, currPref.zodiac, currPref.sexualOri, currPref.mbti,
-        currPref.children, currPref.familyPlans, currPref.meetUp, currPref.education, currPref.religion,
-        currPref.politicalViews, currPref.relationshipType, currPref.intentions,
-        currPref.drink, currPref.smoke, currPref.weed,
-    )}
-    var currentPreference by remember { mutableStateOf(userPrefList[index]) }
-
-    val checkedItems = remember { mutableStateListOf<String>().apply { addAll(currentPreference) } }
+    val checkedItems = remember { mutableStateListOf<String>().apply { addAll(userPrefList) } }
     ChangePreferenceTopBar(
         nav = nav,
         title = title,
@@ -471,45 +404,48 @@ fun ChangePreferenceScreen(
                     .fillMaxWidth()
             ) {
                 opts.forEach { option ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = currentPreference.contains(option),
-                            onCheckedChange = { isChecked ->
-                                if (isChecked) {
-                                    if (option == "Doesn't Matter") {
-                                        checkedItems.clear()
-                                        checkedItems.add(option)
-                                        userPrefList[index] = listOf(option)
-                                    } else {
-                                        checkedItems.add(option)
-                                        checkedItems.remove("Doesn't Matter")
-                                        userPrefList[index] = checkedItems.toList()
-                                    }
-                                } else {
-                                    checkedItems.remove(option)
-                                    if (checkedItems.isEmpty()) {
-                                        checkedItems.add("Doesn't Matter")
-                                        userPrefList[index] = listOf("Doesn't Matter")
-                                    } else {
-                                        userPrefList[index] = checkedItems.toList()
-                                    }
-                                }
-                                val allOptionsSelected = checkedItems.containsAll(opts.filter { it != "Doesn't Matter" })
-                                if (allOptionsSelected) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+                        .clickable(onClick = {
+                            if (!userPrefList.contains(option)) {
+                                userPrefList = if (option == "Doesn't Matter") {
                                     checkedItems.clear()
-                                    checkedItems.add("Doesn't Matter")
-                                    userPrefList[index] = listOf("Doesn't Matter")
+                                    checkedItems.add(option)
+                                    listOf(option)
+                                } else {
+                                    checkedItems.add(option)
+                                    checkedItems.remove("Doesn't Matter")
+                                    checkedItems.toList()
                                 }
-                                // Update currentPreference with checkedItems
-                                currentPreference = checkedItems
-                            },
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
+                            } else {
+                                checkedItems.remove(option)
+                                userPrefList = if (checkedItems.isEmpty()) {
+                                    checkedItems.add("Doesn't Matter")
+                                    listOf("Doesn't Matter")
+                                } else {
+                                    checkedItems.toList()
+                                }
+                            }
+                            val allOptionsSelected =
+                                checkedItems.containsAll(opts.filter { it != "Doesn't Matter" })
+                            if (allOptionsSelected) {
+                                checkedItems.clear()
+                                checkedItems.add("Doesn't Matter")
+                                userPrefList = listOf("Doesn't Matter")
+                            }
+                            // Update currentPreference with checkedItems
+                            userPrefList = checkedItems
+                        }),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
                         GenericTitleSmall(text = option)
+                        Checkbox(
+                            checked = userPrefList.contains(option),
+                            onCheckedChange = {},
+                        )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         },
         save = {
@@ -523,25 +459,24 @@ fun ChangePreferenceScreen(
                 modifier = Modifier.offset(y = 5.dp),
                 onClick = {
                     nav.popBackStack()
-                    //userPrefList[index] = currentPreference
-                    userPrefList[index] = userPrefList[index].sorted()
-                    currentUser.userPref = UserSearchPreferenceModel(
-                        gender = userPrefList[0],
-                        zodiac = userPrefList[1],
-                        sexualOri = userPrefList[2],
-                        mbti = userPrefList[3],
-                        children = userPrefList[4],
-                        familyPlans = userPrefList[5],
-                        education = userPrefList[6],
-                        religion = userPrefList[7],
-                        politicalViews = userPrefList[8],
-                        relationshipType = userPrefList[9],
-                        intentions = userPrefList[10],
-                        drink = userPrefList[11],
-                        smoke = userPrefList[12],
-                        weed = userPrefList[13]
-                    )
-                    vmDating.updateUserPreferences(currentUser.userPref)
+                    when (title) {
+                        "Gender" -> currentUser.userPref.gender = userPrefList.sorted()
+                        "Zodiac Sign" -> currentUser.userPref.zodiac = userPrefList.sorted()
+                        "Sexual Orientation" -> currentUser.userPref.sexualOri = userPrefList.sorted()
+                        "Mbti" -> currentUser.userPref.mbti = userPrefList.sorted()
+                        "Children" -> currentUser.userPref.children = userPrefList.sorted()
+                        "Family Plans" -> currentUser.userPref.familyPlans = userPrefList.sorted()
+                        "Education" -> currentUser.userPref.education = userPrefList.sorted()
+                        "Religion" -> currentUser.userPref.religion = userPrefList.sorted()
+                        "Political Views" -> currentUser.userPref.politicalViews = userPrefList.sorted()
+                        "Relationship Type" -> currentUser.userPref.relationshipType = userPrefList.sorted()
+                        "Intentions" -> currentUser.userPref.intentions = userPrefList.sorted()
+                        "Drink" -> currentUser.userPref.drink = userPrefList.sorted()
+                        "Smokes" -> currentUser.userPref.smoke = userPrefList.sorted()
+                        "Weed" -> currentUser.userPref.weed = userPrefList.sorted()
+                        "Meeting Up" -> currentUser.userPref.meetUp = userPrefList.sorted()
+                    }
+                    vmDating.updateUser(currentUser)
                     checkedItems.clear()
                 }
             ) {

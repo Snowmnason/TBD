@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.activities.ChangePreference
+import com.threegroup.tobedated.activities.ChangeProfileScreen
 import com.threegroup.tobedated.activities.ChatsScreen
 import com.threegroup.tobedated.activities.Dating
 import com.threegroup.tobedated.activities.DatingActivity
@@ -66,6 +67,8 @@ import com.threegroup.tobedated.activities.smokeScreen
 import com.threegroup.tobedated.activities.starScreen
 import com.threegroup.tobedated.activities.weedScreen
 import com.threegroup.tobedated.activities.welcomeScreen
+import com.threegroup.tobedated.composables.datingScreens.BioEdit
+import com.threegroup.tobedated.composables.datingScreens.PromptEdit
 import com.threegroup.tobedated.composables.signUp.BigButton
 import com.threegroup.tobedated.composables.signUp.PromptQuestions
 import com.threegroup.tobedated.viewModels.DatingViewModel
@@ -317,7 +320,7 @@ fun DatingNav(dating:DatingActivity, token:String, location:String) {
             ProfileScreen(navController, viewModelDating)
         }
         composable(route = Dating.EditProfileScreen.name) {
-            EditProfileScreen(navController, dating)
+            EditProfileScreen(navController, dating, viewModelDating)
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
             SearchPreferenceScreen(navController, viewModelDating)
@@ -339,13 +342,32 @@ fun DatingNav(dating:DatingActivity, token:String, location:String) {
             arguments = listOf(
                 navArgument("my_param") { type = NavType.StringType },
                 navArgument("index") { type = NavType.IntType },
-
-
             )
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangePreference(navController, myParam, myIndex, viewModelDating)
+        }
+        composable(
+            route = "ChangeProfileScreen/{my_param}/{index}",
+            arguments = listOf(
+                navArgument("my_param") { type = NavType.StringType },
+                navArgument("index") { type = NavType.IntType },
+                )
+        ) { backStackEntry ->
+            val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
+            val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
+            ChangeProfileScreen(navController, myParam, myIndex, viewModelDating)
+        }
+        composable(route = "BioEdit") {
+            BioEdit(nav = navController, vmDating= viewModelDating)
+        }
+        composable(
+            route = "PromptEdit/{index}",
+            arguments = listOf(navArgument("index") { type = NavType.IntType },)
+        ) { backStackEntry ->
+            val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
+            PromptEdit(navController, viewModelDating, myIndex)
         }
     }
 

@@ -790,6 +790,7 @@ fun PromptEdit(nav:NavHostController, vmDating: DatingViewModel, questionNumber:
                             input = prompt,
                             onInputChanged = { input  ->  prompt = input },
                             isEnables = true
+
                         )
                     }
                 )
@@ -803,7 +804,7 @@ fun PromptEdit(nav:NavHostController, vmDating: DatingViewModel, questionNumber:
                     disabledContainerColor = Color.Transparent,
                     disabledContentColor = Color.Transparent
                 ),
-                enabled = prompt.isNotEmpty(),
+                enabled = prompt.length <= 200,
                 modifier = Modifier.offset(y = 5.dp),
                 onClick = {
                     when (questionNumber) {
@@ -907,17 +908,17 @@ fun ChangePhoto(
                         }
                     }
                     if(upload2){
-                        dating.uploadPhotos(photo1, 2, currentUser.number){ newResult ->
+                        dating.uploadPhotos(photo2, 2, currentUser.number){ newResult ->
                             currentUser.image2 = newResult
                         }
                     }
                     if(upload3){
-                        dating.uploadPhotos(photo1, 3, currentUser.number){ newResult ->
+                        dating.uploadPhotos(photo3, 3, currentUser.number){ newResult ->
                             currentUser.image3 = newResult
                         }
                     }
                     if(upload4){
-                        dating.uploadPhotos(photo1, 4, currentUser.number){ newResult ->
+                        dating.uploadPhotos(photo4, 4, currentUser.number){ newResult ->
                             currentUser.image4 = newResult
                         }
                     }

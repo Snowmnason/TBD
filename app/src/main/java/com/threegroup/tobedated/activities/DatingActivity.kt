@@ -208,7 +208,7 @@ class DatingActivity : ComponentActivity() {
                 ),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
-            return "error"
+            return "error/"
         }
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
@@ -252,17 +252,13 @@ Start of Seeking Screen
 fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel) {
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
-    val isLoading = remember { mutableStateOf(true) }
-
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
     val currentPotential = remember { mutableStateOf<UserModel?>(null) }
     var resetScrollState by remember { mutableStateOf(false) }
     val state = rememberScrollState()
     LaunchedEffect(resetScrollState, Unit) {
         vmDating.getPotentialUserData {
-            //currentPotential.value = profiles.random()
             currentPotential.value = vmDating.getNextPotential(currentProfileIndex)
-            isLoading.value = false // Set loading state to false after data is fetched
         }
         if (resetScrollState) {
             state.scrollTo(0)
@@ -271,7 +267,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         }
     }
     fun nextProfile(newPotential:UserModel){
-        if(newPotential.name.isNotEmpty()){
+        if(newPotential.name != ""){
             currentPotential.value = newPotential
         }else{
             isNext = false
@@ -289,9 +285,9 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         state = state,
         currentScreen = {
-            currentPotential.value?.let { user ->
-                val location = calcDistance(user.location, vmDating.getUser().location)
-                if (isNext || isLoading.value) {
+            if (isNext) {
+                currentPotential.value?.let { user ->
+                    val location = calcDistance(user.location, vmDating.getUser().location)
                     UserInfo(
                         user = user,//usersArray[currentProfileIndex]
                         location = location,
@@ -312,10 +308,11 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
                             )
                         },
                     )
-                } else {
-                    Comeback()
                 }
+            } else {
+                Comeback()
             }
+
         },
 
     )
@@ -470,9 +467,9 @@ fun EditProfileScreen(navController: NavHostController, dating:DatingActivity, v
                     .fillMaxSize()
                     .padding(25.dp, 0.dp)
             ) {
-                DeactivateAccount(onClick = {   })
+                DeactivateAccount(onClick = {/*TODO deactivate account*/   })
                 Spacer(modifier = Modifier.height(8.dp))
-                DeleteAccount(onClick = {   })
+                DeleteAccount(onClick = { /*TODO delete account*/  })
             }
         }
     )

@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -18,16 +17,16 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // Permission granted, proceed with your logic
-                checkUserTokenAndNavigate()
-            } else {
-                // Permission denied, show a message or request permission again
-                requestLocationPermission()
-            }
-        }
+//    private val requestPermissionLauncher =
+//        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+//            if (isGranted) {
+//                // Permission granted, proceed with your logic
+//                checkUserTokenAndNavigate()
+//            } else {
+//                // Permission denied, show a message or request permission again
+//                requestLocationPermission()
+//            }
+//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +38,9 @@ class MainActivity : ComponentActivity() {
         }
 
         // Request location permission if not granted
+
         requestLocationPermission()
+        //TODO I dunno how to do this, it askes for permission, if you don't give permission it just hangs when you give them permission
     }
 
     private fun requestLocationPermission() {
@@ -60,9 +61,13 @@ class MainActivity : ComponentActivity() {
             checkUserTokenAndNavigate()
         }
     }
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 100
     }
+
+
+
     private fun checkUserTokenAndNavigate() {
         lifecycleScope.launch {
             val sharedPreferences =

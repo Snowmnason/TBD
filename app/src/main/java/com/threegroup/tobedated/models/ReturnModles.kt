@@ -25,7 +25,7 @@ val pronounOptions = listOf("He/Him", "She/Her", "They/Them", "Ask me")
 val genderOptions = listOf("Cis-Gender", "Transgender", "Non-binary")
 val ethnicityOptions = listOf("Black/African Descent", "East Asian", "Hispanic/Latino", "Middle Eastern", "Native American", "Pacific Islander", "South Asian", "Southeast Asian", "White/Caucasian", "Other", "Ask me",)
 val starOptions = listOf("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Ask me",)
-val sexOrientationOptions = listOf("Androsexual", "Asexual", "Bisexual", "Demisexuality", "Gynesexual", "HeteroSexual", "Pansexual", "Queer", "Questioning", "Ask Me")
+val sexOrientationOptions = listOf("Androsexual", "Asexual", "Bisexual", "Demisexuality", "Gynesexual", "Heterosexual", "Pansexual", "Queer", "Questioning", "Ask Me")
 val seekingOptions = listOf("Male", "Female", "Everyone")
 val sexOptions = listOf("Male", "Female", "Other")
 val childrenOptions = listOf("Don't have", "Have children", "Ask me")
@@ -49,7 +49,7 @@ val insightsANDReflections = listOf(
     "Describe a moment that significantly changed your perspective on life.",
     "What's a topic you could talk about for hours without getting bored?",
     "What's the most important lesson you've learned from a past relationship?",
-    "If you could rewrite one moment from your past, what would it be and why?,",
+    "If you could rewrite one moment from your past, what would it be and why?",
     "What's something you're currently struggling with, and how do you cope with it?",
     "Describe a time when you had to step out of your comfort zone and how it impacted you.",
     "What's something you wish more people understood about you?"

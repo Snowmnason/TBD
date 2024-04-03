@@ -523,9 +523,9 @@ fun PromptQuestions(nav:NavController, signUpVM: SignUpViewModel, questionNumber
             2 -> questionsToUse = curiositiesANDImaginations
         }
         Column(
-            modifier = Modifier
+            modifier = Modifier.fillMaxSize()
                 .padding(horizontal = 25.dp, vertical = 15.dp)
-                .scrollable(state, orientation = Orientation.Vertical)
+                //.scrollable(state, orientation = Orientation.Vertical)
         ) {
             questionsToUse.forEach { quest ->
                 if(quest == signUpVM.getQuestion1() || quest == signUpVM.getQuestion2() || quest == signUpVM.getQuestion3()){
@@ -552,7 +552,7 @@ fun PromptQuestions(nav:NavController, signUpVM: SignUpViewModel, questionNumber
         }
     }
 }
-
+//TODO I dunno some bug
 @Composable
 fun PlainTextButton(
     onClick : () -> Unit,

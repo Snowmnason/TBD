@@ -991,6 +991,9 @@ fun promptQuestionsScreen(nav:NavController, signUpVM:SignUpViewModel):Boolean{
     var isEnable1 by rememberSaveable { mutableStateOf(false) }
     var isEnable2 by rememberSaveable { mutableStateOf(false) }
     var isEnable3 by rememberSaveable { mutableStateOf(false) }
+    var isAnswered1 by rememberSaveable { mutableStateOf(false) }
+    var isAnswered2 by rememberSaveable { mutableStateOf(false) }
+    var isAnswered3 by rememberSaveable { mutableStateOf(false) }
     promptQ1 = signUpVM.getQuestion1()
     promptQ2 = signUpVM.getQuestion2()
     promptQ3 = signUpVM.getQuestion3()
@@ -1013,6 +1016,7 @@ fun promptQuestionsScreen(nav:NavController, signUpVM:SignUpViewModel):Boolean{
                 input = promptA1,
                 onInputChanged = { input  ->  promptA1 = input
                     newUser.promptA1 = input
+                    isAnswered1 = promptA1.length <= 200
                 },
             )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -1030,6 +1034,7 @@ fun promptQuestionsScreen(nav:NavController, signUpVM:SignUpViewModel):Boolean{
                 input = promptA2,
                 onInputChanged = { input  ->  promptA2 = input
                     newUser.promptA2 = input
+                    isAnswered2 = promptA2.length <= 200
                 },
             )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -1047,11 +1052,12 @@ fun promptQuestionsScreen(nav:NavController, signUpVM:SignUpViewModel):Boolean{
                 input = promptA3,
                 onInputChanged = { input  ->  promptA3 = input
                     newUser.promptA3 = input
+                    isAnswered3 = promptA3.length <= 200
                 },
             )
         },
     )
-    return (promptA1.isNotEmpty() && promptA2.isNotEmpty() && promptA3.isNotEmpty())
+    return (isAnswered1 && isAnswered2 && isAnswered3)
 }
 
 @Composable

@@ -128,6 +128,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         SignUp.PoliticsScreen.name,
         SignUp.RelationshipScreen.name,
         SignUp.IntentionsScreen.name,
+        SignUp.MeetUpScreen.name,
         SignUp.DrinkScreen.name,
         SignUp.SmokeScreen.name,
         SignUp.WeedScreen.name,

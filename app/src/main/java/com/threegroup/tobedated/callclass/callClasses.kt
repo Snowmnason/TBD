@@ -29,7 +29,7 @@ fun calcAge(birth: List<String>?): String{
 }
 fun calcDistance(potential:String, current:String):String{
     val distance: String
-    if(potential != "error/" && current != "error/"){
+    if(potential != "error/" && current != "/"){
         val potentialParts = potential.split("/")
         val currentParts = current.split("/")
         val latitudePotential = potentialParts.first().toDouble()
@@ -46,7 +46,7 @@ fun calcDistance(potential:String, current:String):String{
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         val distanceInMiles = earthRadius * c
 
-        distance = "%.2f miles".format(distanceInMiles)
+        distance = "%.0f miles".format(distanceInMiles)
 
     }else{
         distance = "x miles"

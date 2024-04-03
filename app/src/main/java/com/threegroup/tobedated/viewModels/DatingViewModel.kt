@@ -14,6 +14,12 @@ import com.threegroup.tobedated.models.UserSearchPreferenceModel
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     val list = ArrayList<UserModel>()
+    /*
+    TODO issue with potential user list....annoying,
+     when you open searching screen, it remakes the list, each time
+      and when you click like/pass/whatever it recalls "getPotentialUserData",
+      so its an odd issue with recompositions and shit
+      */
     fun getPotentialUserData(callback: (ArrayList<UserModel>) -> Unit) {
         try {
             FirebaseDatabase.getInstance().getReference("users")
@@ -114,6 +120,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                         signedInUser.drink = userDataMap["drink"] as? String ?: ""
                         signedInUser.smoke = userDataMap["smoke"] as? String ?: ""
                         signedInUser.weed = userDataMap["weed"] as? String ?: ""
+                        signedInUser.meetUp = userDataMap["meetUp"] as? String ?: ""
                         signedInUser.promptQ1 = userDataMap["promptQ1"] as? String ?: ""
                         signedInUser.promptA1 = userDataMap["promptA1"] as? String ?: ""
                         signedInUser.promptQ2 = userDataMap["promptQ2"] as? String ?: ""
@@ -146,6 +153,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                                 children = (map["children"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                                 familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                                 education = (map["education"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                                 religion = (map["religion"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                                 politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                                 relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),

@@ -442,7 +442,36 @@ fun ChangePreferenceScreen(
                         GenericTitleSmall(text = option)
                         Checkbox(
                             checked = userPrefList.contains(option),
-                            onCheckedChange = {},
+                            onCheckedChange = {
+                                if (!userPrefList.contains(option)) {
+                                    userPrefList = if (option == "Doesn't Matter") {
+                                        checkedItems.clear()
+                                        checkedItems.add(option)
+                                        listOf(option)
+                                    } else {
+                                        checkedItems.add(option)
+                                        checkedItems.remove("Doesn't Matter")
+                                        checkedItems.toList()
+                                    }
+                                } else {
+                                    checkedItems.remove(option)
+                                    userPrefList = if (checkedItems.isEmpty()) {
+                                        checkedItems.add("Doesn't Matter")
+                                        listOf("Doesn't Matter")
+                                    } else {
+                                        checkedItems.toList()
+                                    }
+                                }
+                                val allOptionsSelected =
+                                    checkedItems.containsAll(opts.filter { it != "Doesn't Matter" })
+                                if (allOptionsSelected) {
+                                    checkedItems.clear()
+                                    checkedItems.add("Doesn't Matter")
+                                    userPrefList = listOf("Doesn't Matter")
+                                }
+                                // Update currentPreference with checkedItems
+                                userPrefList = checkedItems
+                            },
                         )
                     }
                 }
@@ -499,10 +528,9 @@ fun ChangeSeekingScreen(
     val opts = listOf("Man", "Woman", "Everyone")
 
     val currentUser = vmDating.getUser()
-    val currPref = currentUser.seeking
+    var currPref = currentUser.seeking
 
-    var currentPreference by remember { mutableStateOf(currPref) }
-
+    val checkedItems = remember { mutableStateListOf<String>().apply { add(currPref) } }
     ChangePreferenceTopBar(
         nav = nav,
         title = title,
@@ -513,21 +541,32 @@ fun ChangeSeekingScreen(
                     .fillMaxWidth()
             ) {
                 opts.forEach { option ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+                        .clickable(onClick = {
+                            if (!checkedItems.contains(option)) {
+                                checkedItems.clear()
+                                checkedItems.add(option)
+                                currPref = option
+                            }
+                        }),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        GenericTitleSmall(text = option)
                         Checkbox(
-                            checked = currentPreference == option,
-                            onCheckedChange = { isChecked ->
-                                if (isChecked) {
-                                    currentPreference = option
+                            checked = checkedItems.contains(option),
+                            onCheckedChange = {
+                                if (!checkedItems.contains(option)) {
+                                    checkedItems.clear()
+                                    checkedItems.add(option)
+                                    currPref = option
                                 }
                             },
                             modifier = Modifier.padding(end = 8.dp)
                         )
-                        GenericTitleSmall(text = option)
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         },
         save = {
@@ -541,7 +580,7 @@ fun ChangeSeekingScreen(
                 modifier = Modifier.offset(y = 5.dp),
                 onClick = {
                     nav.popBackStack()
-                    currentUser.seeking = currentPreference
+                    currentUser.seeking = currPref
                     vmDating.updateUser(currentUser)
                 }
             ) {

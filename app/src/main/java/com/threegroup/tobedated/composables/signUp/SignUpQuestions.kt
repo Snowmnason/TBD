@@ -378,9 +378,9 @@ fun PhotoQuestion(
     onClick2: () -> Unit,
     onClick3: () -> Unit,
     onClick4: () -> Unit,
-    isEnabled2:Boolean,
-    isEnabled3:Boolean,
-    isEnabled4:Boolean,
+    isEnabled2:Boolean = true,
+    isEnabled3:Boolean = true,
+    isEnabled4:Boolean = true,
 ) {
     Box(
         modifier = Modifier

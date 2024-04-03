@@ -68,6 +68,7 @@ import com.threegroup.tobedated.activities.starScreen
 import com.threegroup.tobedated.activities.weedScreen
 import com.threegroup.tobedated.activities.welcomeScreen
 import com.threegroup.tobedated.composables.datingScreens.BioEdit
+import com.threegroup.tobedated.composables.datingScreens.ChangePhoto
 import com.threegroup.tobedated.composables.datingScreens.PromptEdit
 import com.threegroup.tobedated.composables.signUp.BigButton
 import com.threegroup.tobedated.composables.signUp.PromptQuestions
@@ -368,6 +369,9 @@ fun DatingNav(dating:DatingActivity, token:String, location:String) {
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             PromptEdit(navController, viewModelDating, myIndex)
+        }
+        composable(route = "ChangePhoto") {
+            ChangePhoto(nav = navController, vmDating= viewModelDating, dating = dating)
         }
     }
 

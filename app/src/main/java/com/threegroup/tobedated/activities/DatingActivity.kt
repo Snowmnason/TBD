@@ -1,11 +1,15 @@
 package com.threegroup.tobedated.activities
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,9 +38,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.threegroup.tobedated.callclass.calcDistance
 import com.threegroup.tobedated.composables.AlertDialogBox
 import com.threegroup.tobedated.composables.DatingNav
@@ -67,6 +74,12 @@ import com.threegroup.tobedated.composables.datingScreens.UserMessage
 import com.threegroup.tobedated.models.UserModel
 import com.threegroup.tobedated.ui.theme.AppTheme
 import com.threegroup.tobedated.viewModels.DatingViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
 import kotlin.random.Random
 
 
@@ -106,6 +119,71 @@ class DatingActivity : ComponentActivity() {
             }
         }
     }
+    fun uploadPhotos(newImage: String, imageNumber: Int, imageName: String, callback: (String) -> Unit) {
+        lifecycleScope.launch {
+            val result = storeImageAttempt(newImage, contentResolver, imageNumber, imageName)
+            callback(result)
+        }
+    }
+
+    private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver, imageNumber: Int, imageName: String): String {
+        var downloadUrl = ""
+        try {
+            val storageRef = FirebaseStorage.getInstance().reference
+            val databaseRef = FirebaseDatabase.getInstance().reference
+            val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
+            val imagePath = "images/$imageName${imageNumber}ProfilePhoto"
+
+            // Delete the existing image
+            deleteImage(imagePath)
+
+            // Upload the new image
+            val imageRef = storageRef.child(imagePath)
+            val file = Uri.fromFile(File(filePath))
+            val inputStream = withContext(Dispatchers.IO) {
+                FileInputStream(file.path)
+            }
+            val uploadTask = imageRef.putStream(inputStream).await()
+            downloadUrl = imageRef.downloadUrl.await().toString()
+
+            // Store the download URL in the Firebase Realtime Database
+            databaseRef.child("images").push().setValue(downloadUrl)
+
+            // Delete the local image file after successful upload
+            val localFile = File(filePath)
+            if (localFile.exists()) {
+                val deleted = localFile.delete()
+                if (!deleted) {
+                    Log.e("storeImageAttempt", "Failed to delete local image file: $filePath")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("storeImageAttempt", "Error uploading image: ${e.message}")
+        }
+        return downloadUrl
+    }
+
+    private fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): String? {
+        var filePath: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        contentResolver.query(contentUri, projection, null, null, null)?.use { cursor ->
+            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            filePath = cursor.getString(columnIndex)
+        }
+        return filePath
+    }
+
+    private suspend fun deleteImage(imageName: String) {
+        try {
+            val storageRef = FirebaseStorage.getInstance().reference
+            val imageRef = storageRef.child(imageName)
+            imageRef.delete().await()
+        } catch (e: Exception) {
+            Log.e("deleteImage", "Error deleting image: ${e.message}")
+        }
+    }
+
 
     private fun requestLocationPermission() {
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -342,6 +420,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
                 prompt1Click = {navController.navigate("PromptEdit/1")},
                 prompt2Click = {navController.navigate("PromptEdit/2")},
                 prompt3Click = {navController.navigate("PromptEdit/3")},
+                photoClick = {navController.navigate("ChangePhoto")}
             )
         }
     )

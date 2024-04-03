@@ -21,7 +21,7 @@ data class AgeRange(
 
 
 
-val pronounOptions = listOf("He/Him", "She/Her", "They/Them", "Ze/Zir" ,"Ask me")
+val pronounOptions = listOf("He/Him", "She/Her", "They/Them", "Ask me")
 val genderOptions = listOf("Cis-Gender", "Transgender", "Non-binary")
 val ethnicityOptions = listOf("Black/African Descent", "East Asian", "Hispanic/Latino", "Middle Eastern", "Native American", "Pacific Islander", "South Asian", "Southeast Asian", "White/Caucasian", "Other", "Ask me",)
 val starOptions = listOf("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Ask me",)

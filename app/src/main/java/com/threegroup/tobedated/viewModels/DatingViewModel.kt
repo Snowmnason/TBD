@@ -78,8 +78,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
 
     fun updateUser(updatedUser: UserModel) {
+        val userPhoneNumber = updatedUser.number
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
+        databaseReference.setValue(updatedUser)
         signedInUser = updatedUser
     }
+
+
     fun setLoggedInUser(userPhoneNumber: String, location:String) {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {

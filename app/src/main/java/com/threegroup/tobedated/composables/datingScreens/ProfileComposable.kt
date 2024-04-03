@@ -1,5 +1,8 @@
 package com.threegroup.tobedated.composables.datingScreens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
@@ -29,6 +32,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -66,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.activities.DatingActivity
 import com.threegroup.tobedated.callclass.calcAge
@@ -74,6 +80,7 @@ import com.threegroup.tobedated.composables.GenericTitleSmall
 import com.threegroup.tobedated.composables.baseAppTextTheme
 import com.threegroup.tobedated.composables.signUp.BigButton
 import com.threegroup.tobedated.composables.signUp.LabelText
+import com.threegroup.tobedated.composables.signUp.PhotoQuestion
 import com.threegroup.tobedated.composables.signUp.PlainTextButton
 import com.threegroup.tobedated.composables.signUp.PromptAnswer
 import com.threegroup.tobedated.models.UserModel
@@ -259,6 +266,7 @@ fun CurrentUserInfo(
     prompt1Click: () -> Unit = {},
     prompt2Click: () -> Unit = {},
     prompt3Click: () -> Unit = {},
+    photoClick: () -> Unit = {},
 ) {
     val photos = listOf(user.image1, user.image2, user.image3, user.image4)
     var subtract = 0
@@ -463,14 +471,24 @@ fun CurrentUserInfo(
         )
         Spacer(modifier = Modifier.height(12.dp))
         val pagerState = rememberPagerState(pageCount = { photos.size - subtract })
-        HorizontalPager(state = pagerState, modifier = Modifier.aspectRatio(2f / 3f)) { page ->
-            AsyncImage(
-                modifier = Modifier.aspectRatio(2f / 3f),
-                model = photos[page],
-                contentDescription = "Profile Photo $page",
-                contentScale = ContentScale.FillBounds  // Ensure photos fill the box without distortion
-            )
+        Column {
+            Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.End){
+                Button(onClick = photoClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DB7),)
+                ) {
+                    GenericBodyText(text = "Change Photos", color= AppTheme.colorScheme.onSurface)
+                }
+            }
+            HorizontalPager(state = pagerState, modifier = Modifier.aspectRatio(2f / 3f)) { page ->
+                AsyncImage(
+                    modifier = Modifier.aspectRatio(2f / 3f),
+                    model = photos[page],
+                    contentDescription = "Profile Photo $page",
+                    contentScale = ContentScale.FillBounds  // Ensure photos fill the box without distortion
+                )
+            }
         }
+        
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
@@ -559,7 +577,13 @@ fun ChangeProfile(
                         GenericTitleSmall(text = option)
                         Checkbox(
                             checked = userSettings.contains(option),
-                            onCheckedChange = {},
+                            onCheckedChange = {
+                                if (!userSettings.contains(option)) {
+                                    checkedItems.clear()
+                                    checkedItems.add(option)
+                                    userSettings = option
+                                }
+                            },
                         )
                     }
                 }
@@ -798,6 +822,116 @@ fun PromptEdit(nav:NavHostController, vmDating: DatingViewModel, questionNumber:
                 )
             }
     }
+    )
+}
+@Composable
+fun ChangePhoto(
+    nav: NavHostController,
+    vmDating: DatingViewModel,
+    dating: DatingActivity
+) {
+    val currentUser = vmDating.getUser()
+    var photo1 by rememberSaveable { mutableStateOf(currentUser.image1) }
+    var photo2 by rememberSaveable { mutableStateOf(currentUser.image2) }
+    var photo3 by rememberSaveable { mutableStateOf(currentUser.image3) }
+    var photo4 by rememberSaveable { mutableStateOf(currentUser.image4) }
+    val nullPhoto = painterResource(id = R.drawable.photoholder)
+    var imageUri1 by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var imageUri2 by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var imageUri3 by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var imageUri4 by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var upload1 by rememberSaveable { mutableStateOf(false) }
+    var upload2 by rememberSaveable { mutableStateOf(false) }
+    var upload3 by rememberSaveable { mutableStateOf(false) }
+    var upload4 by rememberSaveable { mutableStateOf(false) }
+
+    val galleryLauncher1 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> uri?.let { imageUri1 = it
+            photo1 = it.toString()
+          } })//  newUser.image1 = it.toString()
+    val galleryLauncher2 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> uri?.let { imageUri2 = it
+            photo2 = it.toString()
+            } })//newUser.image2 = it.toString()
+    val galleryLauncher3 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> uri?.let { imageUri3 = it
+            photo3 = it.toString()
+            } })//newUser.image3 = it.toString()
+    val galleryLauncher4 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> uri?.let { imageUri4 = it
+            photo4 = it.toString()
+            } })//newUser.image4 = it.toString()
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = "Change Photos",
+        changeSettings = {
+            Spacer(modifier = Modifier.height(24.dp))
+            SimpleBox(
+                whatsInsideTheBox = {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                    ) {
+                        PhotoQuestion(
+                            photo1 = if(imageUri1 != null){ rememberAsyncImagePainter(model = imageUri1) }else{rememberAsyncImagePainter(model = photo1)},
+                            photo2 = if(imageUri2 != null){ rememberAsyncImagePainter(model = imageUri2) }else{rememberAsyncImagePainter(model = photo2)},
+                            photo3 = if(imageUri3 != null){ rememberAsyncImagePainter(model = imageUri3) }else{rememberAsyncImagePainter(model = photo3)},
+                            photo4 = if(imageUri4 != null){ rememberAsyncImagePainter(model = imageUri4) }else if(photo4 != ""){rememberAsyncImagePainter(model = photo4)}else{nullPhoto},
+                            onClick1= { galleryLauncher1.launch("image/*")
+                                upload1 = true},
+                            onClick2= { galleryLauncher2.launch("image/*")
+                                upload2 = true},
+                            onClick3= { galleryLauncher3.launch("image/*")
+                                upload3 = true},
+                            onClick4= { galleryLauncher4.launch("image/*")
+                                upload4 = true},
+                        )
+                    }
+                }
+            )
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    if(upload1){
+                        dating.uploadPhotos(photo1, 1, currentUser.number){ newResult ->
+                            currentUser.image1 = newResult
+                        }
+                    }
+                    if(upload2){
+                        dating.uploadPhotos(photo1, 2, currentUser.number){ newResult ->
+                            currentUser.image2 = newResult
+                        }
+                    }
+                    if(upload3){
+                        dating.uploadPhotos(photo1, 3, currentUser.number){ newResult ->
+                            currentUser.image3 = newResult
+                        }
+                    }
+                    if(upload4){
+                        dating.uploadPhotos(photo1, 4, currentUser.number){ newResult ->
+                            currentUser.image4 = newResult
+                        }
+                    }
+                    nav.popBackStack()
+                    vmDating.updateUser(currentUser)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+        }
     )
 }
 

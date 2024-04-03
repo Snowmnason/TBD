@@ -255,7 +255,7 @@ class SignUpActivity : ComponentActivity() {
         // Wait for the token to be resolved and return it
         return deferredToken.await()
     }
-    private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver): String {
+    private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver, imageNumber:Int, imageName:String): String {
         var downloadUrl = ""
         try {
             val storageRef = FirebaseStorage.getInstance().reference
@@ -263,7 +263,7 @@ class SignUpActivity : ComponentActivity() {
             val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
 
             // Create a reference to the image in Firebase Storage
-            val imageRef = storageRef.child("images/${System.currentTimeMillis()}")
+            val imageRef = storageRef.child("images/$imageName${imageNumber}ProfilePhoto")
 
             // Upload the image file
             val file = Uri.fromFile(File(filePath))
@@ -305,10 +305,10 @@ class SignUpActivity : ComponentActivity() {
     }
     // Modified uploadImage function
     private suspend fun uploadImage() {
-        newUser.image1 = storeImageAttempt(newUser.image1, contentResolver)
-        newUser.image2 = storeImageAttempt(newUser.image2, contentResolver)
-        newUser.image3 = storeImageAttempt(newUser.image3, contentResolver)
-        newUser.image4 = storeImageAttempt(newUser.image4, contentResolver)
+        newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
+        newUser.image2 = storeImageAttempt(newUser.image2, contentResolver, 2, newUser.number)
+        newUser.image3 = storeImageAttempt(newUser.image3, contentResolver, 3, newUser.number)
+        newUser.image4 = storeImageAttempt(newUser.image4, contentResolver, 4, newUser.number)
     }
     private fun showToast(message: String) {
         lifecycleScope.launch {

@@ -164,13 +164,14 @@ fun GenericTitleSmall(
 @Composable
 fun GenericBodyText(
     text:String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = AppTheme.colorScheme.onBackground
 ){
     Text(
         modifier= modifier,
         text = text,
         style = AppTheme.typography.body,
-        color = AppTheme.colorScheme.onBackground)
+        color = color)
 }
 @Composable
 fun GenericLabelText(

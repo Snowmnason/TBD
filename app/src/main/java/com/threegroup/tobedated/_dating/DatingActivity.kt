@@ -73,12 +73,9 @@ import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
 import kotlin.random.Random
 
 
@@ -138,11 +135,11 @@ class DatingActivity : ComponentActivity() {
 
             // Upload the new image
             val imageRef = storageRef.child(imagePath)
-            val file = Uri.fromFile(File(filePath))
-            val inputStream = withContext(Dispatchers.IO) {
-                FileInputStream(file.path)
-            }
-            val uploadTask = imageRef.putStream(inputStream).await()
+//            val file = Uri.fromFile(File(filePath))
+//            val inputStream = withContext(Dispatchers.IO) {
+//                FileInputStream(file.path)
+//            }
+            //val uploadTask = imageRef.putStream(inputStream).await()
             downloadUrl = imageRef.downloadUrl.await().toString()
 
             // Store the download URL in the Firebase Realtime Database
@@ -505,6 +502,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
             matchedUsers.forEach { matchUser ->
                 MessageStart(
                     noMatches = false,
+                    notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.image1,
                     userName = matchUser.name,
                     userLastMessage = matchUser.bio, //TODO change to last message

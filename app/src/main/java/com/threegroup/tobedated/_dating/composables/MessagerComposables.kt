@@ -58,7 +58,7 @@ fun MessageStart(
     userName:String,
     userLastMessage:String,
     openChat: () -> Unit,
-
+    notification:Boolean = false,
     ) {
     val maxLength = 35
     val cleanedMessage = userLastMessage.replace("\n", " ")
@@ -99,7 +99,13 @@ fun MessageStart(
                     modifier = Modifier.padding(15.dp, 6.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = userName, style = AppTheme.typography.titleSmall, color = AppTheme.colorScheme.onBackground)
+                    Row{
+                        Text(text = userName, style = AppTheme.typography.titleSmall, color = AppTheme.colorScheme.onBackground)
+                        if(notification){
+                            Icon(imageVector = ImageVector.vectorResource(R.drawable.notification), contentDescription = "New Message",
+                                modifier = Modifier.offset(y= (-4).dp), tint = AppTheme.colorScheme.primary)
+                        }
+                    }
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(text = displayedMessage,
                         style = AppTheme.typography.labelSmall, color = AppTheme.colorScheme.onBackground)
@@ -185,7 +191,9 @@ fun InsideMessages(
                             //horizontalArrangement = Arrangement.SpaceEvenly
                         ){
                             IconButton(onClick = sendAttachment,
-                                modifier = Modifier.offset(y=5.dp).weight(1.0F),
+                                modifier = Modifier
+                                    .offset(y = 5.dp)
+                                    .weight(1.0F),
                                 colors= IconButtonDefaults.iconButtonColors(
                                     containerColor = Color.Transparent,
                                     contentColor = AppTheme.colorScheme.secondary,
@@ -194,7 +202,9 @@ fun InsideMessages(
                                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
                             }
                             OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth().weight(7.5F),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(7.5F),
                                 value = value, onValueChange = onValueChange,
                                 textStyle = baseAppTextTheme(),
                                 keyboardOptions = KeyboardOptions(
@@ -206,7 +216,9 @@ fun InsideMessages(
 
                                 )
                             IconButton(onClick = sendMessage,
-                                modifier = Modifier.offset(y=5.dp).weight(1.0F),
+                                modifier = Modifier
+                                    .offset(y = 5.dp)
+                                    .weight(1.0F),
                                 colors= IconButtonDefaults.iconButtonColors(
                                     containerColor = Color.Transparent,
                                     contentColor = AppTheme.colorScheme.secondary,

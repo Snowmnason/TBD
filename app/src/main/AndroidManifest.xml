@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:name=".MyApp"
+        android:name=".shareclasses.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -26,7 +26,7 @@
         android:theme="@style/Theme.ToBeDated"
         tools:targetApi="31">
         <activity
-            android:name=".activities.DatingActivity"
+            android:name="._dating.DatingActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -38,19 +38,19 @@
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
-            android:name=".activities.SignUpActivity"
+            android:name="._signUp.SignUpActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="._login.LoginActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity"/>
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".shareclasses.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ToBeDated"
             android:screenOrientation="portrait"

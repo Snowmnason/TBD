@@ -1,15 +1,9 @@
 package com.threegroup.tobedated._signUp
 
-import android.Manifest
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -40,16 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._login.LoginActivity
@@ -95,42 +84,22 @@ import com.threegroup.tobedated.shareclasses.models.sexOrientationOptions
 import com.threegroup.tobedated.shareclasses.models.smokeOptions
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.shareclasses.models.weedOptions
+import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileInputStream
 import java.util.Calendar
 
 var newUser = UserModel()
 var newUserIndex = PreferenceIndexModel()
 class SignUpActivity : ComponentActivity() {
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                getLastLocation()
-            } else {
-                // Handle permission denied
-            }
-        }
+    private lateinit var location:String
     override fun onCreate(savedInstanceState: Bundle?) {
         newUser.number = intent.getStringExtra("userPhone").toString()
+        location = intent.getStringExtra("location").toString()
         super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        // Request location permission if not granted
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestLocationPermission()
-        } else {
-            newUser.location = getLastLocation()
-        }
         setContent {
             AppTheme {
                 PolkaDotCanvas()
@@ -138,58 +107,10 @@ class SignUpActivity : ComponentActivity() {
             }
         }
     }
-    private fun requestLocationPermission() {
-        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    private fun getLastLocation():String {
-        var latitude = ""
-        var longitude = ""
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-            return "error"
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                // Handle the retrieved location
-                if (location != null) {
-                    // Got last known location
-                    latitude = location.latitude.toString()
-                    longitude = location.longitude.toString()
-                } else {
-                    // Last location is null
-                    // Handle this situation
-                    latitude = "error"
-                    longitude = ""
-                }
-            }
-            .addOnFailureListener { e ->
-                // Handle failure to retrieve location
-
-            }
-        return "$latitude/$longitude"
-    }
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
-    }
-
 
     fun switchBack() {
         val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }
@@ -209,18 +130,13 @@ class SignUpActivity : ComponentActivity() {
 
         val intent = Intent(this, DatingActivity::class.java)
         intent.putExtra("token", userToken)
+        intent.putExtra("location", location)
         startActivity(intent)
         finish()
-//        val viewModelDating =  DatingViewModel(MyApp.x)
-//        lifecycleScope.launch {
-//            viewModelDating.setUser(userToken!!)
-//
-//        }
     }
 
     private suspend fun storeData(): String? {
         val deferredToken = CompletableDeferred<String?>()
-
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null && currentUser.phoneNumber != null) {
             FirebaseDatabase.getInstance().getReference("users")
@@ -250,57 +166,8 @@ class SignUpActivity : ComponentActivity() {
             showToast("User NOT authenticated or phone number is null")
             deferredToken.complete(null)
         }
-
         // Wait for the token to be resolved and return it
         return deferredToken.await()
-    }
-    private suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver, imageNumber:Int, imageName:String): String {
-        var downloadUrl = ""
-        try {
-            val storageRef = FirebaseStorage.getInstance().reference
-            val databaseRef = FirebaseDatabase.getInstance().reference
-            val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
-
-            // Create a reference to the image in Firebase Storage
-            val imageRef = storageRef.child("images/$imageName${imageNumber}ProfilePhoto")
-
-            // Upload the image file
-            val file = Uri.fromFile(File(filePath))
-            val inputStream = withContext(Dispatchers.IO) {
-                FileInputStream(file.path)
-            }
-
-            val uploadTask = imageRef.putStream(inputStream).await()
-            downloadUrl = imageRef.downloadUrl.await().toString()
-
-            // Once you have the download URL, store it in the database
-            databaseRef.child("images").push().setValue(downloadUrl)
-
-            // Delete the local image file after successful upload
-            val localFile = File(filePath)
-            if (localFile.exists()) {
-                val deleted = localFile.delete()
-                if (!deleted) {
-                    Log.e("storeImageAttempt", "Failed to delete local image file: $filePath")
-                }
-            }
-        } catch (e: Exception) {
-            // Handle the exception gracefully
-            Log.e("storeImageAttempt", "Error uploading image: ${e.message}")
-        }
-        return downloadUrl
-    }
-
-    // Function to get the file path from a content URI
-    private fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): String? {
-        var filePath: String? = null
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        contentResolver.query(contentUri, projection, null, null, null)?.use { cursor ->
-            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            cursor.moveToFirst()
-            filePath = cursor.getString(columnIndex)
-        }
-        return filePath
     }
     // Modified uploadImage function
     private suspend fun uploadImage() {

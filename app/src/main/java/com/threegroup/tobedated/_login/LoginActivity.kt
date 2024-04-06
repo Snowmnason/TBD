@@ -66,9 +66,11 @@ class LoginActivity : ComponentActivity() {
     private var verificationId: String? = null
     private var userPhoneNumber: String = ""
     private val auth = FirebaseAuth.getInstance()
+    private lateinit var location:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        location = intent.getStringExtra("location").toString()
         setContent {
             AppTheme {
                 PolkaDotCanvas()
@@ -181,16 +183,13 @@ class LoginActivity : ComponentActivity() {
             saveTokenToSharedPreferences(userPhoneNumber)
             val intent = Intent(this, DatingActivity::class.java)
             intent.putExtra("token", userPhoneNumber)
+            intent.putExtra("location", location)
             startActivity(intent)
             finish()
-//        val viewModelDating =  DatingViewModel(MyApp.x)
-//        lifecycleScope.launch {
-//            viewModelDating.setUser(userToken!!)
-//
-//        }
         } else {
             val i = Intent(this, SignUpActivity::class.java)
             i.putExtra("userPhone", userPhoneNumber)
+            i.putExtra("location", location)
             startActivity(i)
             finish()
         }

@@ -206,3 +206,44 @@ fun SignUpFormat(
 }
 
 
+@Composable
+fun SignUpFormatLong(
+    title: String,
+    label: String,
+    enterField: @Composable () -> Unit = {},
+){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(0.dp, 65.dp, 0.dp, 145.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(25.dp, 0.dp, 25.dp, 0.dp),
+            color = AppTheme.colorScheme.surface,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            val state = rememberScrollState()
+            LaunchedEffect(Unit) { state.animateScrollTo(0) }
+            Column(modifier = Modifier
+                .padding(15.dp)
+                .fillMaxSize()
+            ) {
+                GenericTitleText(text = title, style = AppTheme.typography.titleMedium,)
+                Spacer(modifier = Modifier.height(5.dp))
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(state)
+                        .fillMaxSize()
+                ) {
+                    enterField()
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                GenericLabelText(text = label, style = AppTheme.typography.labelMedium)
+            }
+        }
+    }
+}
+
+
+

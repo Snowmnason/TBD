@@ -51,6 +51,7 @@ import com.threegroup.tobedated._signUp.composables.PersonalityTest
 import com.threegroup.tobedated._signUp.composables.PhotoQuestion
 import com.threegroup.tobedated._signUp.composables.PromptAnswer
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
+import com.threegroup.tobedated._signUp.composables.SignUpFormatLong
 import com.threegroup.tobedated._signUp.composables.getCustomButtonStyle
 import com.threegroup.tobedated.shareclasses.checkBirthDate
 import com.threegroup.tobedated.shareclasses.checkDay
@@ -73,7 +74,9 @@ import com.threegroup.tobedated.shareclasses.models.ethnicityOptions
 import com.threegroup.tobedated.shareclasses.models.familyOptions
 import com.threegroup.tobedated.shareclasses.models.genderOptions
 import com.threegroup.tobedated.shareclasses.models.intentionsOptions
+import com.threegroup.tobedated.shareclasses.models.mbtiQuestion
 import com.threegroup.tobedated.shareclasses.models.meetUpOptions
+import com.threegroup.tobedated.shareclasses.models.ourTestQuestions
 import com.threegroup.tobedated.shareclasses.models.politicsOptions
 import com.threegroup.tobedated.shareclasses.models.pronounOptions
 import com.threegroup.tobedated.shareclasses.models.relationshipOptions
@@ -523,8 +526,12 @@ fun sexScreen():Boolean{
 @Composable
 fun mbtiScreen(onNavigate: () -> Unit):Boolean{
     var mbti by rememberSaveable { mutableStateOf(newUser.testResultsMbti) }
-    val questions = listOf( "MBTI TEST QUESTION 1", "MBTI QUESTION 2", "MBTI 3", "MBTI TEST QUESTION 4", "MBTI QUESTION 5", "MBTI 6")
     var isSkip by rememberSaveable { mutableStateOf(false) }
+
+    val answersList: MutableList<Int> = List(ourTestQuestions.size) { -1 }.toMutableList()
+    var results by remember { mutableIntStateOf(-1)    }
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -537,7 +544,7 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
             color = Color.Gray
         )
     }
-    SignUpFormat(
+    SignUpFormatLong(
         title = "MBTI",
         label = "What does your personality say about you?",
         enterField = {
@@ -547,15 +554,41 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
                     .height(550.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                questions.forEach { quest ->
-                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } //This is their Answer
+                mbtiQuestion.forEachIndexed { index, quest ->
+                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } // This is their Answer
                     PersonalityTest(
                         //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
                         selectedIndex = selectedOptionIndex,
                         onSelectionChange = { newIndex ->
                             selectedOptionIndex = newIndex
-                            mbti = "Not Taken"
-                            newUser.testResultsMbti = "Not Taken"
+                            // Save the index and the new value in answersList
+                            answersList[index] = newIndex
+                            if(!answersList.contains(-1)){
+                                results = 0
+                                answersList.forEach{ va ->
+                                    results += va
+                                }
+                                mbti = "Not Taken"
+                                newUser.testResultsMbti = when (results) {
+                                    0 -> "INTJ"
+                                    1 -> "INTP"
+                                    2 -> "ENTJ"
+                                    3 -> "ENTP"
+                                    4 -> "ENFP"
+                                    5 -> "ENFJ"
+                                    6 -> "INFP"
+                                    7 -> "INFJ"
+                                    8 -> "ESFJ"
+                                    9 -> "ESTJ"
+                                    10 -> "ISFJ"
+                                    11 -> "ISTJ"
+                                    12 -> "ISTP"
+                                    13 -> "ISFP"
+                                    14 -> "ESTP"
+                                    15 -> "ESFP"
+                                    else -> "Not Taken"
+                                }
+                            }
                         },
                         question = quest
                     )
@@ -582,12 +615,10 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
 }
 @Composable
 fun ourTestScreen():Boolean{
-    var our by rememberSaveable { mutableIntStateOf(newUser.testResultTbd) }
-    val questions = listOf( "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
-        "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
-        "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",
-        "Do you like long walks on the beach?", "Do you like candles?", "Do you even?",)
-    SignUpFormat(
+    val answersList: MutableList<Int> = List(ourTestQuestions.size) { -1 }.toMutableList()
+    var results by remember { mutableIntStateOf(-1)    }
+
+    SignUpFormatLong(
         title = "Our Test",
         label = "We just want to know you a little more",
         enterField = {
@@ -597,14 +628,21 @@ fun ourTestScreen():Boolean{
                     .height(550.dp)
                     .verticalScroll(rememberScrollState())
             ){
-                questions.forEach { quest ->
-                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } //This is their Answer
+                ourTestQuestions.forEachIndexed { index, quest ->
+                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } // This is their Answer
                     PersonalityTest(
-                        //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
                         selectedIndex = selectedOptionIndex,
-                        onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
-                            our = 12
-                            newUser.testResultTbd = 12
+                        onSelectionChange = { newIndex ->
+                            selectedOptionIndex = newIndex
+                            // Save the index and the new value in answersList
+                            answersList[index] = newIndex
+                            if(!answersList.contains(-1)){
+                                results = 0
+                                answersList.forEach{ va ->
+                                    results += va
+                                }
+                                newUser.testResultTbd = results
+                            }
                         },
                         question = quest
                     )
@@ -612,7 +650,9 @@ fun ourTestScreen():Boolean{
             }
         },
     )
-    return true //our.isNotEmpty()
+
+
+    return true //results != -1
 }
 @Composable
 fun meetUpScreen():Boolean{

@@ -77,6 +77,30 @@ val curiositiesANDImaginations = listOf(
     "Describe a dream you've had that left a lasting impression on you.",
     "If you could have a conversation with your future self, what would you ask?"
 )
+val ourTestQuestions = listOf(
+    "I believe communication is key in a relationship.",
+    "I prefer to take things slow when getting to know someone new.",
+    "I think it's important for partners to have their own separate interests and hobbies.",
+    "I value quality time spent together over extravagant gestures or gifts.",
+    "I believe in giving my partner space and independence within the relationship.",
+    "I feel it's important for partners to have similar long-term goals and values.",
+    "I prefer to express affection through actions rather than words.",
+    "I enjoy trying new activities and experiences with my partner.",
+    "I believe in resolving conflicts through open and respectful communication.",
+    "I think it's important for partners to support each other's personal growth and development.",
+)
+val mbtiQuestion = listOf(
+    "When making decisions, do you prefer to rely on logic and analysis, or do you trust your gut feelings and instincts?",
+    "In social situations, are you more inclined to engage in lively discussions and debates, or do you prefer to observe and listen?",
+    "Do you feel energized by spending time with a large group of people, or do you find yourself needing alone time to recharge?",
+    "When approaching tasks, do you prefer to follow a structured plan and stick to a set schedule, or do you enjoy adapting and improvising as you go?",
+    "Are you more comfortable making decisions based on established traditions and norms, or do you prefer to explore new ideas and possibilities?",
+    "When working on a team project, do you typically take on a leadership role and direct others, or do you prefer to collaborate and share responsibilities?",
+    "In unfamiliar situations, do you tend to rely on past experiences and knowledge, or do you enjoy experimenting and discovering new approaches?",
+    "When engaging in conversations, do you prefer to focus on practical matters and concrete details, or do you enjoy exploring theoretical concepts and abstract ideas?",
+    "Are you more inclined to trust your own judgment and instincts when faced with uncertainty, or do you prefer to seek advice and opinions from others?",
+    "When it comes to completing tasks, do you prefer to work methodically and systematically, or do you thrive on spontaneity and flexibility?",
+)
 
 val genderList = listOf("Cis-Gender", "Transgender", "Non-binary", "Doesn't Matter")
 val zodiacList = listOf("Aries", "Taurus", "Gemini", "Cancer",  "Leo", "Virgo", "Libra",  "Scorpio",  "Sagittarius",  "Capricorn", "Aquarius", "Pisces", "Doesn't Matter")

@@ -224,7 +224,7 @@ fun PersonalityTest(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(50.dp, 130.dp)
+            .heightIn(50.dp, 260.dp)
             .padding(0.dp, 8.dp, 0.dp, 0.dp)
     ){
         Column(
@@ -234,7 +234,9 @@ fun PersonalityTest(
                 .padding(2.dp, 6.dp, 2.dp, 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GenericBodyText(style = AppTheme.typography.bodyMedium, text = question, )
+            Row(Modifier.padding(horizontal = 10.dp, vertical = 4.dp)){
+                GenericBodyText(style = AppTheme.typography.bodyMedium, text = question, )
+            }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier

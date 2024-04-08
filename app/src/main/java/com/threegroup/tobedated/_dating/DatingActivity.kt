@@ -110,17 +110,22 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
     var resetScrollState by remember { mutableStateOf(false) }
     val state = rememberScrollState()
     LaunchedEffect(resetScrollState, Unit) {
-        vmDating.getPotentialUserData {
+        if(vmDating.getNextPotential(currentProfileIndex) != null) {
             currentPotential.value = vmDating.getNextPotential(currentProfileIndex)
+        }else{
+            isNext = false
         }
+
+
         if (resetScrollState) {
             state.scrollTo(0)
             // After resetting, reset the state variable to false
             resetScrollState = false
         }
     }
-    fun nextProfile(newPotential: UserModel){
-        if(newPotential.name != ""){
+
+    fun nextProfile(newPotential: UserModel?){
+        if(newPotential != null){
             currentPotential.value = newPotential
         }else{
             isNext = false
@@ -166,7 +171,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
                     )
                 }
             } else {
-                Comeback()
+                Comeback(text = "Come Back when theres more people to see =0)")
             }
 
         },
@@ -281,8 +286,9 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
 }
 @Composable
 fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, vmDating: DatingViewModel){
-    var seen by remember { mutableStateOf(false)    }
     val currentUser = vmDating.getUser()
+    var seen by remember { mutableStateOf(currentUser.seeMe)    }
+
     val userSettings= listOf(currentUser.ethnicity, currentUser.pronoun, currentUser.gender, currentUser.sexOrientation,
         currentUser.meetUp, currentUser.relationship,  currentUser.intentions, currentUser.star, //currentUser.mbti,
         currentUser.children, currentUser.family,  currentUser.drink, currentUser.smoke, currentUser.weed,
@@ -300,13 +306,19 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
                         modifier = Modifier
                             .padding(15.dp, 0.dp, 15.dp, 0.dp)
                             .fillMaxWidth()
-                            .clickable { seen = !seen },
+                            .clickable { seen = !seen
+                                currentUser.seeMe = seen
+                                vmDating.updateUser(currentUser)
+                                       },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        GenericTitleText(text = "Been seen by people you like")
+                        GenericTitleText(text = "Only be seen by people you like")
                         Checkbox(checked = seen,
-                            onCheckedChange = {seen = !seen})
+                            onCheckedChange = {seen = !seen
+                                currentUser.seeMe = seen
+                                vmDating.updateUser(currentUser)
+                            })
                     }
                 }
             )

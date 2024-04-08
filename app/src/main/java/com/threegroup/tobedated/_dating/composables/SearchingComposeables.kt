@@ -174,8 +174,10 @@ fun SearchingButtons(
     }
 }
 @Composable
-fun Comeback(){
-    GenericBodyText(text = "Come Back when theres more people to see =0)")
+fun Comeback(
+    text: String
+){
+    GenericBodyText(text = text)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

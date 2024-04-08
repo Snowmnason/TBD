@@ -14,61 +14,63 @@ import com.threegroup.tobedated.shareclasses.models.UserSearchPreferenceModel
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     val list = ArrayList<UserModel>()
-    /*
-    TODO issue with potential user list....annoying,
-     when you open searching screen, it remakes the list, each time
-      and when you click like/pass/whatever it recalls "getPotentialUserData",
-      so its an odd issue with recompositions and shit
-      */
-    fun getPotentialUserData(callback: (ArrayList<UserModel>) -> Unit) {
+    fun getPotentialUserData(callback: () -> Unit) {
         try {
             FirebaseDatabase.getInstance().getReference("users")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
+                            val tempList = ArrayList<UserModel>() // Temporary list to store potential users
                             for (data in snapshot.children) {
                                 val model = data.getValue(UserModel::class.java)
                                 if (model?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
                                     model?.let {
-                                        list.add(it)
+                                        if (!it.seeMe) {
+                                            tempList.add(it)
+                                        }
                                     }
                                 }
                             }
+                            // Sort the list by status (currentTimeMillis)
+                            val sortedList = tempList.sortedByDescending { it.status }
+
+                            // Update the original list with the sorted list
+                            list.clear()
+                            list.addAll(sortedList)
                         }
-                        // Invoke the callback with the fetched list
-                        callback(list)
+                        // Invoke the callback to indicate that data retrieval is complete
+                        callback()
                     }
+
                     override fun onCancelled(error: DatabaseError) {
                         Log.d("MY_DEBUGGER", "ERROR")
-                        // Handle error, maybe invoke the callback with an empty list
-                        callback(ArrayList())
+                        // Handle error
                     }
                 })
         } catch (e: Exception) {
             Log.d("MY_DEBUGGER", "ERROR")
-            // Handle error, maybe invoke the callback with an empty list
-            callback(ArrayList())
+            // Handle error
         }
     }
 
-    fun getNextPotential(currentProfileIndex:Int): UserModel {
-        val user: UserModel = if (currentProfileIndex < list.size - 1) {
+
+    fun getNextPotential(currentProfileIndex:Int): UserModel? {
+        return if (currentProfileIndex < list.size) {
             list[currentProfileIndex]
         } else {
-            UserModel()
+            null
         }
-        return user
     }
 
-    fun likedCurrentPotential(currentProfileIndex:Int, currentPotential: UserModel): UserModel {
-
-        return getNextPotential(currentProfileIndex)
-    }
-    fun passedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel {
+    fun likedCurrentPotential(currentProfileIndex:Int, currentPotential: UserModel): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }
-    fun reportedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel {
+    fun passedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel? {
+
+        return getNextPotential(currentProfileIndex)
+    }
+    fun reportedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }
@@ -142,9 +144,10 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                             // Otherwise, use the provided location value
                             location
                         }
-                        signedInUser.status = userDataMap["status"] as? String ?: ""
+                        signedInUser.status = System.currentTimeMillis()
                         signedInUser.number = userDataMap["number"] as? String ?: ""
                         signedInUser.verified = userDataMap["verified"] as? Boolean ?: false
+                        signedInUser.seeMe = userDataMap["Seen"] as? Boolean ?: false
                         signedInUser.userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
                             UserSearchPreferenceModel(
                                 ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18,35),
@@ -166,6 +169,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                                 weed = (map["weed"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
                             )
                         } ?: UserSearchPreferenceModel()
+                        updateStatus()
                     } else {
                         // Handle null user data
                     }
@@ -180,5 +184,10 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                 println("Error: ${error.message}")
             }
         })
+    }
+    fun updateStatus() {
+        val userPhoneNumber = signedInUser.number
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
+        databaseReference.setValue(signedInUser)
     }
 }

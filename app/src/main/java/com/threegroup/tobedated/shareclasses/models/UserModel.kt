@@ -36,9 +36,10 @@ data class UserModel(
     var image3          : String = "",
     var image4          : String = "",
     var location        : String = "3.0/3.0",
-    var status          : String = "",
+    var status          : Long = 0,
     var number          :String = "",
     var verified        :Boolean = false,
+    var seeMe           :Boolean = false,
     var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel()
 )
 data class UserSearchPreferenceModel(

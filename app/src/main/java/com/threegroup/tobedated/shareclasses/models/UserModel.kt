@@ -35,7 +35,7 @@ data class UserModel(
     var image2          : String = "",
     var image3          : String = "",
     var image4          : String = "",
-    var location        : String = "24 miles",
+    var location        : String = "3.0/3.0",
     var status          : String = "",
     var number          :String = "",
     var verified        :Boolean = false,

@@ -74,6 +74,7 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
                 showDialog = true
             }else{
                 questionIndex--
+                isButtonEnabled = false
                 navController.popBackStack()
             }
         })

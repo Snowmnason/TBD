@@ -4,39 +4,28 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -48,7 +37,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -70,7 +57,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._dating.DatingActivity
@@ -78,13 +64,11 @@ import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated._signUp.composables.PhotoQuestion
 import com.threegroup.tobedated._signUp.composables.PromptAnswer
-import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PlainTextButton
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
-import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.childrenOptions
 import com.threegroup.tobedated.shareclasses.models.curiositiesANDImaginations
 import com.threegroup.tobedated.shareclasses.models.drinkOptions
@@ -92,9 +76,6 @@ import com.threegroup.tobedated.shareclasses.models.educationOptions
 import com.threegroup.tobedated.shareclasses.models.ethnicityOptions
 import com.threegroup.tobedated.shareclasses.models.familyOptions
 import com.threegroup.tobedated.shareclasses.models.genderOptions
-import com.threegroup.tobedated.shareclasses.models.getMBTIColor
-import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
-import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.insightsANDReflections
 import com.threegroup.tobedated.shareclasses.models.intentionsOptions
 import com.threegroup.tobedated.shareclasses.models.meetUpOptions
@@ -105,8 +86,6 @@ import com.threegroup.tobedated.shareclasses.models.relationshipOptions
 import com.threegroup.tobedated.shareclasses.models.religionOptions
 import com.threegroup.tobedated.shareclasses.models.sexOrientationOptions
 import com.threegroup.tobedated.shareclasses.models.smokeOptions
-import com.threegroup.tobedated.shareclasses.models.starColorMap
-import com.threegroup.tobedated.shareclasses.models.starColors
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.shareclasses.models.tabs
 import com.threegroup.tobedated.shareclasses.models.weedOptions
@@ -188,308 +167,6 @@ fun DeactivateAccount(
         border = BorderStroke(2.dp , Color.Red)
     ) {
         GenericTitleText(text = "Deactivate Account")
-    }
-}
-
-@Composable
-fun SimpleEditBox(
-    whatsInsideTheBox: @Composable () -> Unit = {},
-    edit:Boolean = false,
-    onClick: () -> Unit = {}
-){
-    val thickness = 1
-    val boardColor= Color(0xFFB39DB7)
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(thickness.dp, boardColor, shape = RoundedCornerShape(4.dp)),
-        color = AppTheme.colorScheme.background,
-        contentColor = AppTheme.colorScheme.onBackground,
-        shape = RoundedCornerShape(4.dp)
-    ) {
-        Box(modifier = Modifier
-            .padding(4.dp, 8.dp)
-            .clickable(enabled = edit, onClick = onClick)) {
-            whatsInsideTheBox()
-        }
-    }
-}
-
-@Composable
-fun SimpleIconEditBox(
-    //whatsInsideTheBox: @Composable () -> Unit = {},
-    verify:String = "false",
-    answer: String,
-    icon: ImageVector?,
-    divider:Boolean = false,
-    color:Color = AppTheme.colorScheme.onBackground,
-){
-
-    Box(modifier = Modifier) {
-        if (icon != null) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Icon(
-                    imageVector = icon, contentDescription = "icon", modifier = Modifier
-                        .offset(y = (-2).dp)
-                        .size(25.dp), tint = AppTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = answer,
-                    style = getSmallerTextStyle(color),
-                    modifier = Modifier.offset(y = 3.dp),
-                )
-            }
-        } else {
-            Text(
-                text = answer,
-                style = getSmallerTextStyle(color),
-                modifier = Modifier.offset(y = 3.dp)
-            )
-        }
-    }
-    if(divider){
-        VerticalDivider(
-            modifier = Modifier.height(20.dp),
-            color = Color(0xFFB39DB7),
-            thickness = 2.dp
-        )
-    }
-}
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun CurrentUserInfo(
-    user: UserModel,
-    bioClick: () -> Unit = {},
-    prompt1Click: () -> Unit = {},
-    prompt2Click: () -> Unit = {},
-    prompt3Click: () -> Unit = {},
-    photoClick: () -> Unit = {},
-) {
-    val photos = listOf(user.image1, user.image2, user.image3, user.image4)
-    var subtract = 0
-    if (photos[3] == "") {
-        subtract = 1
-    }
-    //Sign Sign MBTI
-    val mbtiColor = getMBTIColor(user.testResultsMbti)
-    val starSymbol = getStarSymbol(user.star)
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(15.dp, 0.dp)
-    ) {
-        //Name
-        SimpleBox(verify = user.verified, whatsInsideTheBox = {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = user.name, style = AppTheme.typography.titleMedium) //Name
-            }
-        })
-        //Age, Ethnicity
-                        Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = calcAge(user.birthday.split("/")), icon = null, divider = true)
-                    SimpleIconEditBox(answer = user.ethnicity, icon = null, divider = true)
-                    SimpleIconEditBox(answer = user.pronoun, icon = ImageVector.vectorResource(id = R.drawable.height))
-                }
-            }
-        )
-        //Sexual orientation, Pronouns, Gender
-                        Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.gender, icon = null, divider = true)
-                    SimpleIconEditBox(answer = user.sexOrientation, icon = null, divider = true)
-                    SimpleIconEditBox(answer = user.height, icon = ImageVector.vectorResource(id = R.drawable.height))
-                }
-            }
-        )
-
-
-        //BIO
-                        Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-            Column(modifier = Modifier.fillMaxSize()) {
-//                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
-
-            }
-        },
-            edit = true,
-            onClick = bioClick
-        )
-        //MEET UP AND LOCATION
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.meetUp, icon = ImageVector.vectorResource(id = R.drawable.first_date), divider = true)
-                    SimpleIconEditBox(answer = "0 miles", icon = ImageVector.vectorResource(id = R.drawable.location))
-                }
-            }
-        )
-        //relationship type, Intentions
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.relationship, icon =  ImageVector.vectorResource(id = R.drawable.relationship_type), divider = true)
-                    SimpleIconEditBox(answer = user.intentions, icon = ImageVector.vectorResource(id = R.drawable.intentions))
-                }
-            }
-        )
-        //First prompt question
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(whatsInsideTheBox = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Text(text = user.promptQ1, style = AppTheme.typography.titleSmall)//Prompt question
-                Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA1, style = AppTheme.typography.bodyLarge) //Prompt Answer
-            }
-        },
-            edit = true,
-            onClick = prompt1Click
-        )
-        //Star Sign, MBTI
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.star, icon = starSymbol, divider = true, color= starColors[starColorMap[user.star]!!])
-                    SimpleIconEditBox(answer = user.testResultsMbti, icon = null, color = mbtiColor)
-                }
-            }
-        )
-        //Second prompt question
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(whatsInsideTheBox = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    text = user.promptQ2,
-                    style = AppTheme.typography.titleSmall
-                )///Prompt Questions2
-                Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA2, style = AppTheme.typography.bodyLarge) //Prompt Answer 2
-            }
-        },
-            edit = true,
-            onClick = prompt2Click
-        )
-        //Family, Kids
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.children, icon =  ImageVector.vectorResource(id = R.drawable.children), divider = true)
-                    SimpleIconEditBox(answer = user.family, icon = ImageVector.vectorResource(id = R.drawable.family))
-                }
-            }
-        )
-        //Third Prompt Question
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(whatsInsideTheBox = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    text = user.promptQ3,
-                    style = AppTheme.typography.titleSmall
-                )//Prompt Question 3
-                Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
-            }
-        },
-            edit = true,
-            onClick = prompt3Click
-        )
-        //Smokes, drinks, weeds
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.drink, icon = ImageVector.vectorResource(id = R.drawable.smoking), divider = true)
-                    SimpleIconEditBox(answer = user.smoke, icon = ImageVector.vectorResource(id = R.drawable.drinking), divider = true)
-                    SimpleIconEditBox(answer = user.weed, icon = ImageVector.vectorResource(id = R.drawable.weeds))
-                }
-            }
-        )
-        /*
-        TODO add another breaker it will look nicer
-         */
-
-        /*
-        TODO add another breaker it will look nicer
-         */
-        //Politics Religion School
-                Spacer(modifier = Modifier.height(12.dp))
-        SimpleEditBox(
-            whatsInsideTheBox = {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SimpleIconEditBox(answer = user.politics, icon = ImageVector.vectorResource(id = R.drawable.politics), divider = true)
-                    SimpleIconEditBox(answer = user.religion, icon = ImageVector.vectorResource(id = R.drawable.religion), divider = true)
-                    SimpleIconEditBox(answer = user.education, icon = ImageVector.vectorResource(id = R.drawable.school))
-                }
-            }
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        val pagerState = rememberPagerState(pageCount = { photos.size - subtract })
-        Column {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.End){
-                Button(onClick = photoClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DB7),)
-                ) {
-                    GenericBodyText(text = "Change Photos", color= AppTheme.colorScheme.onSurface)
-                }
-            }
-            HorizontalPager(state = pagerState, modifier = Modifier.aspectRatio(2f / 3f)) { page ->
-                AsyncImage(
-                    modifier = Modifier.aspectRatio(2f / 3f),
-                    model = photos[page],
-                    contentDescription = "Profile Photo $page",
-                    contentScale = ContentScale.FillBounds  // Ensure photos fill the box without distortion
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 @Composable

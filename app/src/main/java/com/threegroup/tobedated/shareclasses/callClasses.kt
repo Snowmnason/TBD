@@ -6,39 +6,35 @@ import android.provider.MediaStore
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
 import java.util.Calendar
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver, imageNumber: Int, imageName: String): String {
+suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolver, imageNumber: Int, userNumber: String): String {
     var downloadUrl = ""
     try {
         val storageRef = FirebaseStorage.getInstance().reference
-        val databaseRef = FirebaseDatabase.getInstance().reference
         val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
-        val imagePath = "users/$imageName/images/${imageName}${imageNumber}ProfilePhoto"
 
-        // Delete the existing image (if any)
-        deleteImage(imagePath)
+        // Define the image path including the user's ID and image number
+        val imagePath = "$userNumber/image$imageNumber"
 
-        // Upload the new image
+        // Upload the image to Firebase Storage
         val imageRef = storageRef.child(imagePath)
-        val file = Uri.fromFile(File(filePath))
-        val inputStream = withContext(Dispatchers.IO) {
-            FileInputStream(file.path)
-        }
-        val uploadTask = imageRef.putStream(inputStream).await()
+//        val file = Uri.fromFile(File(filePath))
+//        val inputStream = withContext(Dispatchers.IO) {
+//            FileInputStream(file.path)
+//        }
+//        val uploadTask = imageRef.putStream(inputStream).await()
         downloadUrl = imageRef.downloadUrl.await().toString()
 
-        // Store the download URL in the Firebase Realtime Database under the user's phone number
-        val userImagesRef = databaseRef.child("users").child(imageName).child("images").child("image$imageNumber")
+        // Store the download URL in the Firebase Realtime Database under the user's ID and image number
+        val databaseRef = FirebaseDatabase.getInstance().reference
+        val userImagesRef = databaseRef.child("users").child(userNumber).child("image$imageNumber")
         userImagesRef.setValue(downloadUrl)
 
         // Delete the local image file after successful upload
@@ -55,6 +51,17 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
     return downloadUrl
 }
 
+//suspend fun deleteImage(userNumber: String, imageNumber: Int) {
+//    try {
+//        val storageRef = FirebaseStorage.getInstance().reference
+//        val imagePath = "users/$userNumber/images/${userNumber}${imageNumber}ProfilePhoto"
+//        val imageRef = storageRef.child(imagePath)
+//        imageRef.delete().await()
+//    } catch (e: Exception) {
+//        Log.e("deleteImage", "Error deleting image: ${e.message}")
+//    }
+//}
+
 
 fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): String? {
     var filePath: String? = null
@@ -66,17 +73,6 @@ fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): St
     }
     return filePath
 }
-
-suspend fun deleteImage(imageName: String) {
-    try {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val imageRef = storageRef.child(imageName)
-        imageRef.delete().await()
-    } catch (e: Exception) {
-        Log.e("deleteImage", "Error deleting image: ${e.message}")
-    }
-}
-
 
 fun calcAge(birth: List<String>?): String{
     val month = (birth?.getOrNull(0)?.substring(0, 2))?.toInt()
@@ -100,7 +96,7 @@ fun calcAge(birth: List<String>?): String{
 }
 fun calcDistance(potential:String, current:String):String{
     val distance: String
-    if(potential != "error/" && current != "/"){
+    if (current != "error/" && current != "/" && current.isNotBlank()){
         val potentialParts = potential.split("/")
         val currentParts = current.split("/")
         val latitudePotential = potentialParts.first().toDouble()

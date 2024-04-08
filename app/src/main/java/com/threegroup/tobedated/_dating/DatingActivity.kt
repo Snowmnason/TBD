@@ -35,7 +35,6 @@ import com.threegroup.tobedated._dating.composables.ChangePreferenceScreen
 import com.threegroup.tobedated._dating.composables.ChangeProfile
 import com.threegroup.tobedated._dating.composables.ChangeSeekingScreen
 import com.threegroup.tobedated._dating.composables.Comeback
-import com.threegroup.tobedated._dating.composables.CurrentUserInfo
 import com.threegroup.tobedated._dating.composables.DeactivateAccount
 import com.threegroup.tobedated._dating.composables.DeleteAccount
 import com.threegroup.tobedated._dating.composables.DistanceSlider
@@ -141,7 +140,10 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         currentScreen = {
             if (isNext) {
                 currentPotential.value?.let { user ->
-                    val location = calcDistance(user.location, vmDating.getUser().location)
+                    var location  = "x miles"
+                    if(user.location != "" && vmDating.getUser().location != ""){
+                        location = calcDistance(user.location, vmDating.getUser().location)
+                    }
                     UserInfo(
                         user = user,//usersArray[currentProfileIndex]
                         location = location,
@@ -265,13 +267,14 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
         settingsButton = { navController.navigate("EditProfileScreen") },
         state = state,
         currentScreen = {
-            CurrentUserInfo(
+            UserInfo(
                 currentUser,
                 bioClick = { navController.navigate("BioEdit") },
                 prompt1Click = {navController.navigate("PromptEdit/1")},
                 prompt2Click = {navController.navigate("PromptEdit/2")},
                 prompt3Click = {navController.navigate("PromptEdit/3")},
-                photoClick = {navController.navigate("ChangePhoto")}
+                photoClick = {navController.navigate("ChangePhoto")},
+                doesEdit = true
             )
         }
     )

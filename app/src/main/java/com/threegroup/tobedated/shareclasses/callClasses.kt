@@ -23,8 +23,9 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
         val storageRef = FirebaseStorage.getInstance().reference
         val databaseRef = FirebaseDatabase.getInstance().reference
         val filePath = getFileFromContentUri(Uri.parse(uriString), contentResolver) ?: return ""
-        val imagePath = "images/$imageName${imageNumber}ProfilePhoto"
-        // Delete the existing image
+        val imagePath = "users/$imageName/images/${imageName}${imageNumber}ProfilePhoto"
+
+        // Delete the existing image (if any)
         deleteImage(imagePath)
 
         // Upload the new image
@@ -36,8 +37,10 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
         val uploadTask = imageRef.putStream(inputStream).await()
         downloadUrl = imageRef.downloadUrl.await().toString()
 
-        // Store the download URL in the Firebase Realtime Database
-        databaseRef.child("images").push().setValue(downloadUrl)
+        // Store the download URL in the Firebase Realtime Database under the user's phone number
+        val userImagesRef = databaseRef.child("users").child(imageName).child("images").child("image$imageNumber")
+        userImagesRef.setValue(downloadUrl)
+
         // Delete the local image file after successful upload
         val localFile = File(filePath)
         if (localFile.exists()) {
@@ -51,6 +54,7 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
     }
     return downloadUrl
 }
+
 
 fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): String? {
     var filePath: String? = null

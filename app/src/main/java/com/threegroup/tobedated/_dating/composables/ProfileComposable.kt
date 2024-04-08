@@ -864,7 +864,7 @@ fun ChangePhoto(
             } })//newUser.image4 = it.toString()
     ChangePreferenceTopBar(
         nav = nav,
-        title = "Change Photos",
+        title = "Photos",
         changeSettings = {
             Spacer(modifier = Modifier.height(24.dp))
             SimpleBox(

@@ -303,7 +303,7 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
                     ) {
                         GenericTitleText(text = "Been seen by people you like")
                         Checkbox(checked = seen,
-                            onCheckedChange = {})
+                            onCheckedChange = {seen = !seen})
                     }
                 }
             )

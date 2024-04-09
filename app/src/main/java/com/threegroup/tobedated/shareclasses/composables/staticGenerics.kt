@@ -73,8 +73,12 @@ fun PolkaDotCanvas() {
     }
 }
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    text1:String ="To Be Dated",
+    text2:String ="the dating app made for connections"
+) {
     val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
+
     Box(
         modifier = Modifier
             .fillMaxSize()

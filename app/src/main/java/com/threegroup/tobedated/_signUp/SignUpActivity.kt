@@ -37,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._login.LoginActivity
@@ -65,8 +63,6 @@ import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.composables.RadioButtonGroup
 import com.threegroup.tobedated.shareclasses.composables.rememberPickerState
-import com.threegroup.tobedated.shareclasses.models.PreferenceIndexModel
-import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.childrenOptions
 import com.threegroup.tobedated.shareclasses.models.drinkOptions
 import com.threegroup.tobedated.shareclasses.models.educationOptions
@@ -87,26 +83,22 @@ import com.threegroup.tobedated.shareclasses.models.sexOrientationOptions
 import com.threegroup.tobedated.shareclasses.models.smokeOptions
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.shareclasses.models.weedOptions
-import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-var newUser = UserModel()
-var newUserIndex = PreferenceIndexModel()
 class SignUpActivity : ComponentActivity() {
     private lateinit var location:String
     override fun onCreate(savedInstanceState: Bundle?) {
-        newUser.number = intent.getStringExtra("userPhone").toString()
+        val number = intent.getStringExtra("userPhone").toString()
         location = intent.getStringExtra("location").toString()
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
                 PolkaDotCanvas()
-                SignUpNav(this@SignUpActivity)
+                SignUpNav(this@SignUpActivity, location, number)
             }
         }
     }
@@ -120,17 +112,18 @@ class SignUpActivity : ComponentActivity() {
 
     fun finishingUp(signUpVM: SignUpViewModel){
         lifecycleScope.launch {
-            newUser.promptQ1 = signUpVM.getQuestion1()
-            newUser.promptQ2 = signUpVM.getQuestion2()
-            newUser.promptQ3 = signUpVM.getQuestion3()
-            uploadImage()
-            val userToken = storeData()
+//            newUser.promptQ1 = signUpVM.getQuestion1()
+//            newUser.promptQ2 = signUpVM.getQuestion2()
+//            newUser.promptQ3 = signUpVM.getQuestion3()
+            signUpVM.uploadImage(contentResolver)
+            val userToken = signUpVM.storeData()
+            showToast()
+            saveTokenToSharedPreferences(userToken)
             goNextScreen(userToken)
 
         }
     }
     private fun goNextScreen(userToken: String?) {
-
         val intent = Intent(this, DatingActivity::class.java)
         intent.putExtra("token", userToken)
         intent.putExtra("location", location)
@@ -138,51 +131,10 @@ class SignUpActivity : ComponentActivity() {
         finish()
     }
 
-    private suspend fun storeData(): String? {
-        val deferredToken = CompletableDeferred<String?>()
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null && currentUser.phoneNumber != null) {
-            FirebaseDatabase.getInstance().getReference("users")
-                .child(currentUser.phoneNumber!!)
-                .setValue(newUser)
-                .addOnSuccessListener {
-                    val user = FirebaseAuth.getInstance().currentUser
-                    user?.getIdToken(true)
-                        ?.addOnCompleteListener { task2 ->
-                            if (task2.isSuccessful) {
-                                //val idToken = task2.result?.token
-                                saveTokenToSharedPreferences(currentUser.phoneNumber)
-                                // Resolve the deferred with the token value
-                                deferredToken.complete(currentUser.phoneNumber)
-                            } else {
-                                // Handle error getting user token
-                                deferredToken.complete(null)
-                            }
-                        }
-                    showToast("Success!")
-                }
-                .addOnFailureListener { e ->
-                    showToast("Failed ${e.message}")
-                    deferredToken.complete(null)
-                }
-        } else {
-            showToast("User NOT authenticated or phone number is null")
-            deferredToken.complete(null)
-        }
-        // Wait for the token to be resolved and return it
-        return deferredToken.await()
-    }
-    // Modified uploadImage function
-    private suspend fun uploadImage() {
-        newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
-        newUser.image2 = storeImageAttempt(newUser.image2, contentResolver, 2, newUser.number)
-        newUser.image3 = storeImageAttempt(newUser.image3, contentResolver, 3, newUser.number)
-        newUser.image4 = storeImageAttempt(newUser.image4, contentResolver, 4, newUser.number)
-    }
-    private fun showToast(message: String) {
+    private fun showToast() {//message: String
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
-                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Success!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -222,8 +174,8 @@ fun welcomeScreen():Boolean {
 
 
 @Composable
-fun nameScreen():Boolean {
-    var name by rememberSaveable { mutableStateOf(newUser.name) }
+fun nameScreen(signUpVM:SignUpViewModel):Boolean {
+    var name by rememberSaveable { mutableStateOf(signUpVM.getUser().name) }
     SignUpFormat(
         title = "Your Name",
         label = "This is what people will know you ass \nJust your first name is needed",
@@ -231,15 +183,15 @@ fun nameScreen():Boolean {
             NameQuestion(
                 input = name,
                 onInputChanged = { input ->  name = input
-                                 newUser.name = input},
+                    signUpVM.setUser("name", input)},
             )
         },
     )
     return name.isNotEmpty()
 }
 @Composable
-fun birthScreen(): Boolean {
-    var date by rememberSaveable { mutableStateOf(newUser.birthday) }
+fun birthScreen(signUpVM:SignUpViewModel): Boolean {
+    var date by rememberSaveable { mutableStateOf(signUpVM.getUser().birthday) }
     val dateComponents = date.split("/")
     var month by rememberSaveable { mutableStateOf(dateComponents.getOrNull(0) ?: "") }
     var day by rememberSaveable { mutableStateOf(dateComponents.getOrNull(1) ?: "") }
@@ -252,7 +204,7 @@ fun birthScreen(): Boolean {
     val focusManager = LocalFocusManager.current
     DisposableEffect(date) {
         onDispose {
-            newUser.birthday = date
+            signUpVM.setUser("birth", date)
         }
     }
 
@@ -340,9 +292,9 @@ fun birthScreen(): Boolean {
     return date.isNotEmpty()
 }
 @Composable
-fun pronounScreen(): Boolean {
-    var pronoun by rememberSaveable { mutableStateOf(newUser.pronoun) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.pronoun) }
+fun pronounScreen(signUpVM:SignUpViewModel): Boolean {
+    var pronoun by rememberSaveable { mutableStateOf(signUpVM.getUser().pronoun) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().pronoun) }
 
     SignUpFormat(
         title = "Pronouns",
@@ -353,7 +305,8 @@ fun pronounScreen(): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     pronoun = pronounOptions[selectedOptionIndex]
-                    newUser.pronoun = pronounOptions[selectedOptionIndex]
+                    signUpVM.setUser("pronoun", pronoun)
+                    signUpVM.setUserIndex("pronoun", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -362,9 +315,9 @@ fun pronounScreen(): Boolean {
     return pronoun.isNotEmpty()
 }
 @Composable
-fun genderScreen():Boolean {
-    var gender by rememberSaveable { mutableStateOf(newUser.gender) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.gender) }
+fun genderScreen(signUpVM:SignUpViewModel):Boolean {
+    var gender by rememberSaveable { mutableStateOf(signUpVM.getUser().gender) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().gender) }
     SignUpFormat(
         title = "Your Gender",
         label = "What do you identify as",
@@ -372,9 +325,11 @@ fun genderScreen():Boolean {
             RadioButtonGroup(
                 options = genderOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     gender = genderOptions[selectedOptionIndex]
-                    newUser.gender = genderOptions[selectedOptionIndex]
+                    signUpVM.setUser("gender", gender)
+                    signUpVM.setUserIndex("gender", newIndex)
                 },
                 style = getCustomButtonStyle()
             ) },
@@ -382,12 +337,12 @@ fun genderScreen():Boolean {
     return gender.isNotEmpty()
 }
 @Composable
-fun heightScreen():Boolean {
-    var height by rememberSaveable { mutableStateOf(newUser.height) }
+fun heightScreen(signUpVM:SignUpViewModel):Boolean {
+    var height by rememberSaveable { mutableStateOf(signUpVM.getUser().height) }
     val valuesPickerState = rememberPickerState()
     DisposableEffect(height) {
         onDispose {
-            newUser.height = height
+            signUpVM.setUser("height", height)
         }
     }
 
@@ -418,19 +373,22 @@ fun heightScreen():Boolean {
     return height.isNotEmpty()
 }
 @Composable
-fun ethnicityScreen():Boolean {
-    var ethnicity by rememberSaveable { mutableStateOf(newUser.ethnicity) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.ethnicity) }
+fun ethnicityScreen(signUpVM: SignUpViewModel): Boolean {
+    var ethnicity by rememberSaveable { mutableStateOf(signUpVM.getUser().ethnicity) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().ethnicity) }
+
     SignUpFormat(
         title = "Ethnicity",
-        label = "We curious on where you are from!",
+        label = "We're curious about where you are from!",
         enterField = {
             RadioButtonGroup(
                 options = ethnicityOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     ethnicity = ethnicityOptions[selectedOptionIndex]
-                    newUser.ethnicity = ethnicityOptions[selectedOptionIndex]
+                    signUpVM.setUser("ethnicity", ethnicity)
+                    signUpVM.setUserIndex("ethnicity", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -438,21 +396,24 @@ fun ethnicityScreen():Boolean {
     )
     return ethnicity.isNotEmpty()
 }
+
 @Composable
-fun starScreen():Boolean{
-    var star by rememberSaveable { mutableStateOf(newUser.star) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.star) }
+fun starScreen(signUpVM: SignUpViewModel): Boolean {
+    var star by rememberSaveable { mutableStateOf(signUpVM.getUser().star) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().star) }
 
     SignUpFormat(
-        title = "Whats your sign?",
+        title = "What's your sign?",
         label = "Do the stars say we are in favor?",
         enterField = {
             RadioButtonGroup(
                 options = starOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     star = starOptions[selectedOptionIndex]
-                    newUser.star = starOptions[selectedOptionIndex]
+                    signUpVM.setUser("star", star)
+                    signUpVM.setUserIndex("star", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -460,10 +421,12 @@ fun starScreen():Boolean{
     )
     return star.isNotEmpty()
 }
+
 @Composable
-fun sexOriScreen():Boolean{
-    var sexOri by rememberSaveable { mutableStateOf(newUser.sexOrientation) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.sexOrientation) }
+fun sexOriScreen(signUpVM: SignUpViewModel): Boolean {
+    var sexOri by rememberSaveable { mutableStateOf(signUpVM.getUser().sexOrientation) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().sexOrientation) }
+
     SignUpFormat(
         title = "Sexual Orientation",
         label = "Who do you like?",
@@ -471,9 +434,11 @@ fun sexOriScreen():Boolean{
             RadioButtonGroup(
                 options = sexOrientationOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     sexOri = sexOrientationOptions[selectedOptionIndex]
-                    newUser.sexOrientation = sexOrientationOptions[selectedOptionIndex]
+                    signUpVM.setUser("sexOrientation", sexOri)
+                    signUpVM.setUserIndex("sexOrientation", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -481,10 +446,12 @@ fun sexOriScreen():Boolean{
     )
     return sexOri.isNotEmpty()
 }
+
 @Composable
-fun searchScreen():Boolean{
-    var search by rememberSaveable { mutableStateOf(newUser.seeking) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.seeking) }
+fun searchScreen(signUpVM: SignUpViewModel): Boolean {
+    var search by rememberSaveable { mutableStateOf(signUpVM.getUser().seeking) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().seeking) }
+
     SignUpFormat(
         title = "Searching For?",
         label = "Who are you looking to connect with?",
@@ -492,9 +459,11 @@ fun searchScreen():Boolean{
             RadioButtonGroup(
                 options = seekingOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     search = seekingOptions[selectedOptionIndex]
-                    newUser.seeking = seekingOptions[selectedOptionIndex]
+                    signUpVM.setUser("seeking", search)
+                    signUpVM.setUserIndex("seeking", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -502,20 +471,24 @@ fun searchScreen():Boolean{
     )
     return search.isNotEmpty()
 }
+
 @Composable
-fun sexScreen():Boolean{
-    var sex by rememberSaveable { mutableStateOf(newUser.sex) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.sex) }
+fun sexScreen(signUpVM: SignUpViewModel): Boolean {
+    var sex by rememberSaveable { mutableStateOf(signUpVM.getUser().sex) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().sex) }
+
     SignUpFormat(
-        title = "Your sex",
+        title = "Your Sex",
         label = "What search category will you be in?",
         enterField = {
             RadioButtonGroup(
                 options = sexOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     sex = sexOptions[selectedOptionIndex]
-                    newUser.sex = sexOptions[selectedOptionIndex]
+                    signUpVM.setUser("sex", sex)
+                    signUpVM.setUserIndex("sex", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -523,12 +496,13 @@ fun sexScreen():Boolean{
     )
     return sex.isNotEmpty()
 }
+
 @Composable
-fun mbtiScreen(onNavigate: () -> Unit):Boolean{
-    var mbti by rememberSaveable { mutableStateOf(newUser.testResultsMbti) }
+fun mbtiScreen(signUpVM: SignUpViewModel, onNavigate: () -> Unit):Boolean{
+    var mbti by rememberSaveable { mutableStateOf(signUpVM.getUser().testResultsMbti) }
     var isSkip by rememberSaveable { mutableStateOf(false) }
 
-    val answersList: MutableList<Int> = List(ourTestQuestions.size) { -1 }.toMutableList()
+    val answersList: MutableList<Int> = signUpVM.getMbti().toMutableList()
     var results by remember { mutableIntStateOf(-1)    }
 
 
@@ -555,21 +529,23 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
                     .verticalScroll(rememberScrollState())
             ) {
                 mbtiQuestion.forEachIndexed { index, quest ->
-                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } // This is their Answer
+                    var selectedIndex by remember { mutableIntStateOf(-1) }
+                    selectedIndex = if(answersList[index] != -1){answersList[index]} else{ -1}
                     PersonalityTest(
                         //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
-                        selectedIndex = selectedOptionIndex,
+                        selectedIndex = selectedIndex,
                         onSelectionChange = { newIndex ->
-                            selectedOptionIndex = newIndex
+                            selectedIndex = newIndex
                             // Save the index and the new value in answersList
-                            answersList[index] = newIndex
+                            answersList[index] = selectedIndex
+                            signUpVM.setMbti(index, selectedIndex)
                             if(!answersList.contains(-1)){
                                 results = 0
                                 answersList.forEach{ va ->
                                     results += va
                                 }
-                                mbti = "Not Taken"
-                                newUser.testResultsMbti = when (results) {
+                                //mbti = "Not Taken"
+                                mbti = when (results) {
                                     0 -> "INTJ"
                                     1 -> "INTP"
                                     2 -> "ENTJ"
@@ -588,6 +564,7 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
                                     15 -> "ESFP"
                                     else -> "Not Taken"
                                 }
+                                signUpVM.setUser("testResultsMbti", mbti)
                             }
                         },
                         question = quest
@@ -601,10 +578,12 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
         var selectedResult by rememberSaveable { mutableStateOf("Not Taken") }
         MBTIDropDown(
             onConfirmation = { isSkip = false
-                newUser.testResultsMbti = selectedResult
+                //newUser.testResultsMbti = selectedResult
+                signUpVM.setUser("testResultsMbti", selectedResult)
                 onNavigate()},
             onDismissRequest = { isSkip = false
-                newUser.testResultsMbti = "Not Taken"
+                //newUser.testResultsMbti = "Not Taken"
+                signUpVM.setUser("testResultsMbti", "Not Taken")
                 onNavigate()},
             selectedMBTI = selectedResult,
             onMBTISelect = { newResult -> selectedResult = newResult }
@@ -614,9 +593,9 @@ fun mbtiScreen(onNavigate: () -> Unit):Boolean{
     return mbti.isNotEmpty()//TODO
 }
 @Composable
-fun ourTestScreen():Boolean{
-    val answersList: MutableList<Int> = List(ourTestQuestions.size) { -1 }.toMutableList()
-    var results by remember { mutableIntStateOf(-1)    }
+fun ourTestScreen(signUpVM: SignUpViewModel):Boolean{
+    val answersList: MutableList<Int> = signUpVM.getOurTest().toMutableList()
+    var results by remember { mutableIntStateOf((signUpVM.getUser().testResultTbd))    }
 
     SignUpFormatLong(
         title = "Our Test",
@@ -629,19 +608,23 @@ fun ourTestScreen():Boolean{
                     .verticalScroll(rememberScrollState())
             ){
                 ourTestQuestions.forEachIndexed { index, quest ->
-                    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(-1) } // This is their Answer
+                    var selectedIndex by remember { mutableIntStateOf(-1) }
+                    selectedIndex = if(answersList[index] != -1){answersList[index]} else{ -1}
                     PersonalityTest(
-                        selectedIndex = selectedOptionIndex,
+                        //TODO some how get value from this shit, I am thinking don't return the values return the result. so math
+                        selectedIndex = selectedIndex,
                         onSelectionChange = { newIndex ->
-                            selectedOptionIndex = newIndex
+                            selectedIndex = newIndex
                             // Save the index and the new value in answersList
                             answersList[index] = newIndex
+                            signUpVM.setOurTest(index, newIndex)
                             if(!answersList.contains(-1)){
                                 results = 0
                                 answersList.forEach{ va ->
                                     results += va
                                 }
-                                newUser.testResultTbd = results
+                                //newUser.testResultTbd = results
+                                signUpVM.setUser("testResultTbd", results)
                             }
                         },
                         question = quest
@@ -650,24 +633,25 @@ fun ourTestScreen():Boolean{
             }
         },
     )
-
-
-    return true //results != -1
+    return true //results != -1//TODO
 }
 @Composable
-fun meetUpScreen():Boolean{
-    var metUp by rememberSaveable { mutableStateOf(newUser.meetUp) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.meetUp) }
+fun meetUpScreen(signUpVM: SignUpViewModel): Boolean {
+    var metUp by rememberSaveable { mutableStateOf(signUpVM.getUser().meetUp) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().meetUp) }
+
     SignUpFormat(
-        title = "How comfortable are you meeting up?",
-        label = "Whens the first date?",
+        title = "How Comfortable Are You Meeting Up?",
+        label = "When's the first date?",
         enterField = {
             RadioButtonGroup(
                 options = meetUpOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     metUp = meetUpOptions[selectedOptionIndex]
-                    newUser.meetUp = meetUpOptions[selectedOptionIndex]
+                    signUpVM.setUser("meetUp", metUp)
+                    signUpVM.setUserIndex("meetUp", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -675,20 +659,24 @@ fun meetUpScreen():Boolean{
     )
     return metUp.isNotEmpty()
 }
+
 @Composable
-fun childrenScreen():Boolean{
-    var children by rememberSaveable { mutableStateOf(newUser.children) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.children) }
+fun childrenScreen(signUpVM: SignUpViewModel): Boolean {
+    var children by rememberSaveable { mutableStateOf(signUpVM.getUser().children) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().children) }
+
     SignUpFormat(
-        title = "Do you have children?",
+        title = "Do You Have Children?",
         label = "Do you have someone else we should think about too?",
         enterField = {
             RadioButtonGroup(
                 options = childrenOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     children = childrenOptions[selectedOptionIndex]
-                    newUser.children = childrenOptions[selectedOptionIndex]
+                    signUpVM.setUser("children", children)
+                    signUpVM.setUserIndex("children", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -696,20 +684,24 @@ fun childrenScreen():Boolean{
     )
     return children.isNotEmpty()
 }
+
 @Composable
-fun familyScreen():Boolean{
-    var family by rememberSaveable { mutableStateOf(newUser.family) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.family) }
+fun familyScreen(signUpVM: SignUpViewModel): Boolean {
+    var family by rememberSaveable { mutableStateOf(signUpVM.getUser().family) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().family) }
+
     SignUpFormat(
-        title = "Do you want Children?",
+        title = "Do You Want Children?",
         label = "What are your plans for your family?",
         enterField = {
             RadioButtonGroup(
                 options = familyOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     family = familyOptions[selectedOptionIndex]
-                    newUser.family = familyOptions[selectedOptionIndex]
+                    signUpVM.setUser("family", family)
+                    signUpVM.setUserIndex("family", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -717,10 +709,12 @@ fun familyScreen():Boolean{
     )
     return family.isNotEmpty()
 }
+
 @Composable
-fun educationScreen():Boolean{
-    var education by rememberSaveable { mutableStateOf(newUser.education) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.education) }
+fun educationScreen(signUpVM: SignUpViewModel): Boolean {
+    var education by rememberSaveable { mutableStateOf(signUpVM.getUser().education) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().education) }
+
     SignUpFormat(
         title = "Education Level",
         label = "Your heart is always smarter than your brain",
@@ -728,9 +722,11 @@ fun educationScreen():Boolean{
             RadioButtonGroup(
                 options = educationOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     education = educationOptions[selectedOptionIndex]
-                    newUser.education = educationOptions[selectedOptionIndex]
+                    signUpVM.setUser("education", education)
+                    signUpVM.setUserIndex("education", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -738,10 +734,12 @@ fun educationScreen():Boolean{
     )
     return education.isNotEmpty()
 }
+
 @Composable
-fun religiousScreen():Boolean{
-    var religious by rememberSaveable { mutableStateOf(newUser.religion) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.religion) }
+fun religiousScreen(signUpVM: SignUpViewModel): Boolean {
+    var religious by rememberSaveable { mutableStateOf(signUpVM.getUser().religion) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().religion) }
+
     SignUpFormat(
         title = "Religion",
         label = "We believe in you, but what do you believe in?",
@@ -749,9 +747,11 @@ fun religiousScreen():Boolean{
             RadioButtonGroup(
                 options = religionOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     religious = religionOptions[selectedOptionIndex]
-                    newUser.religion = religionOptions[selectedOptionIndex]
+                    signUpVM.setUser("religion", religious)
+                    signUpVM.setUserIndex("religion", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -759,10 +759,12 @@ fun religiousScreen():Boolean{
     )
     return religious.isNotEmpty()
 }
+
 @Composable
-fun politicsScreen():Boolean{
-    var politics by rememberSaveable { mutableStateOf(newUser.politics) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.politics) }
+fun politicsScreen(signUpVM: SignUpViewModel): Boolean {
+    var politics by rememberSaveable { mutableStateOf(signUpVM.getUser().politics) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().politics) }
+
     SignUpFormat(
         title = "Politics",
         label = "We vote for you to find a meaningful connection",
@@ -770,9 +772,11 @@ fun politicsScreen():Boolean{
             RadioButtonGroup(
                 options = politicsOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     politics = politicsOptions[selectedOptionIndex]
-                    newUser.politics = politicsOptions[selectedOptionIndex]
+                    signUpVM.setUser("politics", politics)
+                    signUpVM.setUserIndex("politics", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -780,20 +784,24 @@ fun politicsScreen():Boolean{
     )
     return politics.isNotEmpty()
 }
+
 @Composable
-fun relationshipScreen():Boolean{
-    var relationship by rememberSaveable { mutableStateOf(newUser.relationship) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.relationship) }
+fun relationshipScreen(signUpVM: SignUpViewModel): Boolean {
+    var relationship by rememberSaveable { mutableStateOf(signUpVM.getUser().relationship) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().relationship) }
+
     SignUpFormat(
-        title = "Relationship type",
+        title = "Relationship Type",
         label = "There is always enough to go around",
         enterField = {
             RadioButtonGroup(
                 options = relationshipOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     relationship = relationshipOptions[selectedOptionIndex]
-                    newUser.relationship = relationshipOptions[selectedOptionIndex]
+                    signUpVM.setUser("relationship", relationship)
+                    signUpVM.setUserIndex("relationship", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -801,10 +809,12 @@ fun relationshipScreen():Boolean{
     )
     return relationship.isNotEmpty()
 }
+
 @Composable
-fun intentionsScreen():Boolean{
-    var intention by rememberSaveable { mutableStateOf(newUser.intentions) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.intentions) }
+fun intentionsScreen(signUpVM: SignUpViewModel): Boolean {
+    var intention by rememberSaveable { mutableStateOf(signUpVM.getUser().intentions) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().intentions) }
+
     SignUpFormat(
         title = "Dating Intentions",
         label = "What are you looking for?",
@@ -812,9 +822,11 @@ fun intentionsScreen():Boolean{
             RadioButtonGroup(
                 options = intentionsOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     intention = intentionsOptions[selectedOptionIndex]
-                    newUser.intentions = intentionsOptions[selectedOptionIndex]
+                    signUpVM.setUser("intentions", intention)
+                    signUpVM.setUserIndex("intentions", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -822,20 +834,24 @@ fun intentionsScreen():Boolean{
     )
     return intention.isNotEmpty()
 }
+
 @Composable
-fun drinkScreen():Boolean{
-    var drink by rememberSaveable { mutableStateOf(newUser.drink) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.drink) }
+fun drinkScreen(signUpVM: SignUpViewModel): Boolean {
+    var drink by rememberSaveable { mutableStateOf(signUpVM.getUser().drink) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().drink) }
+
     SignUpFormat(
-        title = "Do you drink?",
+        title = "Do You Drink?",
         label = "How do you like to party?",
         enterField = {
             RadioButtonGroup(
                 options = drinkOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     drink = drinkOptions[selectedOptionIndex]
-                    newUser.drink = drinkOptions[selectedOptionIndex]
+                    signUpVM.setUser("drink", drink)
+                    signUpVM.setUserIndex("drink", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -843,20 +859,24 @@ fun drinkScreen():Boolean{
     )
     return drink.isNotEmpty()
 }
+
 @Composable
-fun smokeScreen():Boolean{
-    var smoke by rememberSaveable { mutableStateOf(newUser.smoke) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.smoke) }
+fun smokeScreen(signUpVM: SignUpViewModel): Boolean {
+    var smoke by rememberSaveable { mutableStateOf(signUpVM.getUser().smoke) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().smoke) }
+
     SignUpFormat(
-        title = "Do you Smoke?",
+        title = "Do You Smoke?",
         label = "How do you like to relax?",
         enterField = {
             RadioButtonGroup(
                 options = smokeOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     smoke = smokeOptions[selectedOptionIndex]
-                    newUser.smoke = smokeOptions[selectedOptionIndex]
+                    signUpVM.setUser("smoke", smoke)
+                    signUpVM.setUserIndex("smoke", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -864,20 +884,24 @@ fun smokeScreen():Boolean{
     )
     return smoke.isNotEmpty()
 }
+
 @Composable
-fun weedScreen():Boolean{
-    var weed by rememberSaveable { mutableStateOf(newUser.weed) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(newUserIndex.weed) }
+fun weedScreen(signUpVM: SignUpViewModel): Boolean {
+    var weed by rememberSaveable { mutableStateOf(signUpVM.getUser().weed) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(signUpVM.getUserIndex().weed) }
+
     SignUpFormat(
-        title = "Do you Smoke, Marijuana?",
+        title = "Do You Smoke Marijuana?",
         label = "How do you like to relax or party?",
         enterField = {
             RadioButtonGroup(
                 options = weedOptions,
                 selectedIndex = selectedOptionIndex,
-                onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
+                onSelectionChange = { newIndex ->
+                    selectedOptionIndex = newIndex
                     weed = weedOptions[selectedOptionIndex]
-                    newUser.weed = weedOptions[selectedOptionIndex]
+                    signUpVM.setUser("weed", weed)
+                    signUpVM.setUserIndex("weed", newIndex)
                 },
                 style = getCustomButtonStyle()
             )
@@ -886,23 +910,21 @@ fun weedScreen():Boolean{
     return weed.isNotEmpty()
 }
 
+
 @Composable
 fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
-    var promptQ1 by rememberSaveable { mutableStateOf(newUser.promptQ1) }
-    var promptA1 by rememberSaveable { mutableStateOf(newUser.promptA1) }
-    var promptQ2 by rememberSaveable { mutableStateOf(newUser.promptQ2) }
-    var promptA2 by rememberSaveable { mutableStateOf(newUser.promptA2) }
-    var promptQ3 by rememberSaveable { mutableStateOf(newUser.promptQ3) }
-    var promptA3 by rememberSaveable { mutableStateOf(newUser.promptA3) }
+    val promptQ1 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ1) }
+    var promptA1 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA1) }
+    val promptQ2 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ2) }
+    var promptA2 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA2) }
+    val promptQ3 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ3) }
+    var promptA3 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA3) }
     var isEnable1 by rememberSaveable { mutableStateOf(false) }
     var isEnable2 by rememberSaveable { mutableStateOf(false) }
     var isEnable3 by rememberSaveable { mutableStateOf(false) }
     var isAnswered1 by rememberSaveable { mutableStateOf(false) }
     var isAnswered2 by rememberSaveable { mutableStateOf(false) }
     var isAnswered3 by rememberSaveable { mutableStateOf(false) }
-    promptQ1 = signUpVM.getQuestion1()
-    promptQ2 = signUpVM.getQuestion2()
-    promptQ3 = signUpVM.getQuestion3()
     SignUpFormat(
         title = "Some Ice breakers!",
         label = "Don't be shy, the ice will melt anyway!",
@@ -911,17 +933,17 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
             OutlinedButton(
                 onClick = {
                     nav.navigate("PromptQuestions/1")
-                    newUser.promptQ1 = promptQ1
                     isEnable1 = true
                 })
             {
-                GenericLabelText(text = promptQ1)
+                val question:String = if(promptQ1 == ""){ "Question 1"}else{signUpVM.getUser().promptQ1}
+                GenericLabelText(text = question)
             }
             PromptAnswer(
                 isEnables = isEnable1,
                 input = promptA1,
                 onInputChanged = { input  ->  promptA1 = input
-                    newUser.promptA1 = input
+                    signUpVM.setUser("promptA1", input)
                     isAnswered1 = promptA1.length <= 200
                 },
             )
@@ -929,17 +951,17 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
             OutlinedButton(
                 onClick = {
                     nav.navigate("PromptQuestions/2")
-                    newUser.promptQ2 = promptQ2
                     isEnable2 = true
                 })
             {
-                GenericLabelText(text = promptQ2)
+                val question:String = if(promptQ2 == ""){ "Question 2"}else{signUpVM.getUser().promptQ2}
+                GenericLabelText(text = question)
             }
             PromptAnswer(
                 isEnables = isEnable2,
                 input = promptA2,
                 onInputChanged = { input  ->  promptA2 = input
-                    newUser.promptA2 = input
+                    signUpVM.setUser("promptA2", input)
                     isAnswered2 = promptA2.length <= 200
                 },
             )
@@ -947,17 +969,17 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
             OutlinedButton(
                 onClick = {
                     nav.navigate("PromptQuestions/3")
-                    newUser.promptQ3 = promptQ3
                     isEnable3 = true
                 })
             {
-                GenericLabelText(text = promptQ3)
+                val question:String = if(promptQ3 == ""){ "Question 3"}else{signUpVM.getUser().promptQ3}
+                GenericLabelText(text = question)
             }
             PromptAnswer(
                 isEnables = isEnable3,
                 input = promptA3,
                 onInputChanged = { input  ->  promptA3 = input
-                    newUser.promptA3 = input
+                    signUpVM.setUser("promptA3", input)
                     isAnswered3 = promptA3.length <= 200
                 },
             )
@@ -967,8 +989,8 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
 }
 
 @Composable
-fun bioScreen():Boolean{
-    var bio by rememberSaveable { mutableStateOf(newUser.bio) }
+fun bioScreen(signUpVM: SignUpViewModel):Boolean{
+    var bio by rememberSaveable { mutableStateOf(signUpVM.getUser().bio) }
     SignUpFormat(
         title = "Bio",
         label = "",
@@ -976,7 +998,7 @@ fun bioScreen():Boolean{
             BioQuestion(
                 input = bio,
                 onInputChanged = { input  ->  bio = input
-                    newUser.bio = input
+                    signUpVM.setUser("bio", input)
                 },
             )
         },
@@ -985,11 +1007,11 @@ fun bioScreen():Boolean{
 }
 
 @Composable
-fun photoScreen():Boolean{
-    var photo1 by rememberSaveable { mutableStateOf(newUser.image1) }
-    var photo2 by rememberSaveable { mutableStateOf(newUser.image2) }
-    var photo3 by rememberSaveable { mutableStateOf(newUser.image3) }
-    var photo4 by rememberSaveable { mutableStateOf(newUser.image4) }
+fun photoScreen(signUpVM: SignUpViewModel):Boolean{
+    var photo1 by rememberSaveable { mutableStateOf(signUpVM.getUser().image1) }
+    var photo2 by rememberSaveable { mutableStateOf(signUpVM.getUser().image2) }
+    var photo3 by rememberSaveable { mutableStateOf(signUpVM.getUser().image3) }
+    var photo4 by rememberSaveable { mutableStateOf(signUpVM.getUser().image4) }
     var showFinalDialog by rememberSaveable { mutableStateOf(true) }
     if (showFinalDialog) {
         DialogWithImage(
@@ -1009,19 +1031,19 @@ fun photoScreen():Boolean{
     val galleryLauncher1 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri1 = it
             photo1 = it.toString()
-            newUser.image1 = it.toString()} })
+            signUpVM.setUser("image1", photo1) } })
     val galleryLauncher2 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri2 = it
             photo2 = it.toString()
-            newUser.image2 = it.toString()} })
+            signUpVM.setUser("image2", photo2) } })
     val galleryLauncher3 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri3 = it
             photo3 = it.toString()
-            newUser.image3 = it.toString()} })
+            signUpVM.setUser("image3", photo3) } })
     val galleryLauncher4 = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> uri?.let { imageUri4 = it
             photo4 = it.toString()
-            newUser.image4 = it.toString()} })
+            signUpVM.setUser("image4", photo4) } })
 
     SignUpFormat(
         title = "Add some photos!",

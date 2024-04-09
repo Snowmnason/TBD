@@ -547,7 +547,7 @@ fun PromptQuestions(nav:NavController, signUpVM: SignUpViewModel, questionNumber
             //.scrollable(state, orientation = Orientation.Vertical)
         ) {
             questionsToUse.forEach { quest ->
-                if(quest == signUpVM.getQuestion1() || quest == signUpVM.getQuestion2() || quest == signUpVM.getQuestion3()){
+                if(quest == signUpVM.getUser().promptQ1 || quest == signUpVM.getUser().promptQ2 || quest == signUpVM.getUser().promptQ3){
                     PlainTextButton(
                         question = quest,
                         onClick  = { },
@@ -559,9 +559,9 @@ fun PromptQuestions(nav:NavController, signUpVM: SignUpViewModel, questionNumber
                         question = quest,
                         onClick  = { nav.popBackStack()
                             when(questionNumber){
-                                1-> signUpVM.setQuestion1(quest)
-                                2-> signUpVM.setQuestion2(quest)
-                                3-> signUpVM.setQuestion3(quest)
+                                1-> signUpVM.setUser("promptQ1", quest)
+                                2-> signUpVM.setUser("promptQ2", quest)
+                                3-> signUpVM.setUser("promptQ3", quest)
                             }
                         }
                     )

@@ -25,7 +25,7 @@ import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.ProgressBar
 
 @Composable
-fun SignUpNav(signUpActivity: SignUpActivity) {
+fun SignUpNav(signUpActivity: SignUpActivity, location: String, number: String) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
@@ -64,24 +64,21 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
         SignUp.BioScreen.name,
         SignUp.PhotoScreen.name
     )
-
-
     val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
     val nextDestinationIndex = currentDestinationIndex?.plus(1)
+    signUpVM.setUser("location", location)
+    signUpVM.setUser("number", number)
     if(noShow){
         BackButton(onClick = {
             if(isFirstScreen){
                 showDialog = true
             }else{
                 questionIndex--
-                isButtonEnabled = false
+                //isButtonEnabled = false
                 navController.popBackStack()
             }
         })
     }
-
-
-
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
@@ -107,37 +104,37 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
             isButtonEnabled = welcomeScreen()
         }
         composable(route = SignUp.NameScreen.name) {
-            isButtonEnabled = nameScreen()
+            isButtonEnabled = nameScreen(signUpVM)
         }
         composable(route = SignUp.BirthScreen.name) {
-            isButtonEnabled = birthScreen()
+            isButtonEnabled = birthScreen(signUpVM)
         }
         composable(route = SignUp.PronounScreen.name) {
-            isButtonEnabled = pronounScreen()
+            isButtonEnabled = pronounScreen(signUpVM)
         }
         composable(route = SignUp.GenderScreen.name) {
-            isButtonEnabled = genderScreen()
+            isButtonEnabled = genderScreen(signUpVM)
         }
         composable(route = SignUp.SexOriScreen.name) {
-            isButtonEnabled = sexOriScreen()
+            isButtonEnabled = sexOriScreen(signUpVM)
         }
         composable(route = SignUp.HieghtScreen.name) {
-            isButtonEnabled = heightScreen()
+            isButtonEnabled = heightScreen(signUpVM)
         }
         composable(route = SignUp.EthnicityScreen.name) {
-            isButtonEnabled = ethnicityScreen()
+            isButtonEnabled = ethnicityScreen(signUpVM)
         }
         composable(route = SignUp.StarScreen.name) {
-            isButtonEnabled = starScreen()
+            isButtonEnabled = starScreen(signUpVM)
         }
         composable(route = SignUp.SearchScreen.name) {
-            isButtonEnabled = searchScreen()
+            isButtonEnabled = searchScreen(signUpVM)
         }
         composable(route = SignUp.SexScreen.name) {
-            isButtonEnabled = sexScreen()
+            isButtonEnabled = sexScreen(signUpVM)
         }
         composable(route = SignUp.MbtiScreen.name) {
-            isButtonEnabled = mbtiScreen(onNavigate = {
+            isButtonEnabled = mbtiScreen(signUpVM, onNavigate = {
                 // Code to navigate to the next screen or perform any other action
                 questionIndex++
                 nextDestinationIndex?.let { nextIndex ->
@@ -148,43 +145,43 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
             })
         }
         composable(route = SignUp.OurTestScreen.name) {
-            isButtonEnabled = ourTestScreen()
+            isButtonEnabled = ourTestScreen(signUpVM)
         }
         composable(route = SignUp.ChildrenScreen.name) {
-            isButtonEnabled = childrenScreen()
+            isButtonEnabled = childrenScreen(signUpVM)
         }
         composable(route = SignUp.FamilyScreen.name) {
-            isButtonEnabled = familyScreen()
+            isButtonEnabled = familyScreen(signUpVM)
         }
         composable(route = SignUp.EducationScreen.name) {
-            isButtonEnabled = educationScreen()
+            isButtonEnabled = educationScreen(signUpVM)
         }
         composable(route = SignUp.SexScreen.name) {
-            isButtonEnabled = sexScreen()
+            isButtonEnabled = sexScreen(signUpVM)
         }
         composable(route = SignUp.ReligiousScreen.name) {
-            isButtonEnabled = religiousScreen()
+            isButtonEnabled = religiousScreen(signUpVM)
         }
         composable(route = SignUp.PoliticsScreen.name) {
-            isButtonEnabled = politicsScreen()
+            isButtonEnabled = politicsScreen(signUpVM)
         }
         composable(route = SignUp.RelationshipScreen.name) {
-            isButtonEnabled = relationshipScreen()
+            isButtonEnabled = relationshipScreen(signUpVM)
         }
         composable(route = SignUp.IntentionsScreen.name) {
-            isButtonEnabled = intentionsScreen()
+            isButtonEnabled = intentionsScreen(signUpVM)
         }
         composable(route = SignUp.MeetUpScreen.name){
-            isButtonEnabled = meetUpScreen()
+            isButtonEnabled = meetUpScreen(signUpVM)
         }
         composable(route = SignUp.DrinkScreen.name) {
-            isButtonEnabled = drinkScreen()
+            isButtonEnabled = drinkScreen(signUpVM)
         }
         composable(route = SignUp.SmokeScreen.name) {
-            isButtonEnabled = smokeScreen()
+            isButtonEnabled = smokeScreen(signUpVM)
         }
         composable(route = SignUp.WeedScreen.name) {
-            isButtonEnabled = weedScreen()
+            isButtonEnabled = weedScreen(signUpVM)
         }
 
         composable(route = SignUp.PromptQuestionsScreen.name) {
@@ -199,10 +196,10 @@ fun SignUpNav(signUpActivity: SignUpActivity) {
             PromptQuestions(navController, signUpVM, myIndex)
         }
         composable(route = SignUp.BioScreen.name) {
-            isButtonEnabled = bioScreen()
+            isButtonEnabled = bioScreen(signUpVM)
         }
         composable(route = SignUp.PhotoScreen.name) {
-            isButtonEnabled = photoScreen()
+            isButtonEnabled = photoScreen(signUpVM)
         }
 
     }

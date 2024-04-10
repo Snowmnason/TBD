@@ -595,5 +595,53 @@ fun ChangeSeekingScreen(
         }
     )
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InsideMatchedProfile(
+    nav: NavHostController,
+    editProfile: @Composable () -> Unit = {},
+    title: String
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize(),
+        color = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+    ) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier.height(46.dp),
+                    colors = TopAppBarColors(
+                        containerColor = AppTheme.colorScheme.onTertiary,
+                        navigationIconContentColor = AppTheme.colorScheme.primary,
+                        titleContentColor = AppTheme.colorScheme.secondary,
+                        actionIconContentColor = AppTheme.colorScheme.primary,
+                        scrolledContainerColor = AppTheme.colorScheme.background
+                    ),
+                    title = { TopBarText(title= title, isPhoto = false) },
+                    navigationIcon = {
+                        IconButton(onClick = { nav.popBackStack() }) { //Showing in stuff like messages, editing profile and stuff
+                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back), contentDescription = "Go back")
+                        }
+                    },
+                    actions = {}
+                )
+            },
+        ) {
+                paddingValues ->
+            val state = rememberScrollState()
+            LaunchedEffect(Unit) { state.animateScrollTo(0) }
+            Column(
+                Modifier
+                    .padding(paddingValues)
+                    .verticalScroll(state)
+                    .fillMaxSize()
+            ){
+                Spacer(modifier = Modifier.height(24.dp))
+                editProfile()
+            }
+        }
+    }
+}
 

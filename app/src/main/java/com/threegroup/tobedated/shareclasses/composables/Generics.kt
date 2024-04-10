@@ -1,6 +1,7 @@
 package com.threegroup.tobedated.shareclasses.composables
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
@@ -153,6 +155,20 @@ fun GenTextOnlyButton(
            style = AppTheme.typography.titleLarge)
     }
 
+}
+@Composable
+fun OutLinedButton(
+    onClick: () -> Unit,
+    textColor:Color = AppTheme.colorScheme.onBackground,
+    outLineColor:Color = AppTheme.colorScheme.primary,
+    text:String,
+){
+    OutlinedButton(
+        onClick = onClick,
+        border = BorderStroke(2.dp , outLineColor)
+    ) {
+        GenericTitleText(text = text, color = textColor)
+    }
 }
 
 @Composable

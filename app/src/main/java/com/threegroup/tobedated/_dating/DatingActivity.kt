@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -35,10 +36,9 @@ import com.threegroup.tobedated._dating.composables.ChangePreferenceScreen
 import com.threegroup.tobedated._dating.composables.ChangeProfile
 import com.threegroup.tobedated._dating.composables.ChangeSeekingScreen
 import com.threegroup.tobedated._dating.composables.Comeback
-import com.threegroup.tobedated._dating.composables.DeactivateAccount
-import com.threegroup.tobedated._dating.composables.DeleteAccount
 import com.threegroup.tobedated._dating.composables.DistanceSlider
 import com.threegroup.tobedated._dating.composables.EditProfile
+import com.threegroup.tobedated._dating.composables.InsideMatchedProfile
 import com.threegroup.tobedated._dating.composables.InsideMessages
 import com.threegroup.tobedated._dating.composables.InsideProfileSettings
 import com.threegroup.tobedated._dating.composables.InsideSearchSettings
@@ -56,6 +56,7 @@ import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
+import com.threegroup.tobedated.shareclasses.composables.OutLinedButton
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
@@ -336,9 +337,9 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
                     .fillMaxSize()
                     .padding(25.dp, 0.dp)
             ) {
-                DeactivateAccount(onClick = {/*TODO deactivate account*/   })
+                OutLinedButton(onClick = {/*TODO deactivate account*/   }, text = "Deactivate Account", outLineColor = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
-                DeleteAccount(onClick = { /*TODO delete account*/  })
+                OutLinedButton(onClick = {/*TODO report and delete account*/   }, text = "Delete Account", outLineColor = Color.Red, textColor = Color.Red)
             }
         }
     )
@@ -418,18 +419,35 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
 @Composable
 fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel){
     val talkedUser = vmDating.getTalkedUser()
-    InsideMessages(
-        hideCall = false,
-        titleText = talkedUser.name,
-        goToProfile = { /*Do Nothing*/ },
+    InsideMatchedProfile(
         nav = nav,
-        chatSettings = { /*TODO*/ },
-        messages = {
+        title = talkedUser.name,
+        editProfile = {
             val location = calcDistance(talkedUser.location, vmDating.getUser().location)
             UserInfo(
                 user = talkedUser,//usersArray[currentProfileIndex]
                 location = location,
-                bottomButtons = {},
+                bottomButtons = {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(25.dp, 0.dp)
+                    ) {
+                        OutLinedButton(
+                            onClick = {/*TODO report and unmatch account*/ },
+                            text = "Report",
+                            outLineColor = Color.Red,
+                            textColor = Color.Red
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutLinedButton(
+                            onClick = {/*TODO unmatch account*/ },
+                            text = "Unmatch",
+                            outLineColor = Color.Red
+                        )
+                    }
+                },
             )
         }
     )

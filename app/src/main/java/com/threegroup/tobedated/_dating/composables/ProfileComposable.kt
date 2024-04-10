@@ -3,7 +3,6 @@ package com.threegroup.tobedated._dating.composables
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -28,7 +27,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -146,28 +144,6 @@ fun LogOut(dating: DatingActivity){
         onClick = {
             dating.clearUserToken()
     }, isUse = true)
-}
-@Composable
-fun DeleteAccount(
-    onClick: () -> Unit
-){
-    OutlinedButton(onClick = onClick,
-        border = BorderStroke(2.dp , Color.Red)
-
-    ) {
-        GenericTitleText(text = "Delete Account", color = Color.Red)
-    }
-}
-@Composable
-fun DeactivateAccount(
-    onClick: () -> Unit
-){
-    OutlinedButton(
-        onClick = onClick,
-        border = BorderStroke(2.dp , Color.Red)
-    ) {
-        GenericTitleText(text = "Deactivate Account")
-    }
 }
 @Composable
 fun EditProfile(

@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -32,15 +30,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,13 +45,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
-import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MessageModel
+import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
 
@@ -243,12 +238,12 @@ fun InsideMessages(
             },
         ) {
                 paddingValues ->
-            val state = rememberScrollState()
-            LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
+            //val state = rememberScrollState()
+            //LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
             Column(
                 Modifier
                     .padding(paddingValues)
-                    .verticalScroll(state)
+                    //.verticalScroll(state)
                     .fillMaxSize()
             ){
                 Spacer(modifier = Modifier.height(24.dp))
@@ -285,8 +280,8 @@ fun UserMessage(
 @Composable
 fun TheirMessage(
     replyMessage:String,
-    userPhoto:String,
-    photoClick: () -> Unit
+    userPhoto:String = "",
+    photoClick: () -> Unit = {}
 ){
     Column {
         val bubbleColor = Color.LightGray
@@ -330,6 +325,8 @@ fun MessageUserList(
     chatKeys: List<String>,
     onItemClick: (userName: String, chatId: String) -> Unit
 ) {
+    //val state = rememberScrollState()
+    //LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
     LazyColumn {
         items(userList) { userName ->
             val index = userList.indexOf(userName)
@@ -353,7 +350,7 @@ fun UserItem(userName: String, chatId: String, onItemClick: (userId: String, cha
 fun MessageScreen(
     chatId: String,
     viewModel: MessageViewModel,
-    match: Match,
+    match: UserModel,
     currentUserSenderId: String
 ) {
     val messageList by viewModel.chatDataList.collectAsState()
@@ -365,60 +362,19 @@ fun MessageScreen(
                 MessageItem(match = match ,message = message!!, isCurrentUser = isCurrentUser)
             }
         }
-
-        // Message input field
-        var messageText by remember { mutableStateOf("") }
-        TextField(
-            value = messageText,
-            onValueChange = { messageText = it },
-            label = { Text("Enter your message") }
-        )
-        Button(onClick = { viewModel.storeChatData(chatId, messageText) }) {
-            Text("Send")
-        }
     }
 }
 @Composable
-fun MessageItem(match: Match, message: MessageModel, isCurrentUser: Boolean) {
-    val backgroundColor = if (isCurrentUser)  Color.Blue else Color.White // set colors for example: Blue else White
-    val textColor = if (isCurrentUser) Color.White else Color.Black
+fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean) {
+    val messageModel = viewModel { MessageViewModel(MyApp.x) }
+    messageModel.getChatData(chatId = ) //get last index item .lastIndex
+    if (!isCurrentUser) {
+        //if(last message){TheirMessage(replyMessage = message.message!!, photo, {}), read reciept)}else{}
+        TheirMessage(replyMessage = message.message!!)
+    }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = if (isCurrentUser) Arrangement.End else Arrangement.Start
-    ) {
-        if (!isCurrentUser) {
-            AsyncImage(
-                model = match.userPicture, // need to
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-        }
-
-        message.message?.let {
-            Text(
-                modifier = Modifier
-                    .background(backgroundColor, RoundedCornerShape(4.dp))
-                    .padding(6.dp)
-                    .weight(4f, false),
-                text = it,
-                color = textColor,
-            )
-        }
-
-        if (isCurrentUser) {
-            Spacer(
-                Modifier
-                    .height(4.dp)
-                    .weight(1f, false)
-                    .background(Color.Red)
-            )
-        }
+    if (isCurrentUser) {
+        //if(last message){UserMessage(myMessage = message.message!!), read reciept)}else{}
+        UserMessage(myMessage = message.message!!)
     }
 }

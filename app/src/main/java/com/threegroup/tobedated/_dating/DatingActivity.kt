@@ -30,7 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated._dating.composables.AgeSlider
 import com.threegroup.tobedated._dating.composables.ChangePreferenceScreen
 import com.threegroup.tobedated._dating.composables.ChangeProfile
@@ -43,16 +45,16 @@ import com.threegroup.tobedated._dating.composables.InsideMessages
 import com.threegroup.tobedated._dating.composables.InsideProfileSettings
 import com.threegroup.tobedated._dating.composables.InsideSearchSettings
 import com.threegroup.tobedated._dating.composables.LogOut
+import com.threegroup.tobedated._dating.composables.MessageScreen
 import com.threegroup.tobedated._dating.composables.MessageStart
 import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
 import com.threegroup.tobedated._dating.composables.SimpleBox
-import com.threegroup.tobedated._dating.composables.TheirMessage
 import com.threegroup.tobedated._dating.composables.TopAndBotBars
 import com.threegroup.tobedated._dating.composables.UserInfo
-import com.threegroup.tobedated._dating.composables.UserMessage
 import com.threegroup.tobedated._login.LoginActivity
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
@@ -307,10 +309,11 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
                         modifier = Modifier
                             .padding(15.dp, 0.dp, 15.dp, 0.dp)
                             .fillMaxWidth()
-                            .clickable { seen = !seen
+                            .clickable {
+                                seen = !seen
                                 currentUser.seeMe = seen
                                 vmDating.updateUser(currentUser)
-                                       },
+                            },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -392,25 +395,30 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     val talkedUser = vmDating.getTalkedUser()
+    val chatId = talkedUser.number + vmDating.getUser().number //change to UID later need to account for reverses
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
+    val messageModel = viewModel { MessageViewModel(MyApp.x) }
+    //val messageList by viewModel.chatDataList.collectAsState()
 
     InsideMessages(
         nav = navController,
         titleText = talkedUser.name,
         value = message,
         onValueChange = { message = it},
-        sendMessage = {/* TODO Send Message*/ },
-        goToProfile = {navController.navigate("MatchedUserProfile") },
+        sendMessage = { messageModel.storeChatData(chatId, message)
+                      message = ""},
+        goToProfile = { navController.navigate("MatchedUserProfile") },
         chatSettings = {},
         startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
         startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
         sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
         messages = {
-            UserMessage("Oh my god I totally agree")
-            TheirMessage(replyMessage = "That's crazy because I don't nerd...",
-                userPhoto = talkedUser.image1,
-                photoClick = { navController.navigate("MatchedUserProfile") }
+            MessageScreen(
+                chatId = chatId,
+                viewModel = messageModel,
+                match = talkedUser,
+                currentUserSenderId = vmDating.getUser().number
             )
 
         }

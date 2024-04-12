@@ -6,8 +6,11 @@ import android.provider.MediaStore
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.util.Calendar
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -25,11 +28,11 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
 
         // Upload the image to Firebase Storage
         val imageRef = storageRef.child(imagePath)
-//        val file = Uri.fromFile(File(filePath))
-//        val inputStream = withContext(Dispatchers.IO) {
-//            FileInputStream(file.path)
-//        }
-//        val uploadTask = imageRef.putStream(inputStream).await()
+        val file = Uri.fromFile(File(filePath))
+        val inputStream = withContext(Dispatchers.IO) {
+            FileInputStream(file.path)
+        }
+        val uploadTask = imageRef.putStream(inputStream).await()
         downloadUrl = imageRef.downloadUrl.await().toString()
 
         // Store the download URL in the Firebase Realtime Database under the user's ID and image number

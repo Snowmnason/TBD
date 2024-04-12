@@ -2,13 +2,19 @@ package com.threegroup.tobedated.shareclasses
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.threegroup.tobedated.RealtimeDBMatch
+import com.threegroup.tobedated.RealtimeDBMatchProperties
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,6 +54,15 @@ class FirebaseDataSource() {
     /*
           User data related functions
      */
+    suspend fun getCurrentUserSenderId(): String? {
+        val currentUser = getCurrentFirebaseUser() ?: return null
+        return currentUser.uid
+    }
+
+    private fun getCurrentFirebaseUser(): FirebaseUser? {
+        return FirebaseAuth.getInstance().currentUser
+    }
+
     /**
      * Function to pull the list of users (not including current user)
      * meant to be used for dating discovery
@@ -95,14 +110,63 @@ class FirebaseDataSource() {
     }
 
     /*
+        Likes and match related functions
+     */
+    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+        val database = FirebaseDatabase.getInstance()
+
+        // Update user's liked or passed list
+        val userRef = database.getReference("users/$userId")
+        userRef.child(if (isLike) "liked" else "passed").push().setValue(likedUserId)
+
+        // Mark the liked user as existing in the liked list
+        val likedUserRef = database.getReference("users/$userId/liked/$likedUserId")
+        likedUserRef.setValue(true)
+
+        // Check if there's a match
+        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
+        if (hasUserLikedBack) {
+            val matchId = getMatchId(userId, likedUserId)
+
+            // Create a new match in the database
+            val matchRef = database.getReference("matches/$matchId")
+            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
+            matchRef.setValue(matchData)
+
+            // Retrieve the match data and return
+            val matchSnapshot = matchRef.get().await()
+            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
+        }
+        return null
+    }
+
+    private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
+        val likedRef =
+            FirebaseDatabase.getInstance().getReference("users/$likedUserId/liked/$userId")
+        val likedSnapshot = likedRef.get().await()
+        return likedSnapshot.exists()
+    }
+
+    private fun getMatchId(userId1: String, userId2: String): String {
+        // Here you can define your logic to generate a match ID
+        // For simplicity, let's concatenate user IDs
+        return if (userId1 < userId2) {
+            "$userId1-$userId2"
+        } else {
+            "$userId2-$userId1"
+        }
+    }
+
+
+    /*
         Message related functions
      */
-    //TODO check all code related to chats/messages for functionality
+//TODO check all code related to chats/messages for functionality
     /**
      * Function to get chats from database
      * takes the chat id
      */
-    suspend fun getChatData(chatId: String?) {
+    fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
         FirebaseDatabase.getInstance().getReference("chats")
             .child(chatId!!).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -128,9 +192,11 @@ class FirebaseDataSource() {
      * Function to store messages between users
      * takes the message as a parameter
      */
-    suspend fun storeChatData(message: String) {
-        var senderId: String? = null
-        var chatId: String? = null
+
+    suspend fun storeChatData(chatId: String?, message: String) {
+        val senderId = FirebaseDatabase.getInstance().getReference("users")
+            .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!).toString()
+
         val currentTime: String = SimpleDateFormat("HH:mm a", Locale.getDefault()).format(Date())
         val currentDate: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 

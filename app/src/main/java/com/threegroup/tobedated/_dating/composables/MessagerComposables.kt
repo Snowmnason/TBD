@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,9 +32,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,8 +54,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
+import com.threegroup.tobedated.shareclasses.models.Match
+import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
 
@@ -311,3 +322,103 @@ fun TheirMessage(
     }
 }
 
+// TODO make this template work with the app
+// My attempt to get messages working--These are just basic composable functions
+@Composable
+fun MessageUserList(
+    userList: List<String>,
+    chatKeys: List<String>,
+    onItemClick: (userName: String, chatId: String) -> Unit
+) {
+    LazyColumn {
+        items(userList) { userName ->
+            val index = userList.indexOf(userName)
+            val chatId = chatKeys[index]
+            UserItem(userName, chatId, onItemClick)
+        }
+    }
+}
+
+@Composable
+fun UserItem(userName: String, chatId: String, onItemClick: (userId: String, chatId: String) -> Unit) {
+    // Implement UI for a single user item here
+    // TODO Rework this as it is only a skeleton
+    Text(
+        text = "User Name: $userName",
+        modifier = Modifier.clickable { onItemClick(userName, chatId) }
+    )
+}
+
+@Composable
+fun MessageScreen(
+    chatId: String,
+    viewModel: MessageViewModel,
+    match: Match,
+    currentUserSenderId: String
+) {
+    val messageList by viewModel.chatDataList.collectAsState()
+
+    Column {
+        LazyColumn {
+            items(messageList) { message ->
+                val isCurrentUser = message?.senderId == currentUserSenderId
+                MessageItem(match = match ,message = message!!, isCurrentUser = isCurrentUser)
+            }
+        }
+
+        // Message input field
+        var messageText by remember { mutableStateOf("") }
+        TextField(
+            value = messageText,
+            onValueChange = { messageText = it },
+            label = { Text("Enter your message") }
+        )
+        Button(onClick = { viewModel.storeChatData(chatId, messageText) }) {
+            Text("Send")
+        }
+    }
+}
+@Composable
+fun MessageItem(match: Match, message: MessageModel, isCurrentUser: Boolean) {
+    val backgroundColor = if (isCurrentUser)  Color.Blue else Color.White // set colors for example: Blue else White
+    val textColor = if (isCurrentUser) Color.White else Color.Black
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = if (isCurrentUser) Arrangement.End else Arrangement.Start
+    ) {
+        if (!isCurrentUser) {
+            AsyncImage(
+                model = match.userPicture, // need to
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+        }
+
+        message.message?.let {
+            Text(
+                modifier = Modifier
+                    .background(backgroundColor, RoundedCornerShape(4.dp))
+                    .padding(6.dp)
+                    .weight(4f, false),
+                text = it,
+                color = textColor,
+            )
+        }
+
+        if (isCurrentUser) {
+            Spacer(
+                Modifier
+                    .height(4.dp)
+                    .weight(1f, false)
+                    .background(Color.Red)
+            )
+        }
+    }
+}

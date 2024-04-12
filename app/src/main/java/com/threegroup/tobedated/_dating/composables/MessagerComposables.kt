@@ -51,6 +51,7 @@ import coil.compose.AsyncImage
 import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
@@ -255,7 +256,11 @@ fun InsideMessages(
 @Composable
 fun UserMessage(
     myMessage:String,
-    color: Color = AppTheme.colorScheme.surface
+    color: Color = AppTheme.colorScheme.surface,
+    time:String,
+    last: Boolean,
+    read:Boolean,
+
 ){
     Column {
         Row(
@@ -263,7 +268,9 @@ fun UserMessage(
                 .padding(45.dp, 0.dp, 15.dp, 0.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom // Align bottom vertically
         ) {
+            GenericLabelText(text = time)
             Surface(
                 modifier = Modifier.padding(5.dp),
                 color = color,
@@ -274,6 +281,30 @@ fun UserMessage(
                 }
             }
         }
+        Row(
+            modifier = Modifier
+                .padding(45.dp, 0.dp, 20.dp, 0.dp)
+                .offset(y = (-10).dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom // Align bottom vertically
+        ) {
+            if (last) {
+                if (!read) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.sent),
+                        contentDescription = "sent",
+                        tint = AppTheme.colorScheme.primary
+                    )
+                } else {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.read),
+                        contentDescription = "read",
+                        tint = AppTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(6.dp))
     }
 }
@@ -281,7 +312,9 @@ fun UserMessage(
 fun TheirMessage(
     replyMessage:String,
     userPhoto:String = "",
-    photoClick: () -> Unit = {}
+    photoClick: () -> Unit = {},
+    time:String,
+    last:Boolean,
 ){
     Column {
         val bubbleColor = Color.LightGray
@@ -292,17 +325,18 @@ fun TheirMessage(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
         ) {
-            IconButton(onClick = photoClick) {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(shape = CircleShape),
-                    model = userPhoto,
-                    contentDescription = "UserPfp",
-                    contentScale = ContentScale.Crop,
-                )
+            if(last){
+                IconButton(onClick = photoClick) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(shape = CircleShape),
+                        model = userPhoto,
+                        contentDescription = "UserPfp",
+                        contentScale = ContentScale.Crop,
+                    )
+                }
             }
-
             Surface(
                 modifier = Modifier.padding(5.dp),
                 color = bubbleColor,
@@ -312,6 +346,7 @@ fun TheirMessage(
                     Text(text= replyMessage, style = AppTheme.typography.body)
                 }
             }
+            GenericLabelText(text = time)
         }
         Spacer(modifier = Modifier.height(6.dp))
     }
@@ -367,14 +402,14 @@ fun MessageScreen(
 @Composable
 fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean) {
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
-    messageModel.getChatData(chatId = ) //get last index item .lastIndex
+    //messageModel.getChatData(chatId = ) //get last index item .lastIndex
     if (!isCurrentUser) {
         //if(last message){TheirMessage(replyMessage = message.message!!, photo, {}), read reciept)}else{}
-        TheirMessage(replyMessage = message.message!!)
+        TheirMessage(replyMessage = message.message!!, time =  message.currentTime.toString(), last = true, userPhoto = match.image1)
     }
 
     if (isCurrentUser) {
         //if(last message){UserMessage(myMessage = message.message!!), read reciept)}else{}
-        UserMessage(myMessage = message.message!!)
+        UserMessage(myMessage = message.message!!, time =  message.currentTime.toString(), last = true, read = true)//current Time is no correct...
     }
 }

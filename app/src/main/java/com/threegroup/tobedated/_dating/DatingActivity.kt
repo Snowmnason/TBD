@@ -395,7 +395,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     val talkedUser = vmDating.getTalkedUser()
-    val chatId = talkedUser.number + vmDating.getUser().number //change to UID later need to account for reverses
+    val chatId = (((talkedUser.number + vmDating.getUser().number).toCharArray()).sorted()).joinToString() //change to UID later need to account for reverses
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }

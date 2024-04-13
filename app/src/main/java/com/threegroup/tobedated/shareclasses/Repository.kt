@@ -19,7 +19,7 @@ class Repository(
         return firebaseDataSource.checkUserExist(number)
     }
 
-    suspend fun getCurrentUserSenderId(): String? {
+    fun getCurrentUserSenderId(): String {
         return firebaseDataSource.getCurrentUserSenderId()
     }
 
@@ -36,26 +36,32 @@ class Repository(
     }
 
     suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-        return firebaseDataSource.likeUser(userId,likedUserId,isLike)
+        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
     }
 
     fun getChatData(chatId: String?): Flow<List<MessageModel>> =
         firebaseDataSource.getChatData(chatId).map { list ->
-            list.map {
-                val sender = FirebaseAuth.getInstance().currentUser!!.phoneNumber
-                val text = it.message
-                MessageModel(sender, text)
+            val currUser = FirebaseAuth.getInstance().currentUser?.phoneNumber.orEmpty() // null check
+            list.mapNotNull { messageModel ->
+                try {
+                    val sender = currUser
+                    val text = messageModel.message.orEmpty() // null check
+                    MessageModel(sender, text)
+                } catch (e: Exception) {
+                    null
+                }
             }
         }
 
-    suspend fun storeChatData(chatId:String, message: String) {
+    suspend fun storeChatData(chatId: String, message: String) {
         return firebaseDataSource.storeChatData(chatId, message)
     }
 
     suspend fun displayChats() {
         return firebaseDataSource.displayChats()
     }
-    fun setUserInfo(number: String, location:String):UserModel{
+
+    fun setUserInfo(number: String, location: String): UserModel {
         return firebaseDataSource.setUserInfo(number, location)
     }
 }

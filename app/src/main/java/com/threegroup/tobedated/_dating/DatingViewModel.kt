@@ -20,7 +20,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
-                            val tempList = ArrayList<UserModel>() // Temporary list to store potential users
+                            val tempList =
+                                ArrayList<UserModel>() // Temporary list to store potential users
                             for (data in snapshot.children) {
                                 val model = data.getValue(UserModel::class.java)
                                 if (model?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
@@ -54,7 +55,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     }
 
 
-    fun getNextPotential(currentProfileIndex:Int): UserModel? {
+    fun getNextPotential(currentProfileIndex: Int): UserModel? {
         return if (currentProfileIndex < list.size) {
             list[currentProfileIndex]
         } else {
@@ -63,45 +64,63 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     }
 
     //Stuff for liking and passing
-    fun likedCurrentPotential(currentProfileIndex:Int, currentPotential: UserModel): UserModel? {
+    fun likedCurrentPotential(currentProfileIndex: Int, currentPotential: UserModel): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }
-    fun passedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel? {
+
+    fun passedCurrentPotential(currentProfileIndex: Int, currentPotential: UserModel): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }
-    fun reportedCurrentPotential(currentProfileIndex:Int,currentPotential: UserModel): UserModel? {
+
+    fun reportedCurrentPotential(
+        currentProfileIndex: Int,
+        currentPotential: UserModel
+    ): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }
+
     //Stuff for setting and getting matches
-    fun getMatches():ArrayList<UserModel>{
+    fun getMatches(): ArrayList<UserModel> {
         return list
     }
 
 
-
     //Stuff for chats
-    fun setTalkedUser(userModel: UserModel){
+    fun setTalkedUser(userModel: UserModel) {
         selectedUser = userModel
     }
-    fun getTalkedUser():UserModel{
+
+    fun getTalkedUser(): UserModel {
         return selectedUser
+    }
+
+    /**
+     *  generates a unique chatId made from the UIDs of the sender and receiver
+     */
+    fun getChatId(senderId: String, receiverId: String): String {
+        return if (senderId > receiverId) {
+            senderId + receiverId
+        } else receiverId + senderId
     }
 
     //Stuff for signed in user
     fun getUser(): UserModel {
         return signedInUser
     }
+
     fun updateUser(updatedUser: UserModel) {
         val userPhoneNumber = updatedUser.number
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
+        val databaseReference =
+            FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
         databaseReference.setValue(updatedUser)
         signedInUser = updatedUser
     }
-    fun setLoggedInUser(userPhoneNumber: String, location:String) {
-       signedInUser = repository.setUserInfo(userPhoneNumber, location)
+
+    fun setLoggedInUser(userPhoneNumber: String, location: String) {
+        signedInUser = repository.setUserInfo(userPhoneNumber, location)
     }
 
 }

@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.RealtimeDBMatch
@@ -14,6 +15,7 @@ import com.threegroup.tobedated.shareclasses.models.AgeRange
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.UserSearchPreferenceModel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -56,9 +58,9 @@ class FirebaseDataSource() {
     /*
           User data related functions
      */
-    suspend fun getCurrentUserSenderId(): String? {
-        val currentUser = getCurrentFirebaseUser() ?: return null
-        return currentUser.uid
+    fun getCurrentUserSenderId(): String {
+        return FirebaseAuth.getInstance().currentUser?.uid
+            ?: throw Exception("User not logged in")
     }
 
     private fun getCurrentFirebaseUser(): FirebaseUser? {
@@ -169,25 +171,36 @@ class FirebaseDataSource() {
      * takes the chat id
      */
     fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
-        FirebaseDatabase.getInstance().getReference("chats")
-            .child(chatId!!).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val list = arrayListOf<MessageModel>()
-
-                    for (show in snapshot.children) {
-                        list.add(show.getValue(MessageModel::class.java)!!)
+        val dbRef: DatabaseReference =
+            FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<MessageModel>()
+                for (data in snapshot.children) {
+                    try {
+                        val messageModel = data.getValue(MessageModel::class.java)
+                        messageModel?.let { list.add(it) }
+                        Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
+                    } catch (e: Exception) {
+                        Log.d("CHAT_TAG", "Error parsing MessageModel", e)
                     }
-
-                    // binding.recyclerView2.adapter = MessageAdapter(this@MessageActivity, list)
-
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    //Toast.makeText(this@MessageActivity, error.message, Toast.LENGTH_SHORT).show()
+                trySend(list).isSuccess // this should emit the list to the flow
+                for (i in list) {
+                    if (list.isNotEmpty()) {
+                        println(i)
+                    } else println("Empty list")
                 }
+            }
 
-            })
-
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("CHAT_TAG", "Database error: ${error.message}")
+            }
+        }
+        dbRef.addValueEventListener(valueEventListener)
+        awaitClose{
+            dbRef.removeEventListener(valueEventListener)
+        }
     }
 
     /**
@@ -247,7 +260,8 @@ class FirebaseDataSource() {
                 }
             })
     }
-    fun setUserInfo(number: String, location:String):UserModel{
+
+    fun setUserInfo(number: String, location: String): UserModel {
         val user = UserModel()
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -265,7 +279,8 @@ class FirebaseDataSource() {
                         user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
                         user.seeking = userDataMap["seeking"] as? String ?: ""
                         user.sex = userDataMap["sex"] as? String ?: ""
-                        user.testResultsMbti = userDataMap["testResultsMbti"] as? String ?: "Not Taken"
+                        user.testResultsMbti =
+                            userDataMap["testResultsMbti"] as? String ?: "Not Taken"
                         user.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
                         user.children = userDataMap["children"] as? String ?: ""
                         user.family = userDataMap["family"] as? String ?: ""
@@ -296,29 +311,44 @@ class FirebaseDataSource() {
                             // Otherwise, use the provided location value
                             location
                         }
-                       user.status = System.currentTimeMillis()
-                       user.number = userDataMap["number"] as? String ?: ""
-                       user.verified = userDataMap["verified"] as? Boolean ?: false
-                       user.seeMe = userDataMap["Seen"] as? Boolean ?: false
-                       user.userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
+                        user.status = System.currentTimeMillis()
+                        user.number = userDataMap["number"] as? String ?: ""
+                        user.verified = userDataMap["verified"] as? Boolean ?: false
+                        user.seeMe = userDataMap["Seen"] as? Boolean ?: false
+                        user.userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
                             UserSearchPreferenceModel(
-                                ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18,35),
+                                ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
                                 maxDistance = map["maxDistance"] as? Int ?: 25,
-                                gender = (map["gender"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                children = (map["children"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                education = (map["education"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                religion = (map["religion"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                drink = (map["drink"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-                                weed = (map["weed"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+                                gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                children = (map["children"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                education = (map["education"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                religion = (map["religion"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                drink = (map["drink"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
+                                weed = (map["weed"] as? List<*>)?.filterIsInstance<String>()
+                                    ?: listOf("Doesn't Matter"),
                             )
                         } ?: UserSearchPreferenceModel()
                         updateStatus(number)
@@ -330,6 +360,7 @@ class FirebaseDataSource() {
                     // Handle accordingly
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 println("onCancelled triggered")
                 // Handle error fetching user data
@@ -338,8 +369,10 @@ class FirebaseDataSource() {
         })
         return user
     }
+
     fun updateStatus(number: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
+        val databaseReference =
+            FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
         databaseReference.setValue(System.currentTimeMillis())
     }
 }

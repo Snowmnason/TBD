@@ -1,5 +1,6 @@
 package com.threegroup.tobedated
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.ValueEventListener
@@ -10,6 +11,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -18,7 +20,11 @@ class MessageViewModel(private var repository: Repository) : ViewModel() {
     private var _chatDataList = MutableStateFlow<List<MessageModel?>>(mutableListOf())
     val chatDataList = _chatDataList.asStateFlow()
 
-    fun getChatData(chatId: String?) = repository.getChatData(chatId)
+    fun getChatData(chatId: String?) = chatId?.let {
+        repository.getChatData(it)
+    } ?: flow{
+        Log.d("CHAT_TAG", "Error: chatId is null")
+    }
 
     fun storeChatData(chatId: String, message: String) {
         viewModelScope.launch(IO) {
@@ -32,7 +38,7 @@ class MessageViewModel(private var repository: Repository) : ViewModel() {
         }
     }
 
-    suspend fun getCurrentUserSenderId(): String? {
+    fun getCurrentUserSenderId(): String {
           return  repository.getCurrentUserSenderId()
     }
 

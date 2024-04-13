@@ -19,6 +19,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -395,11 +396,13 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     val talkedUser = vmDating.getTalkedUser()
-    val chatId = (((talkedUser.number + vmDating.getUser().number).toCharArray()).sorted()).joinToString() //change to UID later need to account for reverses
+    val senderId = vmDating.getUser().number
+    val receiverId = vmDating.getTalkedUser().number
+    val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
-    //val messageList by viewModel.chatDataList.collectAsState()
+    val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
 
     InsideMessages(
         nav = navController,
@@ -418,7 +421,8 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
                 chatId = chatId,
                 viewModel = messageModel,
                 match = talkedUser,
-                currentUserSenderId = vmDating.getUser().number
+                messageList = messageList,
+                currentUserSenderId = messageModel.getCurrentUserSenderId()
             )
 
         }

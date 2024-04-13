@@ -386,15 +386,14 @@ fun MessageScreen(
     chatId: String,
     viewModel: MessageViewModel,
     match: UserModel,
+    messageList: List<MessageModel>,
     currentUserSenderId: String
 ) {
-    val messageList by viewModel.chatDataList.collectAsState()
-
     Column {
         LazyColumn {
             items(messageList) { message ->
-                val isCurrentUser = message?.senderId == currentUserSenderId
-                MessageItem(match = match ,message = message!!, isCurrentUser = isCurrentUser)
+                val isCurrentUser = message.senderId == currentUserSenderId
+                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser)
             }
         }
     }

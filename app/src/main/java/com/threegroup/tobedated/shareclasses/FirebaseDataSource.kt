@@ -59,7 +59,7 @@ class FirebaseDataSource() {
           User data related functions
      */
     fun getCurrentUserSenderId(): String {
-        return FirebaseAuth.getInstance().currentUser?.uid
+        return FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
     }
 
@@ -186,11 +186,6 @@ class FirebaseDataSource() {
                     }
                 }
                 trySend(list).isSuccess // this should emit the list to the flow
-                for (i in list) {
-                    if (list.isNotEmpty()) {
-                        println(i)
-                    } else println("Empty list")
-                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -212,12 +207,12 @@ class FirebaseDataSource() {
         val senderId = FirebaseDatabase.getInstance().getReference("users")
             .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!).toString()
 
-        val currentTime: String = SimpleDateFormat("HH:mm a", Locale.getDefault()).format(Date())
+        val currentTime: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
         val currentDate: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
         val map = hashMapOf<String, String>()
         map["message"] = message
-        map["senderId"] = senderId!!
+        map["senderId"] = senderId
         map["currentTime"] = currentTime
         map["currentDate"] = currentDate
 

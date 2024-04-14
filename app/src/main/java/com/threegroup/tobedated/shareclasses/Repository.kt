@@ -44,9 +44,12 @@ class Repository(
             val currUser = FirebaseAuth.getInstance().currentUser?.phoneNumber.orEmpty() // null check
             list.mapNotNull { messageModel ->
                 try {
-                    val sender = currUser
-                    val text = messageModel.message.orEmpty() // null check
-                    MessageModel(sender, text)
+                    MessageModel(
+                        senderId = messageModel.senderId,
+                        message = messageModel.message,
+                        currentTime = messageModel.currentTime,
+                        currentDate = messageModel.currentDate,
+                    )
                 } catch (e: Exception) {
                     null
                 }

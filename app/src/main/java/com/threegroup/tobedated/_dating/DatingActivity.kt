@@ -365,6 +365,7 @@ Start of Message Screens
 @Composable
 fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
     val matchedUsers = vmDating.getMatches() //TODO this has to be changed to be matches users
+    //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState()
     TopAndBotBars(
@@ -383,7 +384,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
                     notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.image1,
                     userName = matchUser.name,
-                    userLastMessage = matchUser.bio, //TODO change to last message
+                    userLastMessage = matchUser.bio, //TODO Last message goes here message.message (some how last)
                     openChat = {
                         navController.navigate("MessagerScreen")
                         vmDating.setTalkedUser(matchUser)
@@ -397,7 +398,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     val talkedUser = vmDating.getTalkedUser()
     val senderId = vmDating.getUser().number
-    val receiverId = vmDating.getTalkedUser().number
+    val receiverId = talkedUser.number
     val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
@@ -424,7 +425,6 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId()
             )
-
         }
     )
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,8 +33,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -391,24 +390,37 @@ fun MessageScreen(
 ) {
     Column {
         LazyColumn {
-            items(messageList) { message ->
+            itemsIndexed(messageList) { index, message ->
+                val last = index == (messageList.size -1)
                 val isCurrentUser = message.senderId == currentUserSenderId
-                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser)
+                val time = message.currentTime
+                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, time = time, last)
             }
         }
     }
 }
 @Composable
-fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean) {
+fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean, time: String, last: Boolean) {
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
     //messageModel.getChatData(chatId = ) //get last index item .lastIndex
+    var timeStamp = ""
+    if(time != "" ){
+        timeStamp = time
+    }
     if (!isCurrentUser) {
-        //if(last message){TheirMessage(replyMessage = message.message!!, photo, {}), read reciept)}else{}
-        TheirMessage(replyMessage = message.message!!, time =  message.currentTime.toString(), last = true, userPhoto = match.image1)
+        if(!last){
+            TheirMessage(replyMessage = message.message, time =  timeStamp, last = false, userPhoto = match.image1)
+        }else{
+            TheirMessage(replyMessage = message.message, time =  timeStamp, last = true, userPhoto = match.image1)
+        }
     }
 
     if (isCurrentUser) {
-        //if(last message){UserMessage(myMessage = message.message!!), read reciept)}else{}
-        UserMessage(myMessage = message.message!!, time =  message.currentTime.toString(), last = true, read = true)//current Time is no correct...
+        if(!last){
+            UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = true)
+        }else{
+            UserMessage(myMessage = message.message, time =  timeStamp, last = true, read = true)
+        }
+
     }
 }

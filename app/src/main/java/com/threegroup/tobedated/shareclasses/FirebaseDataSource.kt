@@ -193,7 +193,7 @@ class FirebaseDataSource() {
             }
         }
         dbRef.addValueEventListener(valueEventListener)
-        awaitClose{
+        awaitClose {
             dbRef.removeEventListener(valueEventListener)
         }
     }
@@ -204,9 +204,8 @@ class FirebaseDataSource() {
      */
 
     suspend fun storeChatData(chatId: String?, message: String) {
-        val senderId = FirebaseDatabase.getInstance().getReference("users")
-            .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!).toString()
-
+        val senderId = FirebaseAuth.getInstance().currentUser?.phoneNumber
+            ?: throw Exception("User not logged in")
         val currentTime: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
         val currentDate: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 

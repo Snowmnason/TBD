@@ -392,8 +392,10 @@ fun MessageScreen(
         LazyColumn {
             itemsIndexed(messageList) { index, message ->
                 val last = index == (messageList.size -1)
-                val isCurrentUser = message.senderId == currentUserSenderId
+                val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
                 val time = message.currentTime
+                println(message.senderId)
+                println(currentUserSenderId)
                 MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, time = time, last)
             }
         }

@@ -25,6 +25,8 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     LaunchedEffect(Unit) {
         viewModelDating.setLoggedInUser(token, location)
+
+        //TODO THIS is where the list of potenatial matches gets initialed def changing this
         viewModelDating.getPotentialUserData {
             // Callback function executed when data retrieval is complete
             potentialUserDataLoaded.value = true

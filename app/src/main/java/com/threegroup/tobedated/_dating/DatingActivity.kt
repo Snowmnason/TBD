@@ -109,15 +109,18 @@ Start of Seeking Screen
 fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel) {
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
-    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
+    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
     val currentPotential = remember { mutableStateOf<UserModel?>(null) }
     var resetScrollState by remember { mutableStateOf(false) }
     val state = rememberScrollState()
+
+
     LaunchedEffect(resetScrollState, Unit) {
+        //TODO This checks to see if the list is empty or not, This NEEDs to be avilialbe some hows
         if(vmDating.getNextPotential(currentProfileIndex) != null) {
-            currentPotential.value = vmDating.getNextPotential(currentProfileIndex)
+            currentPotential.value = vmDating.getNextPotential(currentProfileIndex)//MIGHT CHANGE THIS
         }else{
-            isNext = false
+            isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
 
 
@@ -128,11 +131,12 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         }
     }
 
+    ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an avilibe user to prevent crashes
     fun nextProfile(newPotential: UserModel?){
         if(newPotential != null){
-            currentPotential.value = newPotential
+            currentPotential.value = newPotential///MIGHT change this
         }else{
-            isNext = false
+            isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
         resetScrollState = true
     }
@@ -164,7 +168,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
                                     /*TODO Add an animation or something*/
                                 },
                                 onClickPass = {
-                                    currentProfileIndex++
+                                    currentProfileIndex++//THIS SHIT CAN GO
                                     nextProfile(vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!))
                                     /*TODO Add an animation or something*/
                                 },

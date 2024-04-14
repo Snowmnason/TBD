@@ -59,6 +59,7 @@ import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
+import com.threegroup.tobedated.shareclasses.composables.PagerIndicator
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.getMBTIColor
 import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
@@ -540,6 +541,13 @@ fun UserInfo(
                     contentScale = ContentScale.Fit  // Ensure photos fill the box without distortion
                 )
             }
+            Box(modifier = Modifier.padding(vertical = 2.dp)){
+                PagerIndicator(
+                    pagerState = pagerState,
+                    pageCount = ( photos.size - subtract)
+                )
+            }
+
         }
 
         Spacer(modifier = Modifier.height(12.dp))

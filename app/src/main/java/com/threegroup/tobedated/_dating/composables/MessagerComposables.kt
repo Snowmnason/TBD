@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,12 +48,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
 import com.threegroup.tobedated.shareclasses.models.MessageModel
@@ -386,29 +388,34 @@ fun MessageScreen(
     viewModel: MessageViewModel,
     match: UserModel,
     messageList: List<MessageModel>,
-    currentUserSenderId: String
+    currentUserSenderId: String,
 ) {
+
+
+    val state = rememberLazyListState()
+    LaunchedEffect(state) {
+        state.scrollToItem(Int.MAX_VALUE)
+    }
     Column {
-        LazyColumn(reverseLayout = true) {
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+                .statusBarsPadding()
+                .imePadding(),
+            state = state
+        ) {
             itemsIndexed(messageList) { index, message ->
                 val last = index == (messageList.size -1)
                 val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
                 val time = message.currentTime
-                println(message.senderId)
-                println(currentUserSenderId)
-                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, time = time, last)
+                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+
             }
         }
     }
 }
 @Composable
-fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean, time: String, last: Boolean) {
-    val messageModel = viewModel { MessageViewModel(MyApp.x) }
-    //messageModel.getChatData(chatId = ) //get last index item .lastIndex
-    var timeStamp = ""
-    if(time != "" ){
-        timeStamp = time
-    }
+fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean) {
     if (!isCurrentUser) {
         if(!last){
             TheirMessage(replyMessage = message.message, time =  timeStamp, last = false, userPhoto = match.image1)

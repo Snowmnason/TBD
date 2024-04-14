@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -43,11 +46,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -57,6 +62,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -452,3 +458,47 @@ private fun Modifier.fadingEdge(brush: Brush) = this
 
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PagerIndicator(
+    pagerState: PagerState,
+    pageCount: Int,
+    modifier: Modifier = Modifier,
+    pageIndexMapping: (Int) -> Int = { it },
+    activeColor: Color = AppTheme.colorScheme.primary,
+    inactiveColor: Color = AppTheme.colorScheme.onBackground,
+    indicatorWidth: Dp = 8.dp,
+    indicatorHeight: Dp = indicatorWidth,
+    spacing: Dp = indicatorWidth,
+    indicatorShape: Shape = CircleShape,
+) {
+
+    val indicatorWidthPx = with(LocalDensity.current) { indicatorWidth.roundToPx() }
+    val spacingPx = with(LocalDensity.current) { spacing.roundToPx() }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            repeat(pageCount) { index ->
+                val isActive = index == pagerState.currentPage
+                val color = if (isActive) activeColor else inactiveColor
+                Box(
+                    modifier = Modifier
+                        .size(width = indicatorWidth, height = indicatorHeight)
+                        .clip(indicatorShape)
+                        .background(color = color)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NavDraw(){
+
+}

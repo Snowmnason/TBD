@@ -407,7 +407,9 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
+
     val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
+
 
     InsideMessages(
         nav = navController,
@@ -427,7 +429,7 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
                 viewModel = messageModel,
                 match = talkedUser,
                 messageList = messageList,
-                currentUserSenderId = messageModel.getCurrentUserSenderId()
+                currentUserSenderId = messageModel.getCurrentUserSenderId(),
             )
         }
     )

@@ -6,6 +6,7 @@ import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 
 class Repository(
@@ -37,6 +38,9 @@ class Repository(
 
     suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         return firebaseDataSource.likeUser(userId, likedUserId, isLike)
+    }
+    fun getPotentialUserData(): Flow<Pair<List<UserModel>, Int>> {
+        return firebaseDataSource.getPotentialUserData()
     }
 
     fun getChatData(chatId: String?): Flow<List<MessageModel>> =

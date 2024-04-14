@@ -389,7 +389,7 @@ fun MessageScreen(
     currentUserSenderId: String
 ) {
     Column {
-        LazyColumn(reverseLayout = true) {
+        LazyColumn {
             itemsIndexed(messageList) { index, message ->
                 val last = index == (messageList.size -1)
                 val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })

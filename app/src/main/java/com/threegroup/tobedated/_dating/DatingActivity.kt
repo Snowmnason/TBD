@@ -119,8 +119,10 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         //TODO This checks to see if the list is empty or not, This NEEDs to be avilialbe some hows
         if(vmDating.getNextPotential(currentProfileIndex) != null) {
             currentPotential.value = vmDating.getNextPotential(currentProfileIndex)//MIGHT CHANGE THIS
+            println(currentPotential.value)
         }else{
             isNext = false//This is important, if there are no users this shows a blank screen and not crash
+            println("isNext: $isNext" )
         }
 
 
@@ -408,7 +410,6 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
     val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
-
     InsideMessages(
         nav = navController,
         titleText = talkedUser.name,

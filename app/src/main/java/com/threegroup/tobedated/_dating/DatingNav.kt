@@ -4,6 +4,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,20 +21,22 @@ import com.threegroup.tobedated._dating.composables.PromptEdit
 import com.threegroup.tobedated.shareclasses.MyApp
 
 @Composable
-fun DatingNav(dating: DatingActivity, token:String, location:String) {
+fun DatingNav(dating: DatingActivity, token: String, location: String) {
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     LaunchedEffect(Unit) {
         viewModelDating.setLoggedInUser(token, location)
-
-        //TODO THIS is where the list of potenatial matches gets initialed def changing this
-        viewModelDating.getPotentialUserData {
-            // Callback function executed when data retrieval is complete
-            potentialUserDataLoaded.value = true
-        }
-
     }
+
+    //TODO THIS is where the list of potenatial matches gets initialed def changing this
+    val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
+    if (potentialUserDataState.value.first.isNotEmpty()) {
+        potentialUserDataLoaded.value = true
+        val potentialUsers = potentialUserDataState.value.first
+        val currentProfileIndex = potentialUserDataState.value.second
+    }
+
 
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
@@ -40,9 +44,9 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-            if(potentialUserDataLoaded.value){
+            if (potentialUserDataLoaded.value) {
                 SearchingScreen(navController, viewModelDating)
-            }else{
+            } else {
                 Comeback(text = "currently loading your future connection")
                 //do nothing yet
             }
@@ -85,27 +89,27 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
             arguments = listOf(
                 navArgument("my_param") { type = NavType.StringType },
                 navArgument("index") { type = NavType.IntType },
-                )
+            )
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangeProfileScreen(navController, myParam, myIndex, viewModelDating)
         }
         composable(route = "BioEdit") {
-            BioEdit(nav = navController, vmDating= viewModelDating)
+            BioEdit(nav = navController, vmDating = viewModelDating)
         }
         composable(
             route = "PromptEdit/{index}",
-            arguments = listOf(navArgument("index") { type = NavType.IntType },)
+            arguments = listOf(navArgument("index") { type = NavType.IntType })
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             PromptEdit(navController, viewModelDating, myIndex)
         }
         composable(route = "ChangePhoto") {
-            ChangePhoto(nav = navController, vmDating= viewModelDating, dating = dating)
+            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = dating)
         }
         composable(route = "MatchedUserProfile") {
-            MatchedUserProfile(nav = navController, vmDating= viewModelDating)
+            MatchedUserProfile(nav = navController, vmDating = viewModelDating)
         }
     }
 

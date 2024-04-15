@@ -66,6 +66,7 @@ import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PlainTextButton
+import com.threegroup.tobedated.shareclasses.composables.TopBarText
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
 import com.threegroup.tobedated.shareclasses.models.childrenOptions
 import com.threegroup.tobedated.shareclasses.models.curiositiesANDImaginations

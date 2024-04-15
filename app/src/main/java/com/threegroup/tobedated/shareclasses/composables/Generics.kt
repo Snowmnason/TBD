@@ -7,17 +7,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
@@ -28,14 +31,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,9 +62,12 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -66,6 +76,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -81,6 +92,51 @@ fun baseAppTextTheme(): TextStyle {
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun getTopColors(): TopAppBarColors {
+    return TopAppBarColors(
+        containerColor = AppTheme.colorScheme.onTertiary,
+        navigationIconContentColor = AppTheme.colorScheme.primary,
+        titleContentColor = AppTheme.colorScheme.secondary,
+        actionIconContentColor = AppTheme.colorScheme.primary,
+        scrolledContainerColor = AppTheme.colorScheme.background
+    )
+}
+@Composable
+fun getBottomColors(): NavigationBarItemColors {
+    return NavigationBarItemColors(
+        selectedIconColor = AppTheme.colorScheme.primary,
+        selectedTextColor = AppTheme.colorScheme.primary,
+        selectedIndicatorColor = Color.Transparent,
+        unselectedIconColor = AppTheme.colorScheme.onBackground,
+        unselectedTextColor = AppTheme.colorScheme.onBackground,
+        disabledIconColor = Color.Black,
+        disabledTextColor = Color.Black
+    )
+}
+@Composable
+fun TopBarText(
+    title:String,
+    size: TextStyle = AppTheme.typography.titleLarge,
+    isPhoto:Boolean
+){
+    if(isPhoto){
+        val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
+        Box(modifier = Modifier
+            .height(30.dp)
+            .offset(y = (8).dp)){
+            Image(painter = photo, contentDescription = "Logo")
+        }
+    }else{
+        Text(
+            modifier = Modifier.offset(y = (16).dp),
+            text = title,
+            style = size,
+            color = AppTheme.colorScheme.onBackground,
+        )
+    }
 }
 @Composable
 fun GenericTitleText(
@@ -473,8 +529,8 @@ fun PagerIndicator(
     indicatorShape: Shape = CircleShape,
 ) {
 
-    val indicatorWidthPx = with(LocalDensity.current) { indicatorWidth.roundToPx() }
-    val spacingPx = with(LocalDensity.current) { spacing.roundToPx() }
+//    val indicatorWidthPx = with(LocalDensity.current) { indicatorWidth.roundToPx() }
+//    val spacingPx = with(LocalDensity.current) { spacing.roundToPx() }
 
     Box(
         modifier = modifier,
@@ -499,6 +555,55 @@ fun PagerIndicator(
 }
 
 @Composable
-fun NavDraw(){
+fun NavDraw(
+    colorDating:Color = AppTheme.colorScheme.onBackground,
+    colorFriends:Color = AppTheme.colorScheme.onBackground,
+    colorCausal:Color = AppTheme.colorScheme.onBackground
+    
+){
+
+    Column(
+        modifier = Modifier.padding(25.dp)
+    ) {
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { /*TODO Switch activities*/ },){
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating", tint = colorDating, modifier = Modifier
+                .offset(y = (-4).dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            GenericTitleText(text = "Dating", style = AppTheme.typography.titleLarge)
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { /*TODO Switch activities*/ }){
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends", tint = colorFriends, modifier = Modifier
+                .offset(y = (-4).dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            GenericTitleText(text = "Friends", style = AppTheme.typography.titleLarge)
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { /*TODO Switch activities*/ }){
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
+                .offset(y = (-4).dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Column {
+            Box {
+                GenericTitleText(text = "Word of the Day", style = AppTheme.typography.titleMedium)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Box {
+                GenericTitleText(text = "Horoscope", style = AppTheme.typography.titleMedium)
+            }
+        }
+    }
 
 }
+

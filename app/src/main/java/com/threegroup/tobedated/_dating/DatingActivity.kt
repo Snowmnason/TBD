@@ -52,7 +52,7 @@ import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
 import com.threegroup.tobedated._dating.composables.SimpleBox
-import com.threegroup.tobedated._dating.composables.TopAndBotBars
+import com.threegroup.tobedated._dating.composables.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.composables.UserInfo
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.shareclasses.MyApp
@@ -141,7 +141,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         resetScrollState = true
     }
 
-    TopAndBotBars(
+    TopAndBotBarsDating(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "",
@@ -270,7 +270,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
         }
     }
     val state = rememberScrollState()
-    TopAndBotBars(
+    TopAndBotBarsDating(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         isPhoto = false,
@@ -372,7 +372,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState()
-    TopAndBotBars(
+    TopAndBotBarsDating(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "Messages", //Change based on name
@@ -478,7 +478,7 @@ Start of Groups Screens
 fun GroupsScreen(navController: NavHostController){
 
     val state = rememberScrollState()
-    TopAndBotBars(
+    TopAndBotBarsDating(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         isPhoto = false,
@@ -495,7 +495,7 @@ fun GroupsScreen(navController: NavHostController){
 @Composable
 fun SomeScreen(navController: NavHostController){
     val state = rememberScrollState()
-    TopAndBotBars(
+    TopAndBotBarsDating(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "To Be Dated",

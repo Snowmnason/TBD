@@ -1,7 +1,6 @@
 package com.threegroup.tobedated._dating.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,35 +30,41 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
+import com.threegroup.tobedated.shareclasses.composables.NavDraw
 import com.threegroup.tobedated.shareclasses.composables.PagerIndicator
+import com.threegroup.tobedated.shareclasses.composables.TopBarText
+import com.threegroup.tobedated.shareclasses.composables.getBottomColors
+import com.threegroup.tobedated.shareclasses.composables.getTopColors
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.getMBTIColor
 import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
@@ -67,6 +72,7 @@ import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starColorMap
 import com.threegroup.tobedated.shareclasses.models.starColors
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import kotlinx.coroutines.launch
 
 data class BotNavItem(
     val title:String,
@@ -78,7 +84,7 @@ data class BotNavItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAndBotBars(
+fun TopAndBotBarsDating(
     notifiChat:Int = 0,
     notifiGroup:Boolean = false,
     notifiSearching:Boolean = false,
@@ -122,122 +128,118 @@ fun TopAndBotBars(
     )
 
     //var selectedItemIndex by rememberSaveable { mutableIntStateOf(2) }
+
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = Color.Transparent,
     ) {
-        Scaffold(
-            containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
-            bottomBar = {
-                NavigationBar(
-                    containerColor = AppTheme.colorScheme.onTertiary,
-                    modifier = Modifier.height(46.dp)
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        ModalNavigationDrawer(
+
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(
+                    drawerContainerColor = AppTheme.colorScheme.background
                 ) {
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            colors =  NavigationBarItemColors(
-                                selectedIconColor = AppTheme.colorScheme.primary,
-                                selectedTextColor = AppTheme.colorScheme.primary,
-                                selectedIndicatorColor = Color.Transparent,
-                                unselectedIconColor = AppTheme.colorScheme.onBackground,
-                                unselectedTextColor = AppTheme.colorScheme.onBackground,
-                                disabledIconColor = Color.Black,
-                                disabledTextColor = Color.Black
-                            ),
-                            selected = selectedItemIndex == index,
-                            onClick = { //selectedItemIndex = index
-                                        nav.navigate(item.title)
-                                      },//HANDLE NAVIGATION
-                            label = {  },
-                            alwaysShowLabel = false,
-                            icon = {
-                                BadgedBox(
-                                    badge = {
-                                        if (item.badgeCount != null) {
-                                            Badge {
-                                                Text(text = item.badgeCount.toString())
-                                            }
-                                        } else if (item.hasNew) {
-                                            Badge()
-                                        }
-                                    }) {
-                                    Icon(
-                                        imageVector = if (index == selectedItemIndex) {
-                                            item.selectedIcon
-                                        } else {
-                                            item.unselectedIcon
-                                        },
-                                        contentDescription = item.title
-                                    )
-                                }
-                            })
-                    }
+                    NavDraw( colorDating = AppTheme.colorScheme.primary)
                 }
             },
-            topBar = {
-                CenterAlignedTopAppBar(
-                    modifier = Modifier.height(46.dp),
-                    colors = TopAppBarColors(
+        ) {
+            Scaffold(
+                containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+                bottomBar = {
+                    NavigationBar(
                         containerColor = AppTheme.colorScheme.onTertiary,
-                        navigationIconContentColor = AppTheme.colorScheme.primary,
-                        titleContentColor = AppTheme.colorScheme.secondary,
-                        actionIconContentColor = AppTheme.colorScheme.primary,
-                        scrolledContainerColor = AppTheme.colorScheme.background
-                    ),
-                    title = { TopBarText(title= titleText, isPhoto = isPhoto) },//TitleTextGen(title= titleText)},
-                    navigationIcon = {
-                            IconButton(onClick = { /*TODO*/ }) {//Show my default
+                        modifier = Modifier.height(46.dp)
+                    ) {
+                        items.forEachIndexed { index, item ->
+                            NavigationBarItem(
+                                colors = getBottomColors(),
+                                selected = selectedItemIndex == index,
+                                onClick = { //selectedItemIndex = index
+                                    nav.navigate(item.title)
+                                },//HANDLE NAVIGATION
+                                label = { },
+                                alwaysShowLabel = false,
+                                icon = {
+                                    BadgedBox(
+                                        badge = {
+                                            if (item.badgeCount != null) {
+                                                Badge {
+                                                    Text(text = item.badgeCount.toString())
+                                                }
+                                            } else if (item.hasNew) {
+                                                Badge()
+                                            }
+                                        }) {
+                                        Icon(
+                                            imageVector = if (index == selectedItemIndex) {
+                                                item.selectedIcon
+                                            } else {
+                                                item.unselectedIcon
+                                            },
+                                            contentDescription = item.title
+                                        )
+                                    }
+                                })
+                        }
+                    }
+                },
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        modifier = Modifier.height(46.dp),
+                        colors = getTopColors(),
+                        title = {
+                            TopBarText(
+                                title = titleText,
+                                isPhoto = isPhoto
+                            )
+                        },//TitleTextGen(title= titleText)},
+
+
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
+                                    }
+                                }
+
+                            }) {//Show my default
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = R.drawable.hamburger),
                                     contentDescription = "Change Looking tab"
                                 )
                             }
-                    },
-                    actions = {
-                        IconButton(onClick = settingsButton) {
-                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.settings), contentDescription = "Settings")
+                        },
+                        actions = {
+                            IconButton(onClick = settingsButton) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.settings),
+                                    contentDescription = "Settings"
+                                )
+                            }
                         }
-                    }
-                )
-            }
-        ) {
-           paddingValues ->
-            LaunchedEffect(Unit) { state.animateScrollTo(0) }
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .verticalScroll(state)
-                    .fillMaxSize()
-            ){
-                Spacer(modifier = Modifier.height(24.dp))
+                    )
+                },
+            ) { paddingValues ->
+                LaunchedEffect(Unit) { state.animateScrollTo(0) }
+                Column(
+                    Modifier
+                        .padding(paddingValues)
+                        .verticalScroll(state)
+                        .fillMaxSize()
+                ) {
+                    Spacer(modifier = Modifier.height(24.dp))
                     currentScreen() //All 5 screens go here
+                }
             }
         }
     }
 }
-@Composable
-fun TopBarText(
-    title:String,
-    size: TextStyle = AppTheme.typography.titleLarge,
-    isPhoto:Boolean
-){
-    if(isPhoto){
-        val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
-        Box(modifier = Modifier
-            .height(30.dp)
-            .offset(y = (8).dp)){
-            Image(painter = photo, contentDescription = "Logo")
-        }
-    }else{
-        Text(
-            modifier = Modifier.offset(y = (16).dp),
-            text = title,
-            style = size,
-            color = AppTheme.colorScheme.onBackground,
-        )
-    }
-}
+
 
 @Composable
 fun SimpleBox(
@@ -352,7 +354,7 @@ fun UserInfo(
                 ) {
                     SimpleIconBox(answer = calcAge(user.birthday.split("/")), icon = null, divider = true)
                     SimpleIconBox(answer = user.ethnicity, icon = null, divider = true)
-                    SimpleIconBox(answer = user.pronoun, icon = ImageVector.vectorResource(id = R.drawable.height))
+                    SimpleIconBox(answer = user.pronoun, icon = null)
                 }
             }
         )
@@ -377,7 +379,9 @@ fun UserInfo(
         SimpleBox(
             whatsInsideTheBox = {
                 Column(modifier = Modifier.fillMaxSize()) {
-//                    Text(text = "Bio", style = AppTheme.typography.titleLarge)
+                    Text(text = "About me", style = AppTheme.typography.labelSmall)//Prompt question
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
 
@@ -416,11 +420,11 @@ fun UserInfo(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
-                Text(text = user.promptQ1, style = AppTheme.typography.titleSmall)//Prompt question
+                Text(text = user.promptQ1, style = AppTheme.typography.labelSmall)//Prompt question
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA1, style = AppTheme.typography.bodyLarge) //Prompt Answer
+                Text(text = user.promptA1, style = AppTheme.typography.titleSmall) //Prompt Answer
             }
         },
             edit = doesEdit,
@@ -445,12 +449,12 @@ fun UserInfo(
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = user.promptQ2,
-                    style = AppTheme.typography.titleSmall
+                    style = AppTheme.typography.labelSmall
                 )///Prompt Questions2
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA2, style = AppTheme.typography.bodyLarge) //Prompt Answer 2
+                Text(text = user.promptA2, style = AppTheme.typography.titleSmall) //Prompt Answer 2
             }
         },
             edit = doesEdit,
@@ -475,12 +479,12 @@ fun UserInfo(
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = user.promptQ3,
-                    style = AppTheme.typography.titleSmall
+                    style = AppTheme.typography.labelSmall
                 )//Prompt Question 3
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.promptA3, style = AppTheme.typography.bodyLarge) ///Prompt answer 3
+                Text(text = user.promptA3, style = AppTheme.typography.titleSmall) ///Prompt answer 3
             }
         },
             edit = doesEdit,
@@ -527,7 +531,7 @@ fun UserInfo(
             if(doesEdit){
                 Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.End){
                     Button(onClick = photoClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DB7),)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DB7))
                     ) {
                         GenericBodyText(text = "Change Photos", color= AppTheme.colorScheme.onSurface)
                     }

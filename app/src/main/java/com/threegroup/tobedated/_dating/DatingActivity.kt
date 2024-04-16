@@ -34,11 +34,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MessageViewModel
+import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.composables.AgeSlider
 import com.threegroup.tobedated._dating.composables.ChangePreferenceScreen
 import com.threegroup.tobedated._dating.composables.ChangeProfile
 import com.threegroup.tobedated._dating.composables.ChangeSeekingScreen
-import com.threegroup.tobedated._dating.composables.Comeback
 import com.threegroup.tobedated._dating.composables.DistanceSlider
 import com.threegroup.tobedated._dating.composables.EditProfile
 import com.threegroup.tobedated._dating.composables.InsideMatchedProfile
@@ -54,10 +54,12 @@ import com.threegroup.tobedated._dating.composables.SeekingBox
 import com.threegroup.tobedated._dating.composables.SimpleBox
 import com.threegroup.tobedated._dating.composables.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.composables.UserInfo
+import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
+import com.threegroup.tobedated.shareclasses.composables.Comeback
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.OutLinedButton
 import com.threegroup.tobedated.shareclasses.models.UserModel
@@ -66,19 +68,25 @@ import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+//val notifiSearching = Random.nextBoolean()
 
 val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
-//val notifiSearching = Random.nextBoolean()
 
 class DatingActivity : ComponentActivity() {
+    private lateinit var token :String
+    private lateinit var location :String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val token = intent.getStringExtra("token").toString()
-        var location = intent.getStringExtra("location").toString()
+        token = intent.getStringExtra("token").toString()
+        location = intent.getStringExtra("location").toString()
         if(location.isEmpty()){
             location = "/"
         }
+        val sharedPreference = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val editor = sharedPreference.edit()
+        editor.putString("activityToken", "dating")
+        editor.apply()
         setContent {
             AppTheme {
                 DatingNav(this@DatingActivity, token, location)
@@ -92,43 +100,57 @@ class DatingActivity : ComponentActivity() {
         }
     }
     fun clearUserToken() {
-        val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.remove("firebase_user_token")
+        editor.remove("user_login")
         editor.apply()
 
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }
+    fun switchActivities(switchActivity:String){
+        val intent = when (switchActivity) {
+            "dating" -> {
+                Intent(this, DatingActivity::class.java)
+            }
+
+            "causal" -> {
+                Intent(this, CausalActivity::class.java)
+            }
+
+            "friends" -> {
+                Intent(this, FriendsActivity::class.java)
+            }
+            else -> {
+                Intent(this, DatingActivity::class.java)
+            }
+        }
+        intent.putExtra("token", token)
+        intent.putExtra("location", location)
+        startActivity(intent)
+        finish()
+    }
 }
+
 /*
 Start of Seeking Screen
  */
 @Composable
-fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel) {
+fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navController: NavHostController) {
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
     val currentPotential = remember { mutableStateOf<UserModel?>(null) }
-    var resetScrollState by remember { mutableStateOf(false) }
     val state = rememberScrollState()
-
-
-    LaunchedEffect(resetScrollState, Unit) {
+    LaunchedEffect(Unit) {
         //TODO This checks to see if the list is empty or not, This NEEDs to be avilialbe some hows
         if(vmDating.getNextPotential(currentProfileIndex) != null) {
             currentPotential.value = vmDating.getNextPotential(currentProfileIndex)//MIGHT CHANGE THIS
         }else{
             isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
-
-
-        if (resetScrollState) {
-            state.scrollTo(0)
-            // After resetting, reset the state variable to false
-            resetScrollState = false
-        }
+        state.scrollTo(0) // After resetting, reset the state variable to false
     }
 
     ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an avilibe user to prevent crashes
@@ -138,10 +160,10 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
         }else{
             isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
-        resetScrollState = true
     }
 
     TopAndBotBarsDating(
+        dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "",
@@ -181,11 +203,7 @@ fun SearchingScreen(navController: NavHostController, vmDating: DatingViewModel)
             } else {
                 Comeback(text = "Come Back when theres more people to see =0)")
             }
-
-        },
-
-    )
-
+        })
     if(showReport){
         AlertDialogBox(
             dialogTitle = "Report!",
@@ -261,7 +279,7 @@ End of Seeking Screens
 Start of Profile Screens
  */
 @Composable
-fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
+fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel, dating:DatingActivity){
     val currentUser = vmDating.getUser()
     val isLoading = remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
@@ -271,6 +289,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel){
     }
     val state = rememberScrollState()
     TopAndBotBarsDating(
+        dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         isPhoto = false,
@@ -367,12 +386,13 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
 Start of Message Screens
  */
 @Composable
-fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel){
+fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dating: DatingActivity){
     val matchedUsers = vmDating.getMatches() //TODO this has to be changed to be matches users
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState()
     TopAndBotBarsDating(
+        dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "Messages", //Change based on name
@@ -453,14 +473,18 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel){
                             .padding(25.dp, 0.dp)
                     ) {
                         OutLinedButton(
-                            onClick = {/*TODO report and unmatch account*/ },
+                            onClick = {/*TODO report and unmatch account*/
+                                      nav.navigate("ChatsScreen")
+                            },
                             text = "Report",
                             outLineColor = Color.Red,
                             textColor = Color.Red
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutLinedButton(
-                            onClick = {/*TODO unmatch account*/ },
+                            onClick = {/*TODO unmatch account*/
+                                nav.navigate("ChatsScreen")
+                            },
                             text = "Unmatch",
                             outLineColor = Color.Red
                         )
@@ -475,10 +499,10 @@ End of Message Screens
 Start of Groups Screens
  */
 @Composable
-fun GroupsScreen(navController: NavHostController){
-
+fun GroupsScreen(navController: NavHostController, dating: DatingActivity){
     val state = rememberScrollState()
     TopAndBotBarsDating(
+        dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         isPhoto = false,
@@ -488,14 +512,19 @@ fun GroupsScreen(navController: NavHostController){
         settingsButton = { },
         state = state,
         currentScreen = {
-
         }
     )
 }
 @Composable
-fun SomeScreen(navController: NavHostController){
+fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDating: DatingViewModel){
+    val passed = 12 //viewmodel call here
+    val liked = 12 //viewmodel call here
+    val seen = 12 //viewmodel call here
+    val missed = 12 //viewmodel call here
+    val unmeet = 1 //viewmodel call here
     val state = rememberScrollState()
     TopAndBotBarsDating(
+        dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "To Be Dated",
@@ -505,7 +534,45 @@ fun SomeScreen(navController: NavHostController){
         settingsButton = { },
         state = state,
         currentScreen = {
+            Column(
+                modifier = Modifier.padding(horizontal = 25.dp)
+            ) {
+                GenericTitleText(text ="You're Stats", style = AppTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(2.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                GenericTitleText(text = "People you passed on: $passed")
+                Spacer(modifier = Modifier.height(8.dp))
+                GenericTitleText(text = "People you liked: $liked")
+                Spacer(modifier = Modifier.height(8.dp))
+                GenericTitleText(text = "People who seen you: $seen")
+                Spacer(modifier = Modifier.height(8.dp))
+                GenericTitleText(text = "Missed connections: $missed")
+                Spacer(modifier = Modifier.height(24.dp))
+                GenericTitleText(text ="Unmeet connections", style = AppTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(2.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                GenericTitleText(text = "Currently: $unmeet")
+            }
 
+        }
+    )
+}
+@Composable
+fun ComeBackScreen(navController: NavHostController, dating: DatingActivity){
+    val state = rememberScrollState()
+    TopAndBotBarsDating(
+        dating = dating,
+        notifiChat = notifiChat,
+        notifiGroup = notifiGroup,
+        titleText = "To Be Dated",
+        isPhoto = true,
+        nav = navController,
+        selectedItemIndex = 0,
+        settingsButton = { navController.navigate("SearchPreferenceScreen") },
+        currentScreen = {
+            Comeback(text = "currently loading your future connection")
         }
     )
 }

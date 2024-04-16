@@ -553,12 +553,20 @@ fun PagerIndicator(
         }
     }
 }
-
+@Composable
+fun Comeback(
+    text: String
+){
+    GenericBodyText(text = text)
+}
 @Composable
 fun NavDraw(
     colorDating:Color = AppTheme.colorScheme.onBackground,
     colorFriends:Color = AppTheme.colorScheme.onBackground,
-    colorCausal:Color = AppTheme.colorScheme.onBackground
+    colorCausal:Color = AppTheme.colorScheme.onBackground,
+    datingClickable: () -> Unit = {},
+    causalClickable: () -> Unit = {},
+    friendsClickable: () -> Unit = {},
     
 ){
 
@@ -569,7 +577,8 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable { /*TODO Switch activities*/ },){
+            .clickable {datingClickable()}
+        ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating", tint = colorDating, modifier = Modifier
                 .offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
@@ -578,7 +587,8 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable { /*TODO Switch activities*/ }){
+            .clickable {causalClickable() }
+        ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends", tint = colorFriends, modifier = Modifier
                 .offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
@@ -587,7 +597,9 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable { /*TODO Switch activities*/ }){
+            .clickable { friendsClickable()
+            }
+        ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
                 .offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
@@ -604,6 +616,5 @@ fun NavDraw(
             }
         }
     }
-
 }
 

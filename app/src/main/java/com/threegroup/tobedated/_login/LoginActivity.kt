@@ -195,9 +195,9 @@ class LoginActivity : ComponentActivity() {
         }
     }
     private fun saveTokenToSharedPreferences(token: String?) {
-        val sharedPreferences = getSharedPreferences("firebase_user", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString("firebase_user_token", token)
+        editor.putString("user_login", token)
         editor.apply()
     }
     private fun showToast(message: String, ) {

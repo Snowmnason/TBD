@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.threegroup.tobedated.R
+import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.NavDraw
@@ -94,7 +95,8 @@ fun TopAndBotBarsDating(
     nav: NavHostController,
     selectedItemIndex: Int,
     settingsButton: () -> Unit,
-    state:ScrollState,
+    state:ScrollState = rememberScrollState(),
+    dating: DatingActivity
 ) {
     val items = listOf(
         BotNavItem(
@@ -143,7 +145,16 @@ fun TopAndBotBarsDating(
                 ModalDrawerSheet(
                     drawerContainerColor = AppTheme.colorScheme.background
                 ) {
-                    NavDraw( colorDating = AppTheme.colorScheme.primary)
+                    NavDraw(
+                        colorDating = AppTheme.colorScheme.primary,
+                        datingClickable = {},
+                        causalClickable = {
+                                     dating.switchActivities("causal")
+                        },
+                        friendsClickable = {
+                            dating.switchActivities("friends")
+                        }
+                        )
                 }
             },
         ) {

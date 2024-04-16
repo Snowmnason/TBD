@@ -14,7 +14,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.threegroup.tobedated._dating.composables.BioEdit
 import com.threegroup.tobedated._dating.composables.ChangePhoto
-import com.threegroup.tobedated._dating.composables.Comeback
 import com.threegroup.tobedated._dating.composables.PromptEdit
 import com.threegroup.tobedated.shareclasses.MyApp
 
@@ -23,9 +22,9 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
+
     LaunchedEffect(Unit) {
         viewModelDating.setLoggedInUser(token, location)
-
         //TODO THIS is where the list of potenatial matches gets initialed def changing this
         viewModelDating.getPotentialUserData {
             // Callback function executed when data retrieval is complete
@@ -40,16 +39,17 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
+
             if(potentialUserDataLoaded.value){
-                SearchingScreen(navController, viewModelDating)
+                SearchingScreen(viewModelDating, dating, navController)
             }else{
-                Comeback(text = "currently loading your future connection")
+                ComeBackScreen(navController, dating)
                 //do nothing yet
             }
 
         }
         composable(route = Dating.ProfileScreen.name) {
-            ProfileScreen(navController, viewModelDating)
+            ProfileScreen(navController, viewModelDating, dating)
         }
         composable(route = Dating.EditProfileScreen.name) {
             EditProfileScreen(navController, dating, viewModelDating)
@@ -58,13 +58,13 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
             SearchPreferenceScreen(navController, viewModelDating)
         }
         composable(route = Dating.ChatsScreen.name) {
-            ChatsScreen(navController, viewModelDating)
+            ChatsScreen(navController, viewModelDating, dating)
         }
         composable(route = Dating.GroupsScreen.name) {
-            GroupsScreen(navController)
+            GroupsScreen(navController, dating)
         }
         composable(route = Dating.SomeScreen.name) {
-            SomeScreen(navController)
+            SomeScreen(navController, dating, viewModelDating)
         }
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController, viewModelDating)

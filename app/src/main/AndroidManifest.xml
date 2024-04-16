@@ -32,7 +32,13 @@
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
-            android:name=".activities.FriendsActivity"
+            android:name="._friends.FriendsActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+        <activity
+            android:name="._causal.CausalActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"

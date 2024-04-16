@@ -174,12 +174,6 @@ fun SearchingButtons(
         }
     }
 }
-@Composable
-fun Comeback(
-    text: String
-){
-    GenericBodyText(text = text)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

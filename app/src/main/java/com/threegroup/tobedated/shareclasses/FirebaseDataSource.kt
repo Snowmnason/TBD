@@ -113,8 +113,47 @@ class FirebaseDataSource() {
             .setValue(userUpdates)
     }
 
-    /*
-        Likes and match related functions
+    /**
+    Dating discovery related functions
+     */
+    fun getPotentialUserData(): Flow<Pair<List<UserModel>, Int>> = callbackFlow {
+        val dbRef: DatabaseReference =
+            FirebaseDatabase.getInstance().getReference("users")
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<UserModel>()
+                for (data in snapshot.children) {
+                    try {
+                        val userModel = data.getValue(UserModel::class.java)
+                        if (userModel?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
+                            userModel?.let {
+                                if (!it.seeMe) {
+                                    list.add(it)
+                                }
+                            }
+                        }
+                        Log.d("USER_TAG", "Succeeded parsing UserModel")
+                    } catch (e: Exception) {
+                        Log.d("USER_TAG", "Error parsing UserModel", e)
+                    }
+                }
+                val sortedList = list.sortedByDescending { it.status }
+                // Emit both the list of potential users and the current profile index
+                trySend(Pair(sortedList, 0)).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("USER_TAG", "Database error: ${error.message}")
+            }
+        }
+        dbRef.addValueEventListener(valueEventListener)
+        awaitClose {
+            dbRef.removeEventListener(valueEventListener)
+        }
+    }
+
+    /**
+    Likes and match related functions
      */
     suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         val database = FirebaseDatabase.getInstance()

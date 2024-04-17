@@ -284,7 +284,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel, d
     val isLoading = remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         if (currentUser.name.isNotEmpty()) {
-                isLoading.value = false
+            isLoading.value = false
         }
     }
     val state = rememberScrollState()
@@ -377,10 +377,10 @@ End of Profile Screens
 @Composable
 fun ChangeProfileScreen(navController: NavHostController, title:String, index:Int, vmDating: DatingViewModel){
     ChangeProfile(navController,
-            title = title,
-            vmDating = vmDating,
-            index = index,
-        )
+        title = title,
+        vmDating = vmDating,
+        index = index,
+    )
 }
 /*
 Start of Message Screens
@@ -437,7 +437,7 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
         value = message,
         onValueChange = { message = it},
         sendMessage = { messageModel.storeChatData(chatId, message)
-                      message = ""},
+            message = ""},
         goToProfile = { navController.navigate("MatchedUserProfile") },
         chatSettings = {},
         startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
@@ -474,7 +474,7 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel){
                     ) {
                         OutLinedButton(
                             onClick = {/*TODO report and unmatch account*/
-                                      nav.navigate("ChatsScreen")
+                                nav.navigate("ChatsScreen")
                             },
                             text = "Report",
                             outLineColor = Color.Red,
@@ -500,7 +500,6 @@ Start of Groups Screens
  */
 @Composable
 fun GroupsScreen(navController: NavHostController, dating: DatingActivity){
-    val state = rememberScrollState()
     TopAndBotBarsDating(
         dating = dating,
         notifiChat = notifiChat,
@@ -510,7 +509,6 @@ fun GroupsScreen(navController: NavHostController, dating: DatingActivity){
         nav = navController,
         selectedItemIndex = 3,
         settingsButton = { },
-        state = state,
         currentScreen = {
         }
     )
@@ -522,7 +520,6 @@ fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDatin
     val seen = 12 //viewmodel call here
     val missed = 12 //viewmodel call here
     val unmeet = 1 //viewmodel call here
-    val state = rememberScrollState()
     TopAndBotBarsDating(
         dating = dating,
         notifiChat = notifiChat,
@@ -532,7 +529,6 @@ fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDatin
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { },
-        state = state,
         currentScreen = {
             Column(
                 modifier = Modifier.padding(horizontal = 25.dp)

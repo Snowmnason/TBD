@@ -3,7 +3,7 @@ package com.threegroup.tobedated._dating
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,20 +18,20 @@ import com.threegroup.tobedated._dating.composables.PromptEdit
 import com.threegroup.tobedated.shareclasses.MyApp
 
 @Composable
-fun DatingNav(dating: DatingActivity, token:String, location:String) {
+fun DatingNav(dating: DatingActivity, token:String, location:String){
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
+    viewModelDating.setLoggedInUser(token, location)
 
-    LaunchedEffect(Unit) {
-        viewModelDating.setLoggedInUser(token, location)
-        //TODO THIS is where the list of potenatial matches gets initialed def changing this
-        viewModelDating.getPotentialUserData {
-            // Callback function executed when data retrieval is complete
-            potentialUserDataLoaded.value = true
-        }
-
+    //TODO THIS is where the list of potenatial matches gets initialed def changing this
+    val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
+    if (potentialUserDataState.value.first.isNotEmpty()) {
+        potentialUserDataLoaded.value = true
+        val potentialUsers = potentialUserDataState.value.first
+        val currentProfileIndex = potentialUserDataState.value.second
     }
+
 
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
@@ -39,14 +39,11 @@ fun DatingNav(dating: DatingActivity, token:String, location:String) {
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-
             if(potentialUserDataLoaded.value){
                 SearchingScreen(viewModelDating, dating, navController)
             }else{
                 ComeBackScreen(navController, dating)
-                //do nothing yet
             }
-
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController, viewModelDating, dating)

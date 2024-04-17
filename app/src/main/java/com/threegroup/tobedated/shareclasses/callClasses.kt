@@ -99,7 +99,7 @@ fun calcAge(birth: List<String>?): String{
 }
 fun calcDistance(potential:String, current:String):String{
     val distance: String
-    if (current != "error/" && current != "/" && current.isNotBlank()){
+    if (current != "error/" && current != "/" && current.contains("/")){
         val potentialParts = potential.split("/")
         val currentParts = current.split("/")
         val latitudePotential = potentialParts.first().toDouble()

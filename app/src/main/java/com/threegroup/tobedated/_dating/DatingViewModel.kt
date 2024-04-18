@@ -82,14 +82,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         signedInUser = updatedUser
     }
 
-    fun setLoggedInUser(userPhoneNumber: String, location: String) {
+    fun setLoggedInUser(userPhoneNumber: String, location: String) { //TODO THIS IS THE FUCKING ERROR
         signedInUser = repository.setUserInfo(userPhoneNumber, location)
     }
 
 }
 
-//TODO this funcuation makes a list of potentional users from the database, for you to swipe one.
-//TODO change this to flows.
+
 //    fun getPotentialUserData(callback: () -> Unit) {
 //        try {
 //            FirebaseDatabase.getInstance().getReference("users")
@@ -102,7 +101,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 //                                val model = data.getValue(UserModel::class.java)
 //                                if (model?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
 //                                    model?.let {
-//                                        if (!it.seeMe) {//TODO THIS IS IMPORTANT NEED TO CHECK "user.seeMe"
+//                                        if (!it.seeMe) {/
 //                                            tempList.add(it)
 //                                        }
 //                                    }
@@ -140,7 +139,6 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 //        Pair(userList, currentIndex)
 //    }.stateIn(viewModelScope, SharingStarted.Eagerly, Pair(emptyList(),0))
 //
-//    //TODO this goes through the list, flows might make thi work flow differnt....Might change based on how fflows work
 //    fun getNextPotential(currentProfileIndex: Int): UserModel? {///MUST RETURN USERMODEL
 //        val potentialUsers = potentialUserData.value.first
 //        return if (currentProfileIndex < potentialUsers.size) {

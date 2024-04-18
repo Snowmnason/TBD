@@ -296,49 +296,54 @@ fun BioEdit(
         nav = nav,
         title = "Edit Bio",
         changeSettings = {
-            Spacer(modifier = Modifier.height(24.dp))
-            SimpleBox(
-                whatsInsideTheBox = {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        val maxLength = 500
-                        val remainingChars = maxLength - bio.length
-                        TextField(
-                            value = bio,
-                            onValueChange = { input -> bio = input },
+            Column(
+                modifier = Modifier.padding(horizontal = 15.dp)
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
+                SimpleBox(
+                    edit = true,
+                    whatsInsideTheBox = {
+                        Column(
                             modifier = Modifier
+                                .padding(12.dp, 5.dp, 12.dp, 12.dp)
                                 .fillMaxWidth()
-                                .padding(bottom = 5.dp)
-                                .height(200.dp),
-                            textStyle = baseAppTextTheme(),
-                            maxLines = 10,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                cursorColor = AppTheme.colorScheme.primary, // Set cursor color
-                                focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
-                                unfocusedBorderColor = AppTheme.colorScheme.onSurface, // Set unfocused border color
-                            ),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                capitalization = KeyboardCapitalization.Sentences,
-                                autoCorrect = true,
-                            )
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            GenericLabelText(
-                                text = "$remainingChars/$maxLength",
-                                color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
+                            val maxLength = 500
+                            val remainingChars = maxLength - bio.length
+                            TextField(
+                                value = bio,
+                                onValueChange = { input -> bio = input },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 5.dp)
+                                    .height(200.dp),
+                                textStyle = baseAppTextTheme(),
+                                maxLines = 10,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    cursorColor = AppTheme.colorScheme.primary, // Set cursor color
+                                    focusedBorderColor = AppTheme.colorScheme.secondary, // Set focused border color
+                                    unfocusedBorderColor = AppTheme.colorScheme.onSurface, // Set unfocused border color
+                                ),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    capitalization = KeyboardCapitalization.Sentences,
+                                    autoCorrect = true,
+                                )
                             )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                GenericLabelText(
+                                    text = "$remainingChars/$maxLength",
+                                    color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         },
         save = {
             Button(
@@ -436,18 +441,30 @@ fun PromptEdit(nav:NavHostController, vmDating: DatingViewModel, questionNumber:
                         }
                     }
                 }
-            }else{
+            }else {
                 //prompt = ""
-                SimpleBox(
-                    whatsInsideTheBox = {
-                        PromptAnswer(
-                            input = prompt,
-                            onInputChanged = { input  ->  prompt = input },
-                            isEnables = true
+                Column(
+                    modifier = Modifier.padding(horizontal = 15.dp).fillMaxSize()
+                ) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    SimpleBox(
+                        edit = true,
+                        whatsInsideTheBox = {
+                            Column(
+                                modifier = Modifier
+                                    .padding(12.dp, 0.dp, 12.dp, 12.dp)
+                            ) {
+                                PromptAnswer(
+                                    input = prompt,
+                                    onInputChanged = { input -> prompt = input },
+                                    isEnables = true,
+                                    height = 150
 
-                        )
-                    }
-                )
+                                )
+                            }
+                        }
+                    )
+                }
             }
         },
         save = {

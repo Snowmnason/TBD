@@ -162,6 +162,7 @@ fun PromptAnswer(
     input: String,
     onInputChanged: (String) -> Unit,
     isEnables:Boolean,
+    height:Int = 80
 ) {
     val maxLength = 200
     val remainingChars = maxLength - input.length
@@ -176,7 +177,7 @@ fun PromptAnswer(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 5.dp)
-                .height(80.dp),
+                .height(height.dp),
             textStyle = customTextStyle,
             maxLines = 4,
             colors = OutlinedTextFieldDefaults.colors(

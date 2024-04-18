@@ -143,6 +143,12 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
     val currentPotential = remember { mutableStateOf<UserModel?>(null) }
     val state = rememberScrollState()
+
+    // Reset scroll state when currentProfileIndex or isNext changes
+    LaunchedEffect(currentProfileIndex, isNext) {
+        state.scrollTo(0)
+    }
+
     LaunchedEffect(Unit) {
         //TODO This checks to see if the list is empty or not, This NEEDs to be avilialbe some hows
         if(vmDating.getNextPotential(currentProfileIndex) != null) {
@@ -150,8 +156,8 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
         }else{
             isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
-        state.scrollTo(0) // After resetting, reset the state variable to false
     }
+
 
     ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an avilibe user to prevent crashes
     fun nextProfile(newPotential: UserModel?){
@@ -215,7 +221,6 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
             }
         )
     }
-
 }
 
 @Composable

@@ -562,7 +562,6 @@ fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDatin
 }
 @Composable
 fun ComeBackScreen(navController: NavHostController, dating: DatingActivity){
-    val state = rememberScrollState()
     TopAndBotBarsDating(
         dating = dating,
         notifiChat = notifiChat,

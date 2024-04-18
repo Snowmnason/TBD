@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -112,9 +113,6 @@ class SignUpActivity : ComponentActivity() {
 
     fun finishingUp(signUpVM: SignUpViewModel){
         lifecycleScope.launch {
-//            newUser.promptQ1 = signUpVM.getQuestion1()
-//            newUser.promptQ2 = signUpVM.getQuestion2()
-//            newUser.promptQ3 = signUpVM.getQuestion3()
             signUpVM.uploadImage(contentResolver)
             val userToken = signUpVM.storeData()
             showToast()
@@ -913,11 +911,8 @@ fun weedScreen(signUpVM: SignUpViewModel): Boolean {
 
 @Composable
 fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
-    val promptQ1 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ1) }
     var promptA1 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA1) }
-    val promptQ2 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ2) }
     var promptA2 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA2) }
-    val promptQ3 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptQ3) }
     var promptA3 by rememberSaveable { mutableStateOf(signUpVM.getUser().promptA3) }
     var isEnable1 by rememberSaveable { mutableStateOf(false) }
     var isEnable2 by rememberSaveable { mutableStateOf(false) }
@@ -925,6 +920,14 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
     var isAnswered1 by rememberSaveable { mutableStateOf(false) }
     var isAnswered2 by rememberSaveable { mutableStateOf(false) }
     var isAnswered3 by rememberSaveable { mutableStateOf(false) }
+    var question1 by rememberSaveable { mutableStateOf("Question 1") }
+    var question2 by rememberSaveable { mutableStateOf("Question 2") }
+    var question3 by rememberSaveable { mutableStateOf("Question 3") }
+    LaunchedEffect(Unit, question1, question2, question3) {
+         if(isEnable1){ question1 = signUpVM.getUser().promptQ1}
+         if(isEnable2){ question2 =signUpVM.getUser().promptQ2}
+         if(isEnable3){ question3 =signUpVM.getUser().promptQ3}
+    }
     SignUpFormat(
         title = "Some Ice breakers!",
         label = "Don't be shy, the ice will melt anyway!",
@@ -936,8 +939,7 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
                     isEnable1 = true
                 })
             {
-                val question:String = if(promptQ1 == ""){ "Question 1"}else{signUpVM.getUser().promptQ1}
-                GenericLabelText(text = question)
+                GenericLabelText(text = question1)
             }
             PromptAnswer(
                 isEnables = isEnable1,
@@ -954,8 +956,8 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
                     isEnable2 = true
                 })
             {
-                val question:String = if(promptQ2 == ""){ "Question 2"}else{signUpVM.getUser().promptQ2}
-                GenericLabelText(text = question)
+
+                GenericLabelText(text = question2)
             }
             PromptAnswer(
                 isEnables = isEnable2,
@@ -972,8 +974,7 @@ fun promptQuestionsScreen(nav:NavController, signUpVM: SignUpViewModel):Boolean{
                     isEnable3 = true
                 })
             {
-                val question:String = if(promptQ3 == ""){ "Question 3"}else{signUpVM.getUser().promptQ3}
-                GenericLabelText(text = question)
+                GenericLabelText(text = question3)
             }
             PromptAnswer(
                 isEnables = isEnable3,

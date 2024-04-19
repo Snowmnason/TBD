@@ -23,6 +23,7 @@ fun DatingNav(dating: DatingActivity, token:String, location:String){
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser(token, location)
+    //viewModelDating.updateStatus(token, location)
 
     //TODO THIS is where the list of potenatial matches gets initialed def changing this
     val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))

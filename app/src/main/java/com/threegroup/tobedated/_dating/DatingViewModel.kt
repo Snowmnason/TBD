@@ -1,6 +1,5 @@
 package com.threegroup.tobedated._dating
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -90,72 +89,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun setLoggedInUser(
         userPhoneNumber: String,
         location: String
-    ) { //TODO THIS IS THE FUCKING ERROR
+    ) {
         viewModelScope.launch(IO) {
             repository.setUserInfo(userPhoneNumber, location).collect { userInfo ->
                 _signedInUser.value = userInfo
             }
         }
     }
+    fun updateStatus(number: String, location:String) {
+//        val databaseReference1 = TODO
+//            FirebaseDatabase.getInstance().getReference("users").child(number).child("location")
+//        databaseReference1.setValue(location)
+        val databaseReference =
+            FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
+        databaseReference.setValue(System.currentTimeMillis())
+    }
 }
-
-
-//    fun getPotentialUserData(callback: () -> Unit) {
-//        try {
-//            FirebaseDatabase.getInstance().getReference("users")
-//                .addListenerForSingleValueEvent(object : ValueEventListener {
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//                        if (snapshot.exists()) {
-//                            val tempList =
-//                                ArrayList<UserModel>() // Temporary list to store potential users
-//                            for (data in snapshot.children) {
-//                                val model = data.getValue(UserModel::class.java)
-//                                if (model?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
-//                                    model?.let {
-//                                        if (!it.seeMe) {/
-//                                            tempList.add(it)
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                            // Sort the list by status (currentTimeMillis)
-//                            val sortedList = tempList.sortedByDescending { it.status }
-//
-//                            // Update the original list with the sorted list
-//                            list.clear()
-//                            list.addAll(sortedList)
-//                        }
-//                        // Invoke the callback to indicate that data retrieval is complete
-//                        callback()
-//                    }
-//
-//                    override fun onCancelled(error: DatabaseError) {
-//                        Log.d("MY_DEBUGGER", "ERROR")
-//                        // Handle error
-//                    }
-//                })
-//        } catch (e: Exception) {
-//            Log.d("MY_DEBUGGER", "ERROR")
-//            // Handle error
-//        }
-//    }
-
-//    fun getPotentialUserData(): Flow<Pair<List<UserModel>, Int>> {
-//        return repository.getPotentialUserData()
-//    }
-//
-//    val potentialUserData: StateFlow<Pair<List<UserModel>, Int>> = repository.getPotentialUserData().map { userData ->
-//        val userList: List<UserModel> = userData.first
-//        val currentIndex: Int = userData.second
-//        Pair(userList, currentIndex)
-//    }.stateIn(viewModelScope, SharingStarted.Eagerly, Pair(emptyList(),0))
-//
-//    fun getNextPotential(currentProfileIndex: Int): UserModel? {///MUST RETURN USERMODEL
-//        val potentialUsers = potentialUserData.value.first
-//        return if (currentProfileIndex < potentialUsers.size) {
-//            val nextPotential = potentialUsers[currentProfileIndex]
-//            nextPotential
-//        } else {
-//            null
-//        }
-//    }

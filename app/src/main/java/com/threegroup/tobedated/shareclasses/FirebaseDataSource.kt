@@ -522,11 +522,5 @@ class FirebaseDataSource() {
                 ?: listOf("Doesn't Matter"),
         )
     }
-
-    fun updateStatus(number: String) {
-        val databaseReference =
-            FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
-        databaseReference.setValue(System.currentTimeMillis())
-    }
 }
 

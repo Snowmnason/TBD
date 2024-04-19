@@ -15,13 +15,19 @@ import com.threegroup.tobedated.shareclasses.models.AgeRange
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.UserSearchPreferenceModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class FirebaseDataSource() {
     /*
@@ -294,113 +300,227 @@ class FirebaseDataSource() {
             })
     }
 
-    fun setUserInfo(number: String, location: String): UserModel {
-        val user = UserModel()
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
-        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val userDataMap = snapshot.value as? Map<*, *>
-                    if (userDataMap != null) {
-                        user.name = userDataMap["name"] as? String ?: ""
-                        user.birthday = userDataMap["birthday"] as? String ?: ""
-                        user.pronoun = userDataMap["pronoun"] as? String ?: ""
-                        user.gender = userDataMap["gender"] as? String ?: ""
-                        user.height = userDataMap["height"] as? String ?: ""
-                        user.ethnicity = userDataMap["ethnicity"] as? String ?: ""
-                        user.star = userDataMap["star"] as? String ?: ""
-                        user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
-                        user.seeking = userDataMap["seeking"] as? String ?: ""
-                        user.sex = userDataMap["sex"] as? String ?: ""
-                        user.testResultsMbti =
-                            userDataMap["testResultsMbti"] as? String ?: "Not Taken"
-                        user.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
-                        user.children = userDataMap["children"] as? String ?: ""
-                        user.family = userDataMap["family"] as? String ?: ""
-                        user.education = userDataMap["education"] as? String ?: ""
-                        user.religion = userDataMap["religion"] as? String ?: ""
-                        user.politics = userDataMap["politics"] as? String ?: ""
-                        user.relationship = userDataMap["relationship"] as? String ?: ""
-                        user.intentions = userDataMap["intentions"] as? String ?: ""
-                        user.drink = userDataMap["drink"] as? String ?: ""
-                        user.smoke = userDataMap["smoke"] as? String ?: ""
-                        user.weed = userDataMap["weed"] as? String ?: ""
-                        user.meetUp = userDataMap["meetUp"] as? String ?: ""
-                        user.promptQ1 = userDataMap["promptQ1"] as? String ?: ""
-                        user.promptA1 = userDataMap["promptA1"] as? String ?: ""
-                        user.promptQ2 = userDataMap["promptQ2"] as? String ?: ""
-                        user.promptA2 = userDataMap["promptA2"] as? String ?: ""
-                        user.promptQ3 = userDataMap["promptQ3"] as? String ?: ""
-                        user.promptA3 = userDataMap["promptA3"] as? String ?: ""
-                        user.bio = userDataMap["bio"] as? String ?: ""
-                        user.image1 = userDataMap["image1"] as? String ?: ""
-                        user.image2 = userDataMap["image2"] as? String ?: ""
-                        user.image3 = userDataMap["image3"] as? String ?: ""
-                        user.image4 = userDataMap["image4"] as? String ?: ""
-                        user.location = if (location == "error/" || location == "/") {
-                            // If location is 'error', retrieve location from Firebase
-                            userDataMap["location"] as? String ?: ""
-                        } else {
-                            // Otherwise, use the provided location value
-                            location
-                        }
-                        user.status = System.currentTimeMillis()
-                        user.number = userDataMap["number"] as? String ?: ""
-                        user.verified = userDataMap["verified"] as? Boolean ?: false
-                        user.seeMe = userDataMap["Seen"] as? Boolean ?: false
-                        user.userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
-                            UserSearchPreferenceModel(
-                                ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
-                                maxDistance = map["maxDistance"] as? Int ?: 25,
-                                gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                children = (map["children"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                education = (map["education"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                religion = (map["religion"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                drink = (map["drink"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                                weed = (map["weed"] as? List<*>)?.filterIsInstance<String>()
-                                    ?: listOf("Doesn't Matter"),
-                            )
-                        } ?: UserSearchPreferenceModel()
-                        updateStatus(number)
-                    } else {
-                        // Handle null user data
-                    }
-                } else {
-                    // User not found in the database
-                    // Handle accordingly
-                }
-            }
+//    fun setUserInfo(number: String, location: String): UserModel {
+//        val user = UserModel()
+//        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
+//        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()) {
+//                    val userDataMap = snapshot.value as? Map<*, *>
+//                    if (userDataMap != null) {
+//                        user.name = userDataMap["name"] as? String ?: ""
+//                        user.birthday = userDataMap["birthday"] as? String ?: ""
+//                        user.pronoun = userDataMap["pronoun"] as? String ?: ""
+//                        user.gender = userDataMap["gender"] as? String ?: ""
+//                        user.height = userDataMap["height"] as? String ?: ""
+//                        user.ethnicity = userDataMap["ethnicity"] as? String ?: ""
+//                        user.star = userDataMap["star"] as? String ?: ""
+//                        user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
+//                        user.seeking = userDataMap["seeking"] as? String ?: ""
+//                        user.sex = userDataMap["sex"] as? String ?: ""
+//                        user.testResultsMbti =
+//                            userDataMap["testResultsMbti"] as? String ?: "Not Taken"
+//                        user.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
+//                        user.children = userDataMap["children"] as? String ?: ""
+//                        user.family = userDataMap["family"] as? String ?: ""
+//                        user.education = userDataMap["education"] as? String ?: ""
+//                        user.religion = userDataMap["religion"] as? String ?: ""
+//                        user.politics = userDataMap["politics"] as? String ?: ""
+//                        user.relationship = userDataMap["relationship"] as? String ?: ""
+//                        user.intentions = userDataMap["intentions"] as? String ?: ""
+//                        user.drink = userDataMap["drink"] as? String ?: ""
+//                        user.smoke = userDataMap["smoke"] as? String ?: ""
+//                        user.weed = userDataMap["weed"] as? String ?: ""
+//                        user.meetUp = userDataMap["meetUp"] as? String ?: ""
+//                        user.promptQ1 = userDataMap["promptQ1"] as? String ?: ""
+//                        user.promptA1 = userDataMap["promptA1"] as? String ?: ""
+//                        user.promptQ2 = userDataMap["promptQ2"] as? String ?: ""
+//                        user.promptA2 = userDataMap["promptA2"] as? String ?: ""
+//                        user.promptQ3 = userDataMap["promptQ3"] as? String ?: ""
+//                        user.promptA3 = userDataMap["promptA3"] as? String ?: ""
+//                        user.bio = userDataMap["bio"] as? String ?: ""
+//                        user.image1 = userDataMap["image1"] as? String ?: ""
+//                        user.image2 = userDataMap["image2"] as? String ?: ""
+//                        user.image3 = userDataMap["image3"] as? String ?: ""
+//                        user.image4 = userDataMap["image4"] as? String ?: ""
+//                        user.location = if (location == "error/" || location == "/") {
+//                            // If location is 'error', retrieve location from Firebase
+//                            userDataMap["location"] as? String ?: ""
+//                        } else {
+//                            // Otherwise, use the provided location value
+//                            location
+//                        }
+//                        user.status = System.currentTimeMillis()
+//                        user.number = userDataMap["number"] as? String ?: ""
+//                        user.verified = userDataMap["verified"] as? Boolean ?: false
+//                        user.seeMe = userDataMap["Seen"] as? Boolean ?: false
+//                        user.userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
+//                            UserSearchPreferenceModel(
+//                                ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
+//                                maxDistance = map["maxDistance"] as? Int ?: 25,
+//                                gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                children = (map["children"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                education = (map["education"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                religion = (map["religion"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                drink = (map["drink"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                                weed = (map["weed"] as? List<*>)?.filterIsInstance<String>()
+//                                    ?: listOf("Doesn't Matter"),
+//                            )
+//                        } ?: UserSearchPreferenceModel()
+//                        updateStatus(number)
+//                    } else {
+//                        // Handle null user data
+//                    }
+//                } else {
+//                    // User not found in the database
+//                    // Handle accordingly
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                println("onCancelled triggered")
+//                // Handle error fetching user data
+//                println("Error: ${error.message}")
+//            }
+//        })
+//        return user
+//    }
 
-            override fun onCancelled(error: DatabaseError) {
-                println("onCancelled triggered")
-                // Handle error fetching user data
-                println("Error: ${error.message}")
+    suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> = flow {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
+
+        val userDataMap = withContext(Dispatchers.IO) {
+            suspendCoroutine { continuation ->
+                val eventListener = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        continuation.resume(snapshot.value as? Map<*, *>)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resumeWithException(error.toException())
+                    }
+                }
+                databaseReference.addListenerForSingleValueEvent(eventListener)
             }
-        })
-        return user
+        }
+        userDataMap?.let { map ->
+            val user = setUserProperties(UserModel(), map, location)
+            emit(user)
+        }
+    }
+
+    private fun setUserProperties(
+        user: UserModel,
+        userDataMap: Map<*, *>,
+        location: String
+    ): UserModel {
+        return user.apply {
+            name = userDataMap["name"] as? String ?: ""
+            birthday = userDataMap["birthday"] as? String ?: ""
+            pronoun = userDataMap["pronoun"] as? String ?: ""
+            user.gender = userDataMap["gender"] as? String ?: ""
+            user.height = userDataMap["height"] as? String ?: ""
+            user.ethnicity = userDataMap["ethnicity"] as? String ?: ""
+            user.star = userDataMap["star"] as? String ?: ""
+            user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
+            user.seeking = userDataMap["seeking"] as? String ?: ""
+            user.sex = userDataMap["sex"] as? String ?: ""
+            user.testResultsMbti =
+                userDataMap["testResultsMbti"] as? String ?: "Not Taken"
+            user.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
+            user.children = userDataMap["children"] as? String ?: ""
+            user.family = userDataMap["family"] as? String ?: ""
+            user.education = userDataMap["education"] as? String ?: ""
+            user.religion = userDataMap["religion"] as? String ?: ""
+            user.politics = userDataMap["politics"] as? String ?: ""
+            user.relationship = userDataMap["relationship"] as? String ?: ""
+            user.intentions = userDataMap["intentions"] as? String ?: ""
+            user.drink = userDataMap["drink"] as? String ?: ""
+            user.smoke = userDataMap["smoke"] as? String ?: ""
+            user.weed = userDataMap["weed"] as? String ?: ""
+            user.meetUp = userDataMap["meetUp"] as? String ?: ""
+            user.promptQ1 = userDataMap["promptQ1"] as? String ?: ""
+            user.promptA1 = userDataMap["promptA1"] as? String ?: ""
+            user.promptQ2 = userDataMap["promptQ2"] as? String ?: ""
+            user.promptA2 = userDataMap["promptA2"] as? String ?: ""
+            user.promptQ3 = userDataMap["promptQ3"] as? String ?: ""
+            user.promptA3 = userDataMap["promptA3"] as? String ?: ""
+            user.bio = userDataMap["bio"] as? String ?: ""
+            user.image1 = userDataMap["image1"] as? String ?: ""
+            user.image2 = userDataMap["image2"] as? String ?: ""
+            user.image3 = userDataMap["image3"] as? String ?: ""
+            user.image4 = userDataMap["image4"] as? String ?: ""
+            this.location = if (location == "error/" || location == "/") {
+                userDataMap["location"] as? String ?: ""
+            } else {
+                location
+            }
+            status = System.currentTimeMillis()
+            number = userDataMap["number"] as? String ?: ""
+            verified = userDataMap["verified"] as? Boolean ?: false
+            seeMe = userDataMap["Seen"] as? Boolean ?: false
+            userPref = (userDataMap["userPref"] as? Map<*, *>)?.let { map ->
+                getUserSearchPreference(map)
+            } ?: UserSearchPreferenceModel()
+        }
+    }
+    private fun getUserSearchPreference(map: Map<*, *>): UserSearchPreferenceModel {
+        return UserSearchPreferenceModel(
+            ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
+            maxDistance = map["maxDistance"] as? Int ?: 25,
+            gender = (map["gender"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+            zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            children = (map["children"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            education = (map["education"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            religion = (map["religion"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            drink = (map["drink"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+            weed = (map["weed"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
+        )
     }
 
     fun updateStatus(number: String) {

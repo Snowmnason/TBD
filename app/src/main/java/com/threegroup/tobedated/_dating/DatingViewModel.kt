@@ -1,18 +1,23 @@
 package com.threegroup.tobedated._dating
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.UserModel
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     val list = ArrayList<UserModel>()
-    private var signedInUser: UserModel = UserModel() //= repository.getUser()
+    private val _signedInUser = MutableStateFlow<UserModel?>(null)
+    var signedInUser: StateFlow<UserModel?> = _signedInUser
     private var selectedUser: UserModel = UserModel() //The chat you open
 
     val potentialUserData: StateFlow<Pair<List<UserModel>, Int>> = repository.getPotentialUserData()
@@ -71,7 +76,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     //Stuff for signed in user
     fun getUser(): UserModel {
-        return signedInUser
+        return signedInUser.value!!
     }
 
     fun updateUser(updatedUser: UserModel) {
@@ -79,13 +84,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         val databaseReference =
             FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
         databaseReference.setValue(updatedUser)
-        signedInUser = updatedUser
+        _signedInUser.value = updatedUser
     }
 
-    fun setLoggedInUser(userPhoneNumber: String, location: String) { //TODO THIS IS THE FUCKING ERROR
-        signedInUser = repository.setUserInfo(userPhoneNumber, location)
+    fun setLoggedInUser(
+        userPhoneNumber: String,
+        location: String
+    ) { //TODO THIS IS THE FUCKING ERROR
+        viewModelScope.launch(IO) {
+            repository.setUserInfo(userPhoneNumber, location).collect { userInfo ->
+                _signedInUser.value = userInfo
+            }
+        }
     }
-
 }
 
 

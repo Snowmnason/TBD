@@ -26,6 +26,18 @@ val darkColorScheme = AppColorScheme(
     onSecondary = onLight,
     onTertiary = barDark
 )
+val darkColorSchemeFriends = AppColorScheme(
+    primary = primF,
+    secondary = secF,
+    tertiary = triF,
+    background = bgDarkF,
+    surface = surDarkF,
+    onBackground = onDarkF,
+    onSurface = onSurDarkF,
+    onPrimary = onLightF,
+    onSecondary = onLightF,
+    onTertiary = barDarkF,
+)
 
 val lightColorScheme = AppColorScheme(
     primary = prim,
@@ -38,6 +50,18 @@ val lightColorScheme = AppColorScheme(
     onPrimary = onLight,
     onSecondary = onLight,
     onTertiary = barLight
+)
+val lightColorSchemeFriends = AppColorScheme(
+    primary = primF,
+    secondary = secF,
+    tertiary = triF,
+    background = bgLightF,
+    surface = surLightF,
+    onBackground = onLightF,
+    onSurface = onSurLightF,
+    onPrimary = onLightF,
+    onSecondary = onLightF,
+    onTertiary = barLightF,
 )
 
 
@@ -157,8 +181,37 @@ fun AppTheme(
         content = content
     )
 }
+@Composable
+fun AppThemeFriends(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+){
+    val colorScheme = if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+    val rippleIndication = rememberRipple()
+    CompositionLocalProvider (
+        LocalAppColorScheme provides colorScheme,
+        LocalAppTypography provides typography,
+        LocalAppShape provides shape,
+        LocalAppSize provides size,
+        LocalIndication provides rippleIndication,
+        content = content
+    )
+}
 
 object AppTheme {
+    val colorScheme: AppColorScheme
+        @Composable get() = LocalAppColorScheme.current
+
+    val typography: AppTypography
+        @Composable get() = LocalAppTypography.current
+
+    val shape: AppShape
+        @Composable get() = LocalAppShape.current
+
+    val size: AppSize
+        @Composable get() = LocalAppSize.current
+}
+object AppThemeFriends {
     val colorScheme: AppColorScheme
         @Composable get() = LocalAppColorScheme.current
 

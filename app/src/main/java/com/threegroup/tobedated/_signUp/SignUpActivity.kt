@@ -87,6 +87,7 @@ import com.threegroup.tobedated.shareclasses.models.weedOptions
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
@@ -113,12 +114,12 @@ class SignUpActivity : ComponentActivity() {
 
     fun finishingUp(signUpVM: SignUpViewModel){
         lifecycleScope.launch {
-            signUpVM.uploadImage(contentResolver)
-            val userToken = signUpVM.storeData()
-            showToast()
-            saveTokenToSharedPreferences(userToken)
-            goNextScreen(userToken)
-
+            runBlocking {
+                signUpVM.uploadImage(contentResolver)
+                showToast()
+                saveTokenToSharedPreferences(signUpVM.getUser().number)
+                goNextScreen(signUpVM.getUser().number)
+            }
         }
     }
     private fun goNextScreen(userToken: String?) {

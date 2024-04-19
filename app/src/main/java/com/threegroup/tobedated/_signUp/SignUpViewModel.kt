@@ -2,6 +2,7 @@ package com.threegroup.tobedated._signUp
 
 import android.content.ContentResolver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.threegroup.tobedated.shareclasses.Repository
@@ -9,29 +10,33 @@ import com.threegroup.tobedated.shareclasses.models.PreferenceIndexModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.ourTestQuestions
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class SignUpViewModel(private var repository: Repository) : ViewModel() {
     private var newUser = UserModel()
     private var newUserIndex = PreferenceIndexModel()
-    private var answerListMBTI = Array<Int>(ourTestQuestions.size) { -1 }
-    private var answerListOurTest = Array<Int>(ourTestQuestions.size) { -1 }
+    private var answerListMBTI = Array(ourTestQuestions.size) { -1 }
+    private var answerListOurTest = Array(ourTestQuestions.size) { -1 }
 
-    fun getOurTest():Array<Int>{
+    fun getOurTest(): Array<Int> {
         return answerListOurTest
     }
-    fun getMbti():Array<Int>{
+
+    fun getMbti(): Array<Int> {
         return answerListMBTI
     }
-    fun setMbti(index:Int, value: Int){
+
+    fun setMbti(index: Int, value: Int) {
         answerListMBTI[index] = value
     }
-    fun setOurTest(index:Int, value: Int){
+
+    fun setOurTest(index: Int, value: Int) {
         answerListOurTest[index] = value
     }
 
-    fun setUser(answer:String, value:Any){
-        when(answer){
+    fun setUser(answer: String, value: Any) {
+        when (answer) {
             "name" -> newUser.name = value.toString()
             "birth" -> newUser.birthday = value.toString()
             "pronoun" -> newUser.pronoun = value.toString()
@@ -42,15 +47,15 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             "sexOrientation" -> newUser.sexOrientation = value.toString()
             "seeking" -> newUser.seeking = value.toString()
             "sex" -> newUser.sex = value.toString()
-            "testResultsMbti" -> newUser.testResultsMbti= value.toString()
-            "testResultTbd" -> newUser.testResultTbd  = value as Int
+            "testResultsMbti" -> newUser.testResultsMbti = value.toString()
+            "testResultTbd" -> newUser.testResultTbd = value as Int
             "children" -> newUser.children = value.toString()
             "family" -> newUser.family = value.toString()
             "education" -> newUser.education = value.toString()
             "religion" -> newUser.religion = value.toString()
             "politics" -> newUser.politics = value.toString()
-            "relationship" -> newUser.relationship   = value.toString()
-            "intentions" -> newUser.intentions     = value.toString()
+            "relationship" -> newUser.relationship = value.toString()
+            "intentions" -> newUser.intentions = value.toString()
             "drink" -> newUser.drink = value.toString()
             "smoke" -> newUser.smoke = value.toString()
             "weed" -> newUser.weed = value.toString()
@@ -70,8 +75,9 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             "number" -> newUser.number = value.toString()
         }
     }
-    fun setUserIndex(answer:String, value:Int){
-        when(answer){
+
+    fun setUserIndex(answer: String, value: Int) {
+        when (answer) {
             "pronoun" -> newUserIndex.pronoun = value
             "gender" -> newUserIndex.gender = value
             "ethnicity" -> newUserIndex.ethnicity = value
@@ -98,44 +104,36 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             "promptA3" -> newUserIndex.promptA3 = value
         }
     }
-    fun getUser():UserModel{
+
+    fun getUser(): UserModel {
         return newUser
     }
-    fun getUserIndex():PreferenceIndexModel{
+
+    fun getUserIndex(): PreferenceIndexModel {
         return newUserIndex
     }
 
 
-    suspend fun storeData(): String? {
-        val deferredToken = CompletableDeferred<String?>()
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null && currentUser.phoneNumber != null) {
-            FirebaseDatabase.getInstance().getReference("users").child(currentUser.phoneNumber!!).setValue(newUser).addOnSuccessListener {
-                val user = FirebaseAuth.getInstance().currentUser
-                user?.getIdToken(true)
-                    ?.addOnCompleteListener { task2 ->
-                        if (task2.isSuccessful) {
-                            deferredToken.complete(currentUser.phoneNumber)
-                            //showToast("Success!")
-                        } else {
-                            deferredToken.complete(null)
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    //showToast("Failed ${e.message}")
-                    deferredToken.complete(null)
+    fun storeData() {
+        println("\n\n\n Inside view model")
+        FirebaseDatabase.getInstance().getReference("users")
+            .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!).setValue(newUser)
+            .addOnSuccessListener {
+                println(newUser)
+                newUser.number
             }
-        } else {
-            deferredToken.complete(null)
-        }
-        return deferredToken.await()
     }
+
     suspend fun uploadImage(contentResolver: ContentResolver) {
-        newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
-        newUser.image2 = storeImageAttempt(newUser.image2, contentResolver, 2, newUser.number)
-        newUser.image3 = storeImageAttempt(newUser.image3, contentResolver, 3, newUser.number)
-        newUser.image4 = storeImageAttempt(newUser.image4, contentResolver, 4, newUser.number)
+        viewModelScope.launch {
+            runBlocking {
+                newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
+                newUser.image2 = storeImageAttempt(newUser.image2, contentResolver, 2, newUser.number)
+                newUser.image3 = storeImageAttempt(newUser.image3, contentResolver, 3, newUser.number)
+                newUser.image4 = storeImageAttempt(newUser.image4, contentResolver, 4, newUser.number)
+                storeData()
+            }
+        }
     }
 }
 

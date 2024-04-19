@@ -21,3 +21,23 @@ val sec = Color(0xFF9e6efe)
 val tri = Color(0xFFfe6ece)
 
 val shadowWithOpacity = prim.copy(alpha = 0.75f)
+
+val bgLightF = Color(0xFFE8E7D8)
+val onLightF = Color(0xFF454440)
+val surLightF = Color(0xFFD5CFB8)
+val onSurLightF = Color(0xFF454440)
+val barLightF = Color(0xFFAAA99E)
+
+val bgDarkF = Color(0xFF454440)
+val onDarkF = Color(0xFFE8E7D8)
+val surDarkF = Color(0xFFD5CFB8)
+val onSurDarkF = Color(0xFFE8E7D8)
+val barDarkF = Color(0xFF131311)
+
+val primF = Color(0xFFFEF46E)
+val secF = Color(0xFFFEAC6E)
+//val prim = Color(0xFF904fb4)
+//val sec = Color(0xFFb44fa6)
+val triF = Color(0xFFC0FE6E)
+
+val shadowWithOpacityF = prim.copy(alpha = 0.75f)

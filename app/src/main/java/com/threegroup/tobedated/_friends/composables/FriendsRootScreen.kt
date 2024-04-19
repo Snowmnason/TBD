@@ -110,7 +110,9 @@ fun TopAndBotBarsFriends(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet(
-                    drawerContainerColor = AppTheme.colorScheme.background
+                    drawerContainerColor =  AppTheme.colorScheme.primary
+
+                    //AppTheme.colorScheme.background
                 ) {
                     NavDraw(
                         colorCausal = AppTheme.colorScheme.primary,

@@ -68,7 +68,7 @@ class Repository(
         return firebaseDataSource.displayChats()
     }
 
-    fun setUserInfo(number: String, location: String): UserModel {
+    suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> {
         return firebaseDataSource.setUserInfo(number, location)
     }
 }

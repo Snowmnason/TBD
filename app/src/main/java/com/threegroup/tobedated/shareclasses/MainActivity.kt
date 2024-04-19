@@ -28,8 +28,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        var activityToken = sharedPreferences.getString("activityToken", null)
+        if(activityToken == null){
+            activityToken = "main"
+        }
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = activityToken
+            ) {
                 PolkaDotCanvas()
                 SplashScreen()
             }
@@ -120,7 +127,7 @@ class MainActivity : ComponentActivity() {
                         "causal" -> {
                             navigateToCausalActivity(userToken, location)
                         }
-                        "friends" -> {
+                        "friend" -> {
                             navigateToFriendsActivity(userToken, location)
                         }
                         else -> {

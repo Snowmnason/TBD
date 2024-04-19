@@ -110,12 +110,12 @@ fun TopAndBotBarsFriends(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet(
-                    drawerContainerColor =  AppTheme.colorScheme.primary
+                    drawerContainerColor = AppTheme.colorScheme.background
 
                     //AppTheme.colorScheme.background
                 ) {
                     NavDraw(
-                        colorCausal = AppTheme.colorScheme.primary,
+                        colorFriends = AppTheme.colorScheme.primary,
                         datingClickable = {
                             friend.switchActivities("dating")
                         },
@@ -128,7 +128,7 @@ fun TopAndBotBarsFriends(
             },
         ) {
             Scaffold(
-                containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+                containerColor = if (isSystemInDarkTheme()) Color(0xFF181816) else Color(0xFFD0CDC2),
                 bottomBar = {
                     NavigationBar(
                         containerColor = AppTheme.colorScheme.onTertiary,

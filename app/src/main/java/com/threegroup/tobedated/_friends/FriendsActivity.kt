@@ -31,10 +31,12 @@ class FriendsActivity : ComponentActivity() {
         }
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString("activityToken", "causal")
+        editor.putString("activityToken", "friend")
         editor.apply()
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = "friend"
+            ) {
                 FriendNav(this@FriendsActivity, token, location)
             }
         }
@@ -72,11 +74,11 @@ fun SearchingScreen(navController: NavHostController, friend:FriendsActivity){
         titleText = "To Be Dated",
         isPhoto = true,
         nav = navController,
-        selectedItemIndex = 0,
+        selectedItemIndex = 2,
         settingsButton = { },
         state = state,
         currentScreen = {
-            PolkaDotCanvas()
+            Comeback(text = "Simple text")
         }
     )
 }
@@ -174,7 +176,6 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
 }
 @Composable
 fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity){
-    val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
         notifiChat = com.threegroup.tobedated._dating.notifiChat,

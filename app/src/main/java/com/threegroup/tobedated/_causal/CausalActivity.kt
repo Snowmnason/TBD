@@ -32,7 +32,9 @@ class CausalActivity : ComponentActivity() {
         editor.putString("activityToken", "causal")
         editor.apply()
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = "casual"
+            ) {
                 CausalNav(this@CausalActivity, token, location)
             }
         }
@@ -174,7 +176,6 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
 }
 @Composable
 fun ComeBackScreen(navController: NavHostController, causal: CausalActivity){
-    val state = rememberScrollState()
     TopAndBotBarsCausal(
         causal = causal,
         notifiChat = notifiChat,

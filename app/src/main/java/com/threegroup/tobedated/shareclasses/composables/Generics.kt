@@ -55,10 +55,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -91,6 +93,21 @@ fun baseAppTextTheme(): TextStyle {
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
+    )
+}
+@Composable
+fun getBaseMediumTitle():TextStyle{
+    return TextStyle(
+        fontFamily = JoseFinSans,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp,
+        shadow = Shadow(
+            color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
+            offset = Offset(8f, 8f),
+            blurRadius = 6f
+        )
     )
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -587,7 +604,7 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable {causalClickable() }
+            .clickable { friendsClickable() }
         ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends", tint = colorFriends, modifier = Modifier
                 .offset(y = (-4).dp))
@@ -597,7 +614,7 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable { friendsClickable()
+            .clickable { causalClickable()
             }
         ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
@@ -608,11 +625,11 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Box {
-                GenericTitleText(text = "Word of the Day", style = AppTheme.typography.titleMedium)
+                GenericTitleText(text = "Word of the Day", style = getBaseMediumTitle())
             }
             Spacer(modifier = Modifier.height(12.dp))
             Box {
-                GenericTitleText(text = "Horoscope", style = AppTheme.typography.titleMedium)
+                GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
             }
         }
     }

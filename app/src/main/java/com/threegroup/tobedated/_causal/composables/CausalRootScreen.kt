@@ -113,7 +113,7 @@ fun TopAndBotBarsCausal(
                     drawerContainerColor = AppTheme.colorScheme.background
                 ) {
                     NavDraw(
-                        colorFriends = AppTheme.colorScheme.primary,
+                        colorCausal = AppTheme.colorScheme.primary,
                         datingClickable = {
                             causal.switchActivities("dating")
                         },
@@ -121,7 +121,7 @@ fun TopAndBotBarsCausal(
 
                         },
                         friendsClickable = {
-                            causal.switchActivities("friend")
+                            causal.switchActivities("friends")
                         }
                     )
                 }

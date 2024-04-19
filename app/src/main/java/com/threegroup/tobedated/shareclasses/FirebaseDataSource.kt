@@ -384,7 +384,7 @@ class FirebaseDataSource() {
                                     ?: listOf("Doesn't Matter"),
                             )
                         } ?: UserSearchPreferenceModel()
-                        updateStatus(number)
+                        updateStatus(number, location)
                     } else {
                         // Handle null user data
                     }
@@ -403,7 +403,10 @@ class FirebaseDataSource() {
         return user
     }
 
-    fun updateStatus(number: String) {
+    fun updateStatus(number: String, location:String) {
+//        val databaseReference1 =
+//            FirebaseDatabase.getInstance().getReference("users").child(number).child("location")
+//        databaseReference1.setValue(location)
         val databaseReference =
             FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
         databaseReference.setValue(System.currentTimeMillis())

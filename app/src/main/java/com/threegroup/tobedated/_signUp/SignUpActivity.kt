@@ -98,7 +98,9 @@ class SignUpActivity : ComponentActivity() {
         location = intent.getStringExtra("location").toString()
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = "signup"
+            ) {
                 PolkaDotCanvas()
                 SignUpNav(this@SignUpActivity, location, number)
             }

@@ -72,7 +72,9 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         location = intent.getStringExtra("location").toString()
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = "login"
+            ) {
                 PolkaDotCanvas()
                 LoginNav(this@LoginActivity)
             }

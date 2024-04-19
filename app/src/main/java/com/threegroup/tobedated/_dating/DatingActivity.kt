@@ -88,7 +88,9 @@ class DatingActivity : ComponentActivity() {
         editor.putString("activityToken", "dating")
         editor.apply()
         setContent {
-            AppTheme {
+            AppTheme(
+                activity = "dating"
+            ) {
                 DatingNav(this@DatingActivity, token, location)
             }
         }

@@ -167,26 +167,28 @@ private val size = AppSize(
 
 @Composable
 fun AppTheme(
+    activity:String,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ){
-    val colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
-    val rippleIndication = rememberRipple()
-    CompositionLocalProvider (
-        LocalAppColorScheme provides colorScheme,
-        LocalAppTypography provides typography,
-        LocalAppShape provides shape,
-        LocalAppSize provides size,
-        LocalIndication provides rippleIndication,
-        content = content
-    )
-}
-@Composable
-fun AppThemeFriends(
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-){
-    val colorScheme = if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+    var colorScheme : AppColorScheme
+    when (activity) {
+        "dating" -> {
+            colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
+            println("activity + $activity")
+        }
+        "friend" ->
+        {
+            colorScheme = if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+            println("activity + $activity")
+        }
+        else ->{
+            colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
+            println("activity + $activity")
+        }
+
+        //else -> if (isDarkTheme) darkColorScheme else lightColorScheme
+    }
     val rippleIndication = rememberRipple()
     CompositionLocalProvider (
         LocalAppColorScheme provides colorScheme,
@@ -211,16 +213,4 @@ object AppTheme {
     val size: AppSize
         @Composable get() = LocalAppSize.current
 }
-object AppThemeFriends {
-    val colorScheme: AppColorScheme
-        @Composable get() = LocalAppColorScheme.current
 
-    val typography: AppTypography
-        @Composable get() = LocalAppTypography.current
-
-    val shape: AppShape
-        @Composable get() = LocalAppShape.current
-
-    val size: AppSize
-        @Composable get() = LocalAppSize.current
-}

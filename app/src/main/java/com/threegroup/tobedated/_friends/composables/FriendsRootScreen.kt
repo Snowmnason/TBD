@@ -63,7 +63,8 @@ fun TopAndBotBarsFriends(
     selectedItemIndex: Int,
     settingsButton: () -> Unit,
     state: ScrollState = rememberScrollState(),
-    friend: FriendsActivity
+    friend: FriendsActivity,
+    star:String = "Ask me"
 ) {
     val items = listOf(
         BotNavItem(
@@ -115,6 +116,7 @@ fun TopAndBotBarsFriends(
                     //AppTheme.colorScheme.background
                 ) {
                     NavDraw(
+                        star = star,
                         colorFriends = AppTheme.colorScheme.primary,
                         datingClickable = {
                             friend.switchActivities("dating")

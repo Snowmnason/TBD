@@ -63,7 +63,8 @@ fun TopAndBotBarsCausal(
     selectedItemIndex: Int,
     settingsButton: () -> Unit,
     state: ScrollState = rememberScrollState(),
-    causal: CausalActivity
+    causal: CausalActivity,
+    star:String = "Ask me"
 ) {
     val items = listOf(
         BotNavItem(
@@ -113,6 +114,7 @@ fun TopAndBotBarsCausal(
                     drawerContainerColor = AppTheme.colorScheme.background
                 ) {
                     NavDraw(
+                        star = star,
                         colorCausal = AppTheme.colorScheme.primary,
                         datingClickable = {
                             causal.switchActivities("dating")

@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
+import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
@@ -643,7 +644,12 @@ fun NavDraw(
                     "  the same way. Give yourself the evening off. Refuse to be put in charge of anything."
             Spacer(modifier = Modifier.height(12.dp))
             Column {
-                GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(end = 20.dp)){
+                    GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
+                    Icon(imageVector = getStarSymbol(star), contentDescription = star, tint = AppTheme.colorScheme.onBackground)
+                }
+
                 Spacer(modifier = Modifier.height(2.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(6.dp))
@@ -652,11 +658,11 @@ fun NavDraw(
                     .padding(4.dp, 0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically,){
+                    Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Date: ")
                         GenericBodyText(text = date)
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically,) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         GenericLabelText(text = "Lucky Time: ")
                         GenericBodyText(text = time)
                     }
@@ -668,11 +674,11 @@ fun NavDraw(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically,){
+                    Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Lucky Number: ")
                         GenericBodyText(text = number)
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically,) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         GenericLabelText(text = "Compatibility: ")
                         GenericBodyText(text = comp)
                     }
@@ -684,7 +690,7 @@ fun NavDraw(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically,){
+                    Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Mood: ")
                         GenericBodyText(text = mood)
                     }

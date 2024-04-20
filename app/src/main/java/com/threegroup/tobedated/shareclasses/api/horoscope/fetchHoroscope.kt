@@ -1,5 +1,6 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated.shareclasses.api.horoscope
 
+import com.threegroup.tobedated.shareclasses.api.RetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -13,12 +14,12 @@ fun fetchHoroscope(sign: String, day: String) {
                     println("Horoscope: ${it.description}")
                 }
             } else {
-                println("Error: ${response.errorBody()?.string()}")
+               println("Error: ${response.errorBody()?.string()}")
             }
         }
 
         override fun onFailure(call: Call<HoroscopeResponse>, t: Throwable) {
-            println("Failed to retrieve horoscope: ${t.message}")
+            //println("Failed to retrieve horoscope: ${t.message}")
         }
     })
 }

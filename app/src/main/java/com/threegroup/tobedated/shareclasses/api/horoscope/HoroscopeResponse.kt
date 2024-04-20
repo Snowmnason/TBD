@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated.shareclasses.api.horoscope
 
 data class HoroscopeResponse(
     val description: String,

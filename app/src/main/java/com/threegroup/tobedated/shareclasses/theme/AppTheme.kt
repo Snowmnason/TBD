@@ -171,23 +171,13 @@ fun AppTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ){
-    var colorScheme : AppColorScheme
-    when (activity) {
-        "dating" -> {
-            colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
-            println("activity + $activity")
-        }
-        "friend" ->
-        {
-            colorScheme = if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
-            println("activity + $activity")
-        }
-        else ->{
-            colorScheme = if (isDarkTheme) darkColorScheme else lightColorScheme
-            println("activity + $activity")
-        }
+    //var colorScheme : AppColorScheme
+    val colorScheme = when (activity) {
+        "dating" -> if (isDarkTheme) darkColorScheme else lightColorScheme
+        "friend" -> if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+        "casual" -> if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+        else -> if (isDarkTheme) darkColorScheme else lightColorScheme
 
-        //else -> if (isDarkTheme) darkColorScheme else lightColorScheme
     }
     val rippleIndication = rememberRipple()
     CompositionLocalProvider (

@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated.shareclasses.api.horoscope
 
 import retrofit2.Call
 import retrofit2.http.POST

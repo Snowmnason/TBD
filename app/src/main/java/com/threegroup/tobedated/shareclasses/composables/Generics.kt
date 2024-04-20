@@ -79,6 +79,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
+import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -594,7 +595,7 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable {datingClickable()}
+            .clickable { datingClickable() }
         ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating", tint = colorDating, modifier = Modifier
                 .offset(y = (-4).dp))
@@ -614,7 +615,8 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .clickable { causalClickable()
+            .clickable {
+                causalClickable()
             }
         ){
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
@@ -624,12 +626,17 @@ fun NavDraw(
         }
         Spacer(modifier = Modifier.height(24.dp))
         Column {
-            Box {
+            Column {
                 GenericTitleText(text = "Word of the Day", style = getBaseMediumTitle())
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Box {
+            Column {
                 GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
+                Spacer(modifier = Modifier.height(2.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(6.dp))
+                GenericBodyText(text = "")
+                fetchHoroscope("taurus", "today")
             }
         }
     }

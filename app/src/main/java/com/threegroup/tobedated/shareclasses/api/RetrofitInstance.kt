@@ -1,5 +1,6 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated.shareclasses.api
 
+import com.threegroup.tobedated.shareclasses.api.horoscope.AztroApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

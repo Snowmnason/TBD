@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     val list = ArrayList<UserModel>()
     private val _signedInUser = MutableStateFlow<UserModel?>(null)
-    var signedInUser: StateFlow<UserModel?> = _signedInUser
+    private var signedInUser: StateFlow<UserModel?> = _signedInUser
     private var selectedUser: UserModel = UserModel() //The chat you open
 
     val potentialUserData: StateFlow<Pair<List<UserModel>, Int>> = repository.getPotentialUserData()

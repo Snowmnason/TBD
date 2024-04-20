@@ -38,7 +38,18 @@ val darkColorSchemeFriends = AppColorScheme(
     onSecondary = onLightF,
     onTertiary = barDarkF,
 )
-
+val darkColorSchemeCausal = AppColorScheme(
+    primary = primC,
+    secondary = secC,
+    tertiary = triC,
+    background = bgDarkC,
+    surface = surDarkC,
+    onBackground = onDarkC,
+    onSurface = onSurDarkC,
+    onPrimary = onLightC,
+    onSecondary = onLightC,
+    onTertiary = barDarkC,
+)
 val lightColorScheme = AppColorScheme(
     primary = prim,
     secondary = sec,
@@ -62,6 +73,18 @@ val lightColorSchemeFriends = AppColorScheme(
     onPrimary = onLightF,
     onSecondary = onLightF,
     onTertiary = barLightF,
+)
+val lightColorSchemeCausal = AppColorScheme(
+    primary = primC,
+    secondary = secC,
+    tertiary = triC,
+    background = bgLightC,
+    surface = surLightC,
+    onBackground = onLightC,
+    onSurface = onSurLightC,
+    onPrimary = onLightC,
+    onSecondary = onLightC,
+    onTertiary = barLightC,
 )
 
 
@@ -175,7 +198,7 @@ fun AppTheme(
     val colorScheme = when (activity) {
         "dating" -> if (isDarkTheme) darkColorScheme else lightColorScheme
         "friend" -> if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
-        "casual" -> if (isDarkTheme) darkColorSchemeFriends else lightColorSchemeFriends
+        "casual" -> if (isDarkTheme) darkColorSchemeCausal else lightColorSchemeCausal
         else -> if (isDarkTheme) darkColorScheme else lightColorScheme
 
     }

@@ -20,20 +20,37 @@ val tri = Color(0xFFfe6ece)
 
 val shadowWithOpacity = prim.copy(alpha = 0.75f)
 
-val bgLightF = Color(0xFFE8E7D8)
-val onLightF = Color(0xFF454440)
-val surLightF = Color(0xFFD5CFB8)
-val onSurLightF = Color(0xFF454440)
-val barLightF = Color(0xFFAAA99E)
+val bgLightF = Color(0xFFe9e9e9)//
+val onLightF = Color(0xFF434540)//
+val surLightF = Color(0xFFccd5b8)//
+val onSurLightF = Color(0xFF454a35)//
+val barLightF = Color(0xFFa6aa9e)//
 
-val bgDarkF = Color(0xFF454440)
-val onDarkF = Color(0xFFE8E7D8)
-val surDarkF = Color(0xFFD5CFB8)
-val onSurDarkF = Color(0xFFE8E7D8)
-val barDarkF = Color(0xFF131311)
+val bgDarkF = Color(0xFF434540)//
+val onDarkF = Color(0xFFe0e8d8)//
+val surDarkF = Color(0xFF454a35)//
+val onSurDarkF = Color(0xFFccd5b8)//
+val barDarkF = Color(0xFF121311)
 
-val primF = Color(0xFFD6CD55)
-val secF = Color(0xFFFEAC6E)
-val triF = Color(0xFFC0FE6E)
+val primF = Color(0xFF97cd60)
+val secF = Color(0xFF8255af)
+val triF = Color(0xFF5555af)
+
+
+val bgLightC = Color(0xFFe7dcdc)//
+val onLightC = Color(0xFF454040)//
+val surLightC = Color(0xFFd5b8b8)//
+val onSurLightC = Color(0xFF4a3535)//
+val barLightC = Color(0xFFaa9e9e)//
+
+val bgDarkC = Color(0xFF454040)//
+val onDarkC = Color(0xFFe8d8d8)//
+val surDarkC = Color(0xFF4a3535)//
+val onSurDarkC = Color(0xFFd5b8b8)//
+val barDarkC = Color(0xFF121311)
+
+val primC = Color(0xFFdc4848)
+val secC = Color(0xFF9248dc)
+val triC = Color(0xFFdc9248)
 
 //val shadowWithOpacityF = primF.copy(alpha = 0.75f)

@@ -130,7 +130,7 @@ fun TopAndBotBarsFriends(
             },
         ) {
             Scaffold(
-                containerColor = if (isSystemInDarkTheme()) Color(0xFF181816) else Color(0xFFD0CDC2),
+                containerColor = if (isSystemInDarkTheme()) Color(0xFF181816) else Color(0xFFd0d0d0),
                 bottomBar = {
                     NavigationBar(
                         containerColor = AppTheme.colorScheme.onTertiary,
@@ -176,7 +176,8 @@ fun TopAndBotBarsFriends(
                         title = {
                             TopBarText(
                                 title = titleText,
-                                isPhoto = isPhoto
+                                isPhoto = isPhoto,
+                                activity = "friends"
                             )
                         },//TitleTextGen(title= titleText)},
 

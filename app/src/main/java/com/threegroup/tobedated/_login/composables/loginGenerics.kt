@@ -57,8 +57,23 @@ import com.threegroup.tobedated.shareclasses.theme.shadowWithOpacity
 
 @Composable
 fun LoginSplash(
+    activity:String = "dating"
 ){
-    val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
+    val photo = if (isSystemInDarkTheme()) painterResource(
+        id = when(activity){
+            "dating" -> R.drawable.tbd_dark
+            "friends" -> R.drawable.tbf_dark
+            "causal" -> R.drawable.tbc_dark
+            else -> R.drawable.tbd_dark
+        }
+    ) else painterResource(
+        id = when(activity){
+            "dating" -> R.drawable.tbd_light
+            "friends" -> R.drawable.tbf_light
+            "causal" -> R.drawable.tbc_light
+            else -> R.drawable.tbd_light
+        }
+    )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

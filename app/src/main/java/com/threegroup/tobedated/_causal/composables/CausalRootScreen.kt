@@ -130,7 +130,7 @@ fun TopAndBotBarsCausal(
             },
         ) {
             Scaffold(
-                containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
+                containerColor = if (isSystemInDarkTheme()) Color(0xFF181616) else Color(0xFFc9bcbc),
                 bottomBar = {
                     NavigationBar(
                         containerColor = AppTheme.colorScheme.onTertiary,
@@ -176,7 +176,8 @@ fun TopAndBotBarsCausal(
                         title = {
                             TopBarText(
                                 title = titleText,
-                                isPhoto = isPhoto
+                                isPhoto = isPhoto,
+                                activity = "causal"
                             )
                         },//TitleTextGen(title= titleText)},
 

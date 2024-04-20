@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                 activity = activityToken
             ) {
                 PolkaDotCanvas()
-                SplashScreen()
+                SplashScreen(activity = activityToken)
             }
         }
 

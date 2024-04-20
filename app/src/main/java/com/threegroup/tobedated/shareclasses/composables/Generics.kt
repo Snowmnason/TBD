@@ -140,10 +140,25 @@ fun getBottomColors(): NavigationBarItemColors {
 fun TopBarText(
     title:String,
     size: TextStyle = AppTheme.typography.titleLarge,
-    isPhoto:Boolean
+    isPhoto:Boolean,
+    activity:String = "dating"
 ){
     if(isPhoto){
-        val photo = if (isSystemInDarkTheme()) painterResource(id = R.drawable.logo) else painterResource(id = R.drawable.logodark)
+        val photo = if (isSystemInDarkTheme()) painterResource(
+            id = when(activity){
+                "dating" -> R.drawable.tbd_dark
+                "friends" -> R.drawable.tbf_dark
+                "causal" -> R.drawable.tbc_dark
+                else -> R.drawable.tbd_dark
+            }
+        ) else painterResource(
+            id = when(activity){
+                "dating" -> R.drawable.tbd_light
+                "friends" -> R.drawable.tbf_light
+                "causal" -> R.drawable.tbc_light
+                else -> R.drawable.tbd_light
+            }
+        )
         Box(modifier = Modifier
             .height(30.dp)
             .offset(y = (8).dp)){
@@ -627,10 +642,33 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
+        val wordOfDay = "Underwhelm"
+        val descriptive = "verb"
+        val phonetic = "un-der-WELM"
+        val def = "To underwhelm someone is to fail to impress or excite them."
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Column {
                 GenericTitleText(text = "Word of the Day", style = getBaseMediumTitle())
+                Spacer(modifier = Modifier.height(2.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    GenericTitleText(text = wordOfDay, style = AppTheme.typography.titleLarge)
+                }
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        GenericBodyText(text = descriptive)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        GenericBodyText(text = phonetic)
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                GenericBodyText(text = def)
             }
 
             fetchHoroscope(if(star == "Ask me"){ starOptions.random() }else{star.lowercase()}, "today")
@@ -642,10 +680,12 @@ fun NavDraw(
             val description = "It's finally time for you to think about just" +
                     "  one thing: what makes you happy. Fortunately, that happens to be a person who feels" +
                     "  the same way. Give yourself the evening off. Refuse to be put in charge of anything."
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth().padding(end = 20.dp)){
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 20.dp)){
                     GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
                     Icon(imageVector = getStarSymbol(star), contentDescription = star, tint = AppTheme.colorScheme.onBackground)
                 }

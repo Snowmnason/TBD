@@ -405,7 +405,7 @@ fun ChangePreferenceTopBar(
                         actionIconContentColor = AppTheme.colorScheme.primary,
                         scrolledContainerColor = AppTheme.colorScheme.background
                     ),
-                    title = { TopBarText(title= title, isPhoto = false) },
+                    title = { TopBarText(title= title, isPhoto = false, activity = "dating") },
                     navigationIcon = {
                         Button(onClick = { nav.popBackStack() },
                             colors = ButtonColors(

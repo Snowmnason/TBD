@@ -168,7 +168,7 @@ fun TopAndBotBarsDating(
                     CenterAlignedTopAppBar(
                         modifier = Modifier.height(46.dp),
                         colors = getTopColors(),
-                        title = { TopBarText(title = titleText, isPhoto = isPhoto) },//TitleTextGen(title= titleText)},
+                        title = { TopBarText(title = titleText, isPhoto = isPhoto, activity = "dating") },//TitleTextGen(title= titleText)},
                         navigationIcon = {
                             IconButton(onClick = {
                                 scope.launch {

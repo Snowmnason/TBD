@@ -67,6 +67,9 @@ fun DatingNav(dating: DatingActivity, token:String, location:String){
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController, viewModelDating)
         }
+        composable(route = Dating.FeedBackMessagerScreen.name) {
+            FeedBackMessagerScreen(navController, viewModelDating)
+        }
         composable(
             route = "ChangePreference/{my_param}/{index}",
             arguments = listOf(

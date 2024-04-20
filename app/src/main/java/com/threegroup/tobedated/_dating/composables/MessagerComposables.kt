@@ -1,5 +1,6 @@
 package com.threegroup.tobedated._dating.composables
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,10 +44,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -61,7 +62,6 @@ import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
 @Composable
 fun MessageStart(
-    noMatches:Boolean = true,
     userPhoto:String,
     userName:String,
     userLastMessage:String,
@@ -80,21 +80,12 @@ fun MessageStart(
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ) {
-        if(noMatches){
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "You have no connects at this moment\nGo try and met with some people!",
-                    style = AppTheme.typography.titleMedium,
-                    color = AppTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }else{
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(Modifier.clickable(onClick = openChat)){
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(Modifier.clickable(onClick = openChat)){
+            if(userPhoto == "feedback"){
+                Image(painterResource(id = R.drawable.feedback), contentDescription = "Feedback photo",
+                    modifier = Modifier.size(58.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
+            }else{
                 AsyncImage(
                     modifier = Modifier
                         .size(58.dp)
@@ -103,26 +94,25 @@ fun MessageStart(
                     contentDescription = "UserPfp",
                     contentScale = ContentScale.Crop,
                 )
-                Column(
-                    modifier = Modifier.padding(15.dp, 6.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row{
-                        Text(text = userName, style = AppTheme.typography.titleSmall, color = AppTheme.colorScheme.onBackground)
-                        if(notification){
-                            Icon(imageVector = ImageVector.vectorResource(R.drawable.notification), contentDescription = "New Message",
-                                modifier = Modifier.offset(y= (-4).dp), tint = AppTheme.colorScheme.primary)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(14.dp))
-                    Text(text = displayedMessage,
-                        style = AppTheme.typography.labelSmall, color = AppTheme.colorScheme.onBackground)
-                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(modifier = Modifier.height(20.dp),color = Color(0xDDB39DB7), thickness = 1.dp)
+            Column(
+                modifier = Modifier.padding(15.dp, 6.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row{
+                    Text(text = userName, style = AppTheme.typography.titleSmall, color = AppTheme.colorScheme.onBackground)
+                    if(notification){
+                        Icon(imageVector = ImageVector.vectorResource(R.drawable.notification), contentDescription = "New Message",
+                            modifier = Modifier.offset(y= (-4).dp), tint = AppTheme.colorScheme.primary)
+                    }
+                }
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(text = displayedMessage,
+                    style = AppTheme.typography.labelSmall, color = AppTheme.colorScheme.onBackground)
+            }
         }
-
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider(modifier = Modifier.height(20.dp),color = Color(0xDDB39DB7), thickness = 1.dp)
     }
 }
 
@@ -141,6 +131,7 @@ fun InsideMessages(
     chatSettings:() -> Unit,
     sendAttachment:() -> Unit = {},
     hideCall: Boolean = true,
+    hideCallButtons:Boolean = true
 ) {
     Surface(
         modifier = Modifier
@@ -174,7 +165,7 @@ fun InsideMessages(
                         }
                     },
                     actions = {
-                        if(hideCall){
+                        if(hideCall && hideCallButtons){
                             IconButton(onClick = startVideoCall) {
                                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.videocall), contentDescription = "Settings")
                             }
@@ -327,15 +318,20 @@ fun TheirMessage(
             verticalAlignment = Alignment.Bottom
         ) {
             if(last){
-                IconButton(onClick = photoClick) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(shape = CircleShape),
-                        model = userPhoto,
-                        contentDescription = "UserPfp",
-                        contentScale = ContentScale.Crop,
-                    )
+                if(userPhoto == "feedback"){
+                    Image(painterResource(id = R.drawable.feedback), contentDescription = "Feedback photo",
+                        modifier = Modifier.size(58.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
+                }else{
+                    IconButton(onClick = photoClick) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(shape = CircleShape),
+                            model = userPhoto,
+                            contentDescription = "UserPfp",
+                            contentScale = ContentScale.Crop,
+                        )
+                    }
                 }
             }
             Surface(
@@ -386,18 +382,16 @@ fun UserItem(userName: String, chatId: String, onItemClick: (userId: String, cha
 fun MessageScreen(
     chatId: String,
     viewModel: MessageViewModel,
-    match: UserModel,
+    match: UserModel = UserModel(),
+    isFeedBack:Boolean = false,
     messageList: List<MessageModel>,
     currentUserSenderId: String,
 ) {
-
-
     val state = rememberLazyListState()
     LaunchedEffect(state) {
         state.scrollToItem(Int.MAX_VALUE)
     }
     Column {
-
         LazyColumn(
             modifier = Modifier.fillMaxSize()
                 .statusBarsPadding()
@@ -408,7 +402,12 @@ fun MessageScreen(
                 val last = index == (messageList.size -1)
                 val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
                 val time = message.currentTime
-                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                if(isFeedBack){
+                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                }else{
+                    MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                }
+
 
             }
         }
@@ -423,13 +422,25 @@ fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean,
             TheirMessage(replyMessage = message.message, time =  timeStamp, last = true, userPhoto = match.image1)
         }
     }
-
     if (isCurrentUser) {
         if(!last){
             UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = true)
         }else{
             UserMessage(myMessage = message.message, time =  timeStamp, last = true, read = true)
         }
+    }
+}
+@Composable
+fun MessageItemFeedBack(message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean) {
+    if (!isCurrentUser) {
+        if(!last){
+            TheirMessage(replyMessage = message.message, time =  timeStamp, last = false, userPhoto = "feedback")
+        }else{
+            TheirMessage(replyMessage = message.message, time =  timeStamp, last = true, userPhoto = "feedback")
+        }
+    }
 
+    if (isCurrentUser) {
+        UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = true)
     }
 }

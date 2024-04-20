@@ -414,7 +414,6 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
         currentScreen = {
             matchedUsers.forEach { matchUser ->
                 MessageStart(
-                    noMatches = false,
                     notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.image1,
                     userName = matchUser.name,
@@ -425,6 +424,15 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
                     }
                 )
             }
+
+            //This is for the feed back system
+            MessageStart(
+                userPhoto = "feedback",
+                userName = "FeedBack System",
+                userLastMessage = "Message success",
+                openChat = {
+                    navController.navigate("FeedBackMessagerScreen")
+                })
         }
     )
 }
@@ -458,6 +466,39 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
                 chatId = chatId,
                 viewModel = messageModel,
                 match = talkedUser,
+                messageList = messageList,
+                currentUserSenderId = messageModel.getCurrentUserSenderId(),
+            )
+        }
+    )
+}
+@Composable
+fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
+    val talkedUser = "feedback"
+    val senderId = vmDating.getUser().number
+    val receiverId = "feedback"
+    val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
+    //TODO need to make this nested I think
+    var message by rememberSaveable { mutableStateOf("") }
+    val messageModel = viewModel { MessageViewModel(MyApp.x) }
+    val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
+
+    InsideMessages(
+        nav = navController,
+        hideCallButtons = false,
+        titleText = "Feedback",
+        value = message,
+        onValueChange = { message = it},
+        sendMessage = { messageModel.storeChatData(chatId, message)
+            message = ""},
+        goToProfile = {  },
+        chatSettings = {},
+        sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
+        messages = {
+            MessageScreen(
+                chatId = chatId,
+                viewModel = messageModel,
+                isFeedBack = true,
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),
             )
@@ -594,4 +635,5 @@ enum class Dating {
     GroupsScreen,
     SomeScreen,
     MessagerScreen,
+    FeedBackMessagerScreen
 }

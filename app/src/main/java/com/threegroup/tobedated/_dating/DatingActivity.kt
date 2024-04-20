@@ -180,6 +180,7 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         state = state,
+        star = vmDating.getUser().star,
         currentScreen = {
             if (isNext) {
                 currentPotential.value?.let { user ->
@@ -305,6 +306,7 @@ fun ProfileScreen(navController: NavHostController, vmDating: DatingViewModel, d
         selectedItemIndex = 4,
         settingsButton = { navController.navigate("EditProfileScreen") },
         state = state,
+        star = vmDating.getUser().star,
         currentScreen = {
             UserInfo(
                 currentUser,
@@ -408,6 +410,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
         selectedItemIndex = 1,
         settingsButton = { },
         state = state,
+        star = vmDating.getUser().star,
         currentScreen = {
             matchedUsers.forEach { matchUser ->
                 MessageStart(
@@ -516,6 +519,7 @@ fun GroupsScreen(navController: NavHostController, dating: DatingActivity){
         nav = navController,
         selectedItemIndex = 3,
         settingsButton = { },
+        star = "Ask me",
         currentScreen = {
         }
     )
@@ -536,6 +540,7 @@ fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDatin
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { },
+        star = vmDating.getUser().star,
         currentScreen = {
             Column(
                 modifier = Modifier.padding(horizontal = 25.dp)
@@ -573,6 +578,7 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity){
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
+        star = "Ask me",
         currentScreen = {
             Comeback(text = "currently loading your future connection")
         }

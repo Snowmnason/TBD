@@ -63,6 +63,7 @@ fun TopAndBotBarsDating(
     settingsButton: () -> Unit,
     state: ScrollState = rememberScrollState(),
     dating: DatingActivity,
+    star:String
 ) {
     val items = listOf(
         BotNavItem(
@@ -110,6 +111,7 @@ fun TopAndBotBarsDating(
                     drawerContainerColor = AppTheme.colorScheme.background
                 ) {
                     NavDraw(
+                        star = star,
                         colorDating = AppTheme.colorScheme.primary,
                         datingClickable = {},
                         causalClickable = {

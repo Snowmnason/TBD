@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
+import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -585,6 +586,7 @@ fun NavDraw(
     datingClickable: () -> Unit = {},
     causalClickable: () -> Unit = {},
     friendsClickable: () -> Unit = {},
+    star:String
     
 ){
 
@@ -629,14 +631,66 @@ fun NavDraw(
             Column {
                 GenericTitleText(text = "Word of the Day", style = getBaseMediumTitle())
             }
+
+            fetchHoroscope(if(star == "Ask me"){ starOptions.random() }else{star.lowercase()}, "today")
+            val date = "September, 23, 2017"
+            val comp = "Cancer"
+            val time = "12am"
+            val number = "64"
+            val mood = "Relaxed"
+            val description = "It's finally time for you to think about just" +
+                    "  one thing: what makes you happy. Fortunately, that happens to be a person who feels" +
+                    "  the same way. Give yourself the evening off. Refuse to be put in charge of anything."
             Spacer(modifier = Modifier.height(12.dp))
             Column {
                 GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
                 Spacer(modifier = Modifier.height(2.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(6.dp))
-                GenericBodyText(text = "")
-                fetchHoroscope("taurus", "today")
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp, 0.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically,){
+                        GenericLabelText(text = "Date: ")
+                        GenericBodyText(text = date)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically,) {
+                        GenericLabelText(text = "Lucky Time: ")
+                        GenericBodyText(text = time)
+                    }
+                }
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp, 0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically,){
+                        GenericLabelText(text = "Lucky Number: ")
+                        GenericBodyText(text = number)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically,) {
+                        GenericLabelText(text = "Compatibility: ")
+                        GenericBodyText(text = comp)
+                    }
+                }
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp, 0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically,){
+                        GenericLabelText(text = "Mood: ")
+                        GenericBodyText(text = mood)
+                    }
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                GenericBodyText(text = description)
             }
         }
     }

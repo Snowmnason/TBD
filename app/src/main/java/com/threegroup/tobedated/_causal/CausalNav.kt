@@ -20,7 +20,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.threegroup.tobedated._causal.composables.PromptQuestionsC
-import com.threegroup.tobedated._signUp.SignUp
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
@@ -104,8 +103,8 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
 fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
-    val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
+    val isFirstScreen = currentBackStackEntry?.destination?.route == CasualSign.WelcomeScreenC.name
+    val isLastScreen = currentBackStackEntry?.destination?.route == CasualSign.PromptQuestionsScreenC.name
     var showDialog by remember { mutableStateOf(false) }
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
@@ -117,11 +116,11 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
         CasualSign.LookingForScreen.name,
         CasualSign.ExperienceScreen.name,
         CasualSign.LocationScreen.name,
+        CasualSign.CommScreen.name,
         CasualSign.SexHealthScreen.name,
         CasualSign.AfterCareScreen.name,
         CasualSign.NewBioScreen.name,
         CasualSign.PromptQuestionsScreenC.name,
-        CasualSign.CausalNav.name
     )
     val currentDestinationIndex = currentBackStackEntry?.destination?.route?.let { screenOrder.indexOf(it) }
     val nextDestinationIndex = currentDestinationIndex?.plus(1)
@@ -171,16 +170,16 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
         composable(route = CasualSign.LocationScreen.name) {
             isButtonEnabled = locationScreen(vmCausal)
         }
-        composable(route = CasualSign.SexHealthScreen.name) {
+        composable(route = CasualSign.CommScreen.name) {
             isButtonEnabled = commScreen(vmCausal)
         }
-        composable(route = CasualSign.AfterCareScreen.name) {
+        composable(route = CasualSign.SexHealthScreen.name) {
             isButtonEnabled = sexHealthScreen(vmCausal)
         }
-        composable(route = CasualSign.NewBioScreen.name) {
+        composable(route = CasualSign.AfterCareScreen.name) {
             isButtonEnabled = afterCareScreen(vmCausal)
         }
-        composable(route = CasualSign.PromptQuestionsScreenC.name) {
+        composable(route = CasualSign.NewBioScreen.name) {
             isButtonEnabled = newBioScreen(vmCausal, onNavigate = {
                 // Code to navigate to the next screen or perform any other action
                 questionIndex++
@@ -202,10 +201,6 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
             noShow = false
             PromptQuestionsC(navController, vmCausal, myIndex)
         }
-        composable(route = CasualSign.CausalNav.name){
-            CausalNav(causal = causal, viewModelCausal = vmCausal)
-        }
-
     }
     var buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
     if(noShow) {
@@ -226,10 +221,8 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
                     buttonText = "Loading..."
                     runBlocking {
                         vmCausal.storeDataC()
-                        nextDestinationIndex?.let {
-                            screenOrder.getOrNull(it)
-                                ?.let { it1 -> navController.navigate(it1) }
-                        }
+                        causal.newContent(vmCausal)
+
                     }
                 }
                 //println(userInfoArray.joinToString(separator = ", "))

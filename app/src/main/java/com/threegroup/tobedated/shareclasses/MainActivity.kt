@@ -21,7 +21,9 @@ import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.composables.SplashScreen
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -112,45 +114,46 @@ class MainActivity : ComponentActivity() {
             val activityToken = sharedPreferences.getString("activityToken", null)
             getLastLocation { location ->
                 if (userToken != null) {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.Main) {
+                            MyApp.x.setUserInfo(userToken, location).collect { userInfo ->
+                                MyApp._signedInUser.value = userInfo
+                            }
+                        }
+
                     when (activityToken) {
                         "dating" -> {
-                            navigateToDatingActivity(userToken, location)
+                            navigateToDatingActivity()
                         }
                         "causal" -> {
-                            navigateToCausalActivity(userToken, location)
+                            navigateToCausalActivity()
                         }
                         "friend" -> {
-                            navigateToFriendsActivity(userToken, location)
+                            navigateToFriendsActivity()
                         }
                         else -> {
-                            navigateToDatingActivity(userToken, location)
+                            navigateToDatingActivity()
                         }
                     }
-
+                }
                 } else {
                     navigateToLoginActivity(location)
                 }
             }
         }
     }
-    private fun navigateToDatingActivity(userToken: String, location: String) {
+    private fun navigateToDatingActivity() {
         val intent = Intent(this, DatingActivity::class.java)
-        intent.putExtra("token", userToken)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }
-    private fun navigateToCausalActivity(userToken: String, location: String) {
+    private fun navigateToCausalActivity() {
         val intent = Intent(this, CausalActivity::class.java)
-        intent.putExtra("token", userToken)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }
-    private fun navigateToFriendsActivity(userToken: String, location: String) {
+    private fun navigateToFriendsActivity() {
         val intent = Intent(this, FriendsActivity::class.java)
-        intent.putExtra("token", userToken)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }

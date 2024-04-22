@@ -7,10 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.composables.Comeback
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
@@ -20,15 +22,8 @@ val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 
 class FriendsActivity : ComponentActivity() {
-    private lateinit var token :String
-    private lateinit var location :String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = intent.getStringExtra("token").toString()
-        location = intent.getStringExtra("location").toString()
-        if(location.isEmpty()){
-            location = "/"
-        }
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("activityToken", "friend")
@@ -37,7 +32,14 @@ class FriendsActivity : ComponentActivity() {
             AppTheme(
                 activity = "friend"
             ) {
-                FriendNav(this@FriendsActivity, token, location)
+                val viewModelFriend = viewModel { FriendViewModel(MyApp.x) }
+                viewModelFriend.setLoggedInUser()
+
+                if(viewModelFriend.getUser().hasCasual){
+                    FriendNav(this@FriendsActivity, viewModelFriend)
+                }else{
+                    FriendNav(this@FriendsActivity, viewModelFriend)
+                }
             }
         }
     }
@@ -58,8 +60,6 @@ class FriendsActivity : ComponentActivity() {
                 Intent(this, DatingActivity::class.java)
             }
         }
-        intent.putExtra("token", token)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }

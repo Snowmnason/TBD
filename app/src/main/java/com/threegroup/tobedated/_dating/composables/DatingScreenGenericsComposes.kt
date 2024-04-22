@@ -218,7 +218,7 @@ fun UserInfo(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     SimpleIconBox(answer = user.meetUp, icon = ImageVector.vectorResource(id = R.drawable.first_date), divider = true)
-                    SimpleIconBox(answer = "0 miles", icon = ImageVector.vectorResource(id = R.drawable.location))
+                    SimpleIconBox(answer = location, icon = ImageVector.vectorResource(id = R.drawable.location))
                 }
             }
         )

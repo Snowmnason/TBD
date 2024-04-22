@@ -74,15 +74,8 @@ val notifiGroup = Random.nextBoolean()
 val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 
 class DatingActivity : ComponentActivity() {
-    private lateinit var token :String
-    private lateinit var location :String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = intent.getStringExtra("token").toString()
-        location = intent.getStringExtra("location").toString()
-        if(location.isEmpty()){
-            location = "/"
-        }
         val sharedPreference = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
         editor.putString("activityToken", "dating")
@@ -91,7 +84,7 @@ class DatingActivity : ComponentActivity() {
             AppTheme(
                 activity = "dating"
             ) {
-                DatingNav(this@DatingActivity, token, location)
+                DatingNav(this@DatingActivity)
             }
         }
     }
@@ -128,8 +121,6 @@ class DatingActivity : ComponentActivity() {
                 Intent(this, DatingActivity::class.java)
             }
         }
-        intent.putExtra("token", token)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }
@@ -474,7 +465,6 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
 }
 @Composable
 fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
-    val talkedUser = "feedback"
     val senderId = vmDating.getUser().number
     val receiverId = "feedback"
     val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses

@@ -1,16 +1,14 @@
 package com.threegroup.tobedated._causal
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.AdditionsIndex
 import com.threegroup.tobedated.shareclasses.models.CasualAdditions
 import com.threegroup.tobedated.shareclasses.models.UserModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class CausalViewModel(private var repository: Repository) : ViewModel() {
     private val _signedInUser = MutableStateFlow<UserModel?>(null)
@@ -19,15 +17,9 @@ class CausalViewModel(private var repository: Repository) : ViewModel() {
     fun getUser(): UserModel {
         return signedInUser.value!!
     }
-    fun setLoggedInUser(
-        userPhoneNumber: String,
-        location: String
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.setUserInfo(userPhoneNumber, location).collect { userInfo ->
-                _signedInUser.value = userInfo
-            }
-        }
+    fun setLoggedInUser() {
+        signedInUser = MyApp.signedInUser
+
     }
 
     /**
@@ -78,6 +70,7 @@ class CausalViewModel(private var repository: Repository) : ViewModel() {
             .addOnSuccessListener {
                 databaseReference.child("hasCasual").setValue(true)
                 signedInUser.value!!.casualAdditions = additions
+                signedInUser.value!!.hasCasual = true
             }
     }
 

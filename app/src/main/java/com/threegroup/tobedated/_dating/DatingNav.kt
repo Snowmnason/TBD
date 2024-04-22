@@ -18,11 +18,11 @@ import com.threegroup.tobedated._dating.composables.PromptEdit
 import com.threegroup.tobedated.shareclasses.MyApp
 
 @Composable
-fun DatingNav(dating: DatingActivity, token:String, location:String){
+fun DatingNav(dating: DatingActivity){
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
-    viewModelDating.setLoggedInUser(token, location) //TODO make sure location works....
+    viewModelDating.setLoggedInUser() //TODO make sure location works....
 
     //TODO THIS is where the list of potenatial matches gets initialed def changing this
     val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))

@@ -62,6 +62,7 @@ fun welcomeScreenC():Boolean {
         Spacer(modifier = Modifier.height(5.dp))
         GenericBodyText(style = getAddShadow(style = AppTheme.typography.bodyMedium, "bod"), text = "Have fun an be yourself")
     }
+
     return true
 }
 @Composable
@@ -139,8 +140,8 @@ fun locationScreen(causalVM: CausalViewModel): Boolean {
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().location) }
 
     SignUpFormat(
-        title = "Pronouns",
-        label = "How do you go by?",
+        title = "Where can you meet?",
+        label = "Where should the connection take place",
         enterField = {
             RadioButtonGroup(
                 options = locationOptions,
@@ -309,7 +310,7 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
 @Composable
 fun newBioScreen(causalVM: CausalViewModel, onNavigate: () -> Unit): Boolean{
     var isSkip by rememberSaveable { mutableStateOf(false) }
-    var bio by rememberSaveable { mutableStateOf(causalVM.getAdditions().afterCare) }
+    var bio by rememberSaveable { mutableStateOf(causalVM.getAdditions().casualBio) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -354,8 +355,8 @@ enum class CasualSign {
     ExperienceScreen,
     LocationScreen,
     SexHealthScreen,
+    CommScreen,
     AfterCareScreen,
     NewBioScreen,
     PromptQuestionsScreenC,
-    CausalNav
 }

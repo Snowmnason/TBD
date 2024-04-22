@@ -3,15 +3,14 @@ package com.threegroup.tobedated._dating
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.UserModel
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     val list = ArrayList<UserModel>()
@@ -86,14 +85,15 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         _signedInUser.value = updatedUser
     }
 
-    fun setLoggedInUser(
-        userPhoneNumber: String,
-        location: String
-    ) {
-        viewModelScope.launch(IO) {
-            repository.setUserInfo(userPhoneNumber, location).collect { userInfo ->
-                _signedInUser.value = userInfo
-            }
-        }
+    fun setLoggedInUser() {
+        signedInUser = MyApp.signedInUser
+//        if(signedInUser.value?.location?.isEmpty() == true){
+//            signedInUser.value?.location = "/"
+//        }
+//        viewModelScope.launch(IO) {
+//            repository.setUserInfo(userPhoneNumber, location).collect { userInfo ->
+//                _signedInUser.value = userInfo
+//            }
+//        }
     }
 }

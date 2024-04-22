@@ -4,18 +4,16 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.threegroup.tobedated.shareclasses.MyApp
 
 @Composable
-fun FriendNav(friend: FriendsActivity, token:String, location:String) {
+fun FriendNav(friend: FriendsActivity, viewModelFriend:FriendViewModel) {
     val navController = rememberNavController()
-    val viewModelFriend = viewModel { FriendViewModel(MyApp.x) }
+
 
     LaunchedEffect(Unit) {
 

@@ -52,6 +52,7 @@ import com.threegroup.tobedated._signUp.composables.PromptAnswer
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated._signUp.composables.SignUpFormatLong
 import com.threegroup.tobedated._signUp.composables.getCustomButtonStyle
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.checkBirthDate
 import com.threegroup.tobedated.shareclasses.checkDay
 import com.threegroup.tobedated.shareclasses.checkMonth
@@ -121,14 +122,15 @@ class SignUpActivity : ComponentActivity() {
                 signUpVM.uploadImage(contentResolver)
                 showToast()
                 saveTokenToSharedPreferences(signUpVM.getUser().number)
-                goNextScreen(signUpVM.getUser().number)
+                MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
+                    MyApp._signedInUser.value = userInfo
+                }
+                goNextScreen()
             }
         }
     }
-    private fun goNextScreen(userToken: String?) {
+    private fun goNextScreen() {
         val intent = Intent(this, DatingActivity::class.java)
-        intent.putExtra("token", userToken)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }

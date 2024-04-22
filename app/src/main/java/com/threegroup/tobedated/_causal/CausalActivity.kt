@@ -20,32 +20,35 @@ import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
 class CausalActivity : ComponentActivity() {
-    private lateinit var token :String
-    private lateinit var location :String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = intent.getStringExtra("token").toString()
-        location = intent.getStringExtra("location").toString()
-        if(location.isEmpty()){
-            location = "/"
-        }
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("activityToken", "causal")
         editor.apply()
         setContent {
             AppTheme(
-                activity = "casual"
+                activity = "casual"//causal
             ) {
                 val viewModelCausal = viewModel { CausalViewModel(MyApp.x) }
-                viewModelCausal.setLoggedInUser(token, location)
+                viewModelCausal.setLoggedInUser()
 
-                if(viewModelCausal.getUser().number == ""){
+                if(viewModelCausal.getUser().hasCasual){
                     CausalNav(this@CausalActivity, viewModelCausal)
                 }else{
+                    PolkaDotCanvas()
                     SignUpCausalNav(this@CausalActivity, viewModelCausal)
                 }
                 //CausalNav(this@CausalActivity, token, location)
+            }
+        }
+    }
+    fun newContent(viewModelCausal:CausalViewModel){
+        setContent {
+            AppTheme(
+                activity = "casual"//causal
+            ) {
+                CausalNav(this@CausalActivity, viewModelCausal)
             }
         }
     }
@@ -68,8 +71,6 @@ class CausalActivity : ComponentActivity() {
                 Intent(this, DatingActivity::class.java)
             }
         }
-        intent.putExtra("token", token)
-        intent.putExtra("location", location)
         startActivity(intent)
         finish()
     }

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.MoveCursorCommand
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -53,6 +54,7 @@ import com.threegroup.tobedated._login.composables.VerifyField
 import com.threegroup.tobedated._signUp.SignUpActivity
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
@@ -60,6 +62,9 @@ import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.formatPhone
 import com.threegroup.tobedated.shareclasses.formatPhoneNumber
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 
@@ -183,10 +188,16 @@ class LoginActivity : ComponentActivity() {
 
     private fun switchAct(exists: Int) {
         if (exists == 1) {
-            saveTokenToSharedPreferences(userPhoneNumber)
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    MyApp.x.setUserInfo(userPhoneNumber, location).collect { userInfo ->
+                        MyApp._signedInUser.value = userInfo
+                    }
+                    saveTokenToSharedPreferences(userPhoneNumber)
+
+                }
+            }
             val intent = Intent(this, DatingActivity::class.java)
-            intent.putExtra("token", userPhoneNumber)
-            intent.putExtra("location", location)
             startActivity(intent)
             finish()
         } else {

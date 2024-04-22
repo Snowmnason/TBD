@@ -55,6 +55,7 @@ import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
@@ -157,7 +158,7 @@ fun InsideMessages(
                             disabledContainerColor = Color.Transparent,
                             disabledContentColor = Color.Transparent
                         ),
-                    ) { Text(text = titleText, style = AppTheme.typography.titleMedium) }
+                    ) { Text(text = titleText, style = getAddShadow(style = AppTheme.typography.titleMedium, "med")) }
                     },//TitleTextGen(title= titleText)},
                     navigationIcon = {
                         IconButton(onClick = { nav.popBackStack() }) { //Showing in stuff like messages, editing profile and stuff

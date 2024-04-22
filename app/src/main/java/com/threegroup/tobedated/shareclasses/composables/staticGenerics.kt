@@ -118,14 +118,14 @@ fun SplashScreen(
                 text = "To Be Dated",
                 modifier = Modifier,
                 fontSize = 24.sp,
-                style = AppTheme.typography.bodyMedium,
+                style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
                 color = AppTheme.colorScheme.onBackground
             )
             Text(
                 text = "the dating app made for connections",
                 modifier = Modifier,
                 fontSize = 15.sp,
-                style = AppTheme.typography.labelMedium,
+                style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),
                 color = AppTheme.colorScheme.onBackground
             )
         }

@@ -96,12 +96,4 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
-    fun updateStatus(number: String, location:String) {
-//        val databaseReference1 = TODO
-//            FirebaseDatabase.getInstance().getReference("users").child(number).child("location")
-//        databaseReference1.setValue(location)
-        val databaseReference =
-            FirebaseDatabase.getInstance().getReference("users").child(number).child("status")
-        databaseReference.setValue(System.currentTimeMillis())
-    }
 }

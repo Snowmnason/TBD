@@ -71,6 +71,7 @@ import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.PickerState
 import com.threegroup.tobedated.shareclasses.composables.PlainTextButton
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.curiositiesANDImaginations
 import com.threegroup.tobedated.shareclasses.models.insightsANDReflections
 import com.threegroup.tobedated.shareclasses.models.passionsANDInterests
@@ -145,12 +146,12 @@ fun BioQuestion(
         ) {
 
             GenericLabelText(
-                style = AppTheme.typography.labelMedium,
+                style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),
                 text = "Tell us about yourself",
             )
             // Character count
             GenericLabelText(
-                style = AppTheme.typography.labelMedium,
+                style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),
                 text = "$remainingChars/$maxLength",
                 color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
             )
@@ -198,7 +199,7 @@ fun PromptAnswer(
         ) {
             // Character count
             GenericLabelText(
-                style = AppTheme.typography.labelMedium,
+                style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),
                 text = "$remainingChars/$maxLength",
                 color = if (remainingChars < 0) Color.Red else AppTheme.colorScheme.onBackground
             )
@@ -236,7 +237,7 @@ fun PersonalityTest(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(Modifier.padding(horizontal = 10.dp, vertical = 4.dp)){
-                GenericBodyText(style = AppTheme.typography.bodyMedium, text = question, )
+                GenericBodyText(style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"), text = question, )
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -477,7 +478,7 @@ fun HeightQuestion(
                 BasicPicker(
                     values = feet,
                     valuesPickerState = pickedState,
-                    style = AppTheme.typography.titleMedium,
+                    style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                     start = feet.size / 2,
                     visible = 5
                 )
@@ -485,7 +486,7 @@ fun HeightQuestion(
                 BasicPicker(
                     values = cm,
                     valuesPickerState = pickedState,
-                    style = AppTheme.typography.titleMedium,
+                    style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                     start = cm.size / 2,
                     visible = 5
                 )
@@ -494,7 +495,7 @@ fun HeightQuestion(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Ft",
-                style = AppTheme.typography.titleMedium,
+                style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                 color = AppTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
@@ -505,7 +506,7 @@ fun HeightQuestion(
             )
             Text(
                 text = "Cm",
-                style = AppTheme.typography.titleMedium,
+                style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                 color = AppTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )

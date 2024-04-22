@@ -51,6 +51,7 @@ import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.PagerIndicator
 import com.threegroup.tobedated.shareclasses.composables.TopBarText
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.getMBTIColor
 import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
@@ -159,7 +160,7 @@ fun UserInfo(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = user.name, style = AppTheme.typography.titleMedium) //Name
+                Text(text = user.name, style = getAddShadow(style = AppTheme.typography.titleMedium, "med")) //Name
             }
         })
         //Age, Ethnicity

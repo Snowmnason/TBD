@@ -51,9 +51,9 @@ import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated._signUp.composables.getCustomTextStyle
 import com.threegroup.tobedated._signUp.composables.getCustomTextStyleLabel
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
-import com.threegroup.tobedated.shareclasses.theme.shadowWithOpacity
 
 @Composable
 fun LoginSplash(
@@ -93,14 +93,14 @@ fun LoginSplash(
             text = "To Be Dated",
             modifier = Modifier,
             fontSize = 24.sp,
-            style = AppTheme.typography.bodyMedium,
+            style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
             color = AppTheme.colorScheme.onBackground
         )
         Text(
             text = "the dating app made for connections",
             modifier = Modifier,
             fontSize = 15.sp,
-            style = AppTheme.typography.labelMedium,
+            style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),
             color = AppTheme.colorScheme.onBackground
         )
     }
@@ -194,7 +194,7 @@ fun VerifyField(
         lineHeight = 12.sp,
         letterSpacing = 0.5.sp,
         shadow = Shadow(
-            color = shadowWithOpacity,
+            color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
             offset = Offset(4f, 4f),
             blurRadius = 4f
         )
@@ -263,7 +263,7 @@ fun ResendCode(
             ) {
                 Text(
                     text = retryBtnText,
-                    style = AppTheme.typography.titleMedium,
+                    style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                     fontSize = 20.sp
                 )
             }

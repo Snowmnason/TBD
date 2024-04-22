@@ -7,12 +7,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.composables.TopAndBotBarsCausal
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated._friends.FriendsActivity
+import com.threegroup.tobedated.shareclasses.MyApp
 import com.threegroup.tobedated.shareclasses.composables.Comeback
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
@@ -35,7 +37,15 @@ class CausalActivity : ComponentActivity() {
             AppTheme(
                 activity = "casual"
             ) {
-                CausalNav(this@CausalActivity, token, location)
+                val viewModelCausal = viewModel { CausalViewModel(MyApp.x) }
+                viewModelCausal.setLoggedInUser(token, location)
+
+                if(viewModelCausal.getUser().number == ""){
+                    CausalNav(this@CausalActivity, viewModelCausal)
+                }else{
+                    SignUpCausalNav(this@CausalActivity, viewModelCausal)
+                }
+                //CausalNav(this@CausalActivity, token, location)
             }
         }
     }
@@ -71,10 +81,10 @@ fun SearchingScreen(navController: NavHostController, causal: CausalActivity, vm
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
-        selectedItemIndex = 0,
+        selectedItemIndex = 2,
         settingsButton = { },
         state = state,
         currentScreen = {
@@ -89,7 +99,7 @@ fun ProfileScreen(navController: NavHostController, causal: CausalActivity, vmCa
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 0,
@@ -115,7 +125,7 @@ fun ChatsScreen(navController: NavHostController, causal: CausalActivity, vmCaus
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 0,
@@ -133,7 +143,7 @@ fun GroupsScreen(navController: NavHostController, causal: CausalActivity){
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 0,
@@ -151,7 +161,7 @@ fun SomeScreen(navController: NavHostController, causal: CausalActivity){
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 0,
@@ -180,7 +190,7 @@ fun ComeBackScreen(navController: NavHostController, causal: CausalActivity){
         causal = causal,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
+        titleText = "To Be Casual",
         isPhoto = true,
         nav = navController,
         selectedItemIndex = 0,

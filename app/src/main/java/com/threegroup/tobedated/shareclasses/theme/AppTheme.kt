@@ -6,8 +6,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -102,11 +100,7 @@ private val typography = AppTypography(
         fontSize = 32.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
-        shadow = Shadow(
-            color = shadowWithOpacity,
-            offset = Offset(8f, 8f),
-            blurRadius = 6f
-        )
+
     ),
     titleSmall = TextStyle(
         fontFamily = JoseFinSans,
@@ -128,11 +122,6 @@ private val typography = AppTypography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp,
-        shadow = Shadow(
-            color = shadowWithOpacity,
-            offset = Offset(4f, 4f),
-            blurRadius = 4f
-        )
     ),
     body = TextStyle(
         fontFamily = JoseFinSans,
@@ -162,11 +151,6 @@ private val typography = AppTypography(
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,
-        shadow = Shadow(
-            color = shadowWithOpacity,
-            offset = Offset(4f, 4f),
-            blurRadius = 4f
-        )
     ),
     labelSmall = TextStyle(
         fontFamily = JoseFinSans,

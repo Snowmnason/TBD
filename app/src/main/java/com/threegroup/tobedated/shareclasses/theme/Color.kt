@@ -18,8 +18,6 @@ val prim = Color(0xFFe66efe)
 val sec = Color(0xFF9e6efe)
 val tri = Color(0xFFfe6ece)
 
-val shadowWithOpacity = prim.copy(alpha = 0.75f)
-
 val bgLightF = Color(0xFFe9e9e9)//
 val onLightF = Color(0xFF434540)//
 val surLightF = Color(0xFFccd5b8)//

@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.sp
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
-import com.threegroup.tobedated.shareclasses.theme.shadowWithOpacity
 
 @Composable
 fun getCustomTextStyle(): TextStyle {
@@ -53,7 +53,7 @@ fun getCustomTextStyle(): TextStyle {
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp,
         shadow = Shadow(
-            color = shadowWithOpacity,
+            color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
             offset = Offset(4f, 4f),
             blurRadius = 4f
         )
@@ -69,7 +69,7 @@ fun getCustomButtonStyle(): TextStyle {
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp,
         shadow = Shadow(
-            color = shadowWithOpacity,
+            color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
             offset = Offset(4f, 4f),
             blurRadius = 4f
         )
@@ -106,7 +106,7 @@ fun getCustomTextStyleLabel(
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
         shadow = Shadow(
-            color = shadowWithOpacity,
+            color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
             offset = Offset(4f, 4f),
             blurRadius = 4f
         )
@@ -157,7 +157,7 @@ fun BigButton(
             ) {
                 Text(
                     text = text,
-                    style = AppTheme.typography.titleMedium,
+                    style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
                     fontSize = 25.sp
                 )
             }
@@ -191,14 +191,14 @@ fun SignUpFormat(
                     .fillMaxSize()
             ) {
                 // Title
-                GenericTitleText(text = title, style = AppTheme.typography.titleMedium,)
+                GenericTitleText(text = title, style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),)
                 Spacer(modifier = Modifier.height(5.dp))
                 enterField()
                 //Fun Label
                 Spacer(modifier = Modifier.height(12.dp))
                 GenericLabelText(
                     text = label,
-                    style = AppTheme.typography.labelMedium
+                    style = getAddShadow(style = AppTheme.typography.labelMedium, "label")
                 )
             }
         }
@@ -229,7 +229,7 @@ fun SignUpFormatLong(
                 .padding(15.dp)
                 .fillMaxSize()
             ) {
-                GenericTitleText(text = title, style = AppTheme.typography.titleMedium,)
+                GenericTitleText(text = title, style = getAddShadow(style = AppTheme.typography.titleMedium, "med"),)
                 Spacer(modifier = Modifier.height(5.dp))
                 Column(
                     modifier = Modifier
@@ -239,7 +239,7 @@ fun SignUpFormatLong(
                     enterField()
                 }
                 Spacer(modifier = Modifier.height(2.dp))
-                GenericLabelText(text = label, style = AppTheme.typography.labelMedium)
+                GenericLabelText(text = label, style = getAddShadow(style = AppTheme.typography.labelMedium, "label"))
             }
         }
     }

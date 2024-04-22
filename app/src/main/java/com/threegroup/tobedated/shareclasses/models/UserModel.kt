@@ -37,10 +37,30 @@ data class UserModel(
     var image4          : String = "",
     var location        : String = "3.0/3.0",
     var status          : Long = 0,
-    var number          :String = "",
-    var verified        :Boolean = false,
-    var seeMe           :Boolean = false,
-    var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel()
+    var number          : String = "",
+    var verified        : Boolean = false,
+    var seeMe           : Boolean = false,
+    var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel(),
+    var hasCasual       : Boolean = false,
+    var hasFriends      :Boolean = false,
+    var casualAdditions : CasualAdditions = CasualAdditions()
+)
+data class CasualAdditions(
+    var leaning             : String = "",
+    var lookingFor          : String = "",
+    var experience          : String = "",
+    var location            : String = "",
+    var comm                : String = "",
+    var sexHealth           : String = "",
+    var afterCare           : String = "",
+    var casualBio           : String = "",
+    var promptQ1            : String = "",
+    var promptA1            : String = "",
+    var promptQ2            : String = "",
+    var promptA2            : String = "",
+    var promptQ3            : String = "",
+    var promptA3            : String = "",
+
 )
 data class UserSearchPreferenceModel(
     var ageRange            : AgeRange = AgeRange(18, 35),
@@ -88,5 +108,15 @@ data class PreferenceIndexModel(
     var promptQ3 : Int = -1,
     var promptA3 : Int = -1,
     var meetUp  : Int = -1
+)
+
+data class AdditionsIndex(
+    var leaning :Int = -1,
+    var lookingFor :Int = -1,
+    var experience :Int = -1,
+    var location :Int = -1,
+    var comm :Int = -1,
+    var sexHealth :Int = -1,
+    var afterCare :Int = -1,
 )
 

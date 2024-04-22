@@ -99,17 +99,18 @@ fun baseAppTextTheme(): TextStyle {
     )
 }
 @Composable
-fun getBaseMediumTitle():TextStyle{
-    return TextStyle(
-        fontFamily = JoseFinSans,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp,
+fun getAddShadow(style: TextStyle, type: String): TextStyle {
+    val displace = when (type){
+        "med" -> 8f
+        "body" -> 4f
+        "label" -> 4f
+        else -> 8f
+    }
+    return style.copy(
         shadow = Shadow(
             color = AppTheme.colorScheme.primary.copy(alpha = 0.75f),
-            offset = Offset(8f, 8f),
-            blurRadius = 6f
+            offset = Offset(displace, displace),
+            blurRadius = displace
         )
     )
 }
@@ -468,7 +469,7 @@ fun Picker(
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
-    textStyle: TextStyle = AppTheme.typography.titleMedium,
+    textStyle: TextStyle = getAddShadow(style = AppTheme.typography.titleMedium, "med"),
     dividerColor: Color = AppTheme.colorScheme.primary,
     textColor:Color = AppTheme.colorScheme.onBackground
 ) {
@@ -649,7 +650,7 @@ fun NavDraw(
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Column {
-                GenericTitleText(text = "Word of the Day", style = getBaseMediumTitle())
+                GenericTitleText(text = "Word of the Day", style = getAddShadow(AppTheme.typography.titleMedium, "med"))
                 Spacer(modifier = Modifier.height(2.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(6.dp))
@@ -686,7 +687,7 @@ fun NavDraw(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 20.dp)){
-                    GenericTitleText(text = "Horoscope", style = getBaseMediumTitle())
+                    GenericTitleText(text = "Horoscope", style = getAddShadow(AppTheme.typography.titleMedium, "med"))
                     Icon(imageVector = getStarSymbol(star), contentDescription = star, tint = AppTheme.colorScheme.onBackground)
                 }
 

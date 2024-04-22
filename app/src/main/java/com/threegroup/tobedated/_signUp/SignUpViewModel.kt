@@ -114,12 +114,10 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
     }
 
 
-    fun storeData() {
-        println("\n\n\n Inside view model")
+    private fun storeData() {
         FirebaseDatabase.getInstance().getReference("users")
             .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!).setValue(newUser)
             .addOnSuccessListener {
-                println(newUser)
                 newUser.number
             }
     }

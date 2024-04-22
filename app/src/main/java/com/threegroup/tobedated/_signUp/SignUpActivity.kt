@@ -63,6 +63,7 @@ import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.composables.RadioButtonGroup
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.composables.rememberPickerState
 import com.threegroup.tobedated.shareclasses.models.childrenOptions
 import com.threegroup.tobedated.shareclasses.models.drinkOptions
@@ -156,19 +157,19 @@ fun welcomeScreen():Boolean {
             .padding(15.dp)
     ) {
         Spacer(modifier = Modifier.height(55.dp))
-        GenericTitleText(style = AppTheme.typography.titleMedium, text = "Welcome to: To Be Dated")
+        GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text = "Welcome to: To Be Dated")
         Spacer(modifier = Modifier.height(55.dp))
-        GenericTitleText(style = AppTheme.typography.titleMedium, text = "Be Kind")
+        GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text = "Be Kind")
             Spacer(modifier = Modifier.height(5.dp))
-        GenericBodyText(style = AppTheme.typography.bodyMedium, text = "Treat everyone with respect!")
+        GenericBodyText(style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"), text = "Treat everyone with respect!")
             Spacer(modifier = Modifier.height(25.dp))
-        GenericTitleText(style = AppTheme.typography.titleMedium, text = "Be Safe")
+        GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text = "Be Safe")
             Spacer(modifier = Modifier.height(5.dp))
-        GenericBodyText(style = AppTheme.typography.bodyMedium, text = "Don't jump into things too quick")
+        GenericBodyText(style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"), text = "Don't jump into things too quick")
         Spacer(modifier = Modifier.height(25.dp))
-        GenericTitleText(style = AppTheme.typography.titleMedium, text = "Be Dated")
+        GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text = "Be Dated")
             Spacer(modifier = Modifier.height(5.dp))
-        GenericBodyText(style = AppTheme.typography.bodyMedium, text = "Have fun an be yourself")
+        GenericBodyText(style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"), text = "Have fun an be yourself")
     }
     return true
 }
@@ -547,7 +548,7 @@ fun mbtiScreen(signUpVM: SignUpViewModel, onNavigate: () -> Unit):Boolean{
                                 }
                                 //mbti = "Not Taken"
                                 mbti = when (results) {
-                                    0 -> "INTJ"
+                                    0 -> "Not Taken"
                                     1 -> "INTP"
                                     2 -> "ENTJ"
                                     3 -> "ENTP"
@@ -563,7 +564,7 @@ fun mbtiScreen(signUpVM: SignUpViewModel, onNavigate: () -> Unit):Boolean{
                                     13 -> "ISFP"
                                     14 -> "ESTP"
                                     15 -> "ESFP"
-                                    else -> "Not Taken"
+                                    else -> "INTJ"
                                 }
                                 signUpVM.setUser("testResultsMbti", mbti)
                             }

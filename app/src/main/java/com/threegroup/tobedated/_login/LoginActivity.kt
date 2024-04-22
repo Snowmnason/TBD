@@ -56,6 +56,7 @@ import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
+import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.formatPhone
 import com.threegroup.tobedated.shareclasses.formatPhoneNumber
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
@@ -234,7 +235,7 @@ fun LoginScreen(navController: NavHostController, loginActivity: LoginActivity) 
             .fillMaxWidth()
             .padding(horizontal = 25.dp, vertical = 80.dp)
     ) {
-        GenericTitleText(style = AppTheme.typography.titleMedium, text =  "Your Phone Number")
+        GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text =  "Your Phone Number")
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
@@ -268,7 +269,7 @@ fun LoginScreen(navController: NavHostController, loginActivity: LoginActivity) 
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        GenericLabelText(style=  AppTheme.typography.labelMedium,text = "TBD will send a text with a verification code. \nMessage and data rates my apply",)
+        GenericLabelText(style=  getAddShadow(style = AppTheme.typography.labelMedium, "label"),text = "TBD will send a text with a verification code. \nMessage and data rates my apply",)
     }
     val controller = LocalSoftwareKeyboardController.current
     BigButton(
@@ -300,7 +301,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             // Title
-            GenericTitleText(style = AppTheme.typography.titleMedium, text =  "Verification Code")
+            GenericTitleText(style = getAddShadow(style = AppTheme.typography.titleMedium, "med"), text =  "Verification Code")
             Spacer(modifier = Modifier.height(20.dp))
             // Row for verification code fields
             Row(
@@ -339,7 +340,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
             Row {
                 Text(
                     text = "Sent to\n $number",
-                    style = AppTheme.typography.bodyMedium,
+                    style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
                     color = AppTheme.colorScheme.onBackground
                 )
                 ResendCode( loginActivity)

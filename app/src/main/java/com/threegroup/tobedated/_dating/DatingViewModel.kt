@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
-    val list = ArrayList<UserModel>()
     private val _signedInUser = MutableStateFlow<UserModel?>(null)
     private var signedInUser: StateFlow<UserModel?> = _signedInUser
     private var selectedUser: UserModel = UserModel() //The chat you open
@@ -40,10 +39,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         return getNextPotential(currentProfileIndex)
     }
 
-    fun reportedCurrentPotential(
-        currentProfileIndex: Int,
-        currentPotential: UserModel
-    ): UserModel? {
+    fun reportedCurrentPotential(currentProfileIndex: Int, currentPotential: UserModel): UserModel? {
 
         return getNextPotential(currentProfileIndex)
     }

@@ -1,11 +1,11 @@
 package com.threegroup.tobedated.shareclasses.models
 
 data class Match(
-    val id: String,//Match id
-    val userAge: Int,
-    val userId: String,//phone number
-    val userName: String,
-    val userPicture: String,
-    val formattedDate: String,
-    val lastMessage: String?
+    var id: String = "",//Match id
+    //var userAge: Int = 0,
+    var userId: String = "",//phone number
+    var userName: String = "",
+    var userPicture: String = "",
+    //var formattedDate: String = "",
+    var lastMessage: String? = "",
 )

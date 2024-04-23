@@ -67,12 +67,11 @@ import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 //val notifiSearching = Random.nextBoolean()
 
-val notifiGroup = Random.nextBoolean()
-val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
+const val notifiGroup = false
+const val notifiChat = 0//Random.nextInt(0, 41) // Generates a random integer between 0 and 40
 
 class DatingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -412,7 +411,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
         star = vmDating.getUser().star,
         currentScreen = {
             matchedUsers.forEach { matchUser ->
-                println(matchedUsers)
+//                println(matchedUsers)
                 MessageStart(
                     notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.userPicture,

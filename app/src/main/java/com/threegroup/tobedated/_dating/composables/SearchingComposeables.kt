@@ -614,7 +614,7 @@ fun InsideMatchedProfile(
                         actionIconContentColor = AppTheme.colorScheme.primary,
                         scrolledContainerColor = AppTheme.colorScheme.background
                     ),
-                    title = { TopBarText(title= title, isPhoto = false) },
+                    title = { TopBarText(title= title, isPhoto = true) },
                     navigationIcon = {
                         IconButton(onClick = { nav.popBackStack() }) { //Showing in stuff like messages, editing profile and stuff
                             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back), contentDescription = "Go back")

@@ -28,9 +28,9 @@ class Repository(
     suspend fun updateUserData(userUpdates: UserModel) {
         return firebaseDataSource.updateUserData(userUpdates)
     }
-    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
-    }
+//    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+//        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
+//    }
     fun getCurrentUserSenderId(): String {
         return firebaseDataSource.getCurrentUserSenderId()
     }

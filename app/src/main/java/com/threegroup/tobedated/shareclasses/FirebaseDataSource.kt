@@ -164,33 +164,33 @@ class FirebaseDataSource() {
     /**
     Likes and match related functions
      */
-    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-        val database = FirebaseDatabase.getInstance()
-
-        // Update user's liked or passed list
-        val userRef = database.getReference("users/$userId")
-        userRef.child(if (isLike) "liked" else "passed").push().setValue(likedUserId)
-
-        // Mark the liked user as existing in the liked list
-        val likedUserRef = database.getReference("users/$userId/liked/$likedUserId")
-        likedUserRef.setValue(true)
-
-        // Check if there's a match
-        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
-        if (hasUserLikedBack) {
-            val matchId = getMatchId(userId, likedUserId)
-
-            // Create a new match in the database
-            val matchRef = database.getReference("matches/$matchId")
-            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
-            matchRef.setValue(matchData)
-
-            // Retrieve the match data and return
-            val matchSnapshot = matchRef.get().await()
-            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
-        }
-        return null
-    }
+//    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+//        val database = FirebaseDatabase.getInstance()
+//
+//        // Update user's liked or passed list
+//        val userRef = database.getReference("users/$userId")
+//        userRef.child(if (isLike) "liked" else "passed").push().setValue(likedUserId)
+//
+//        // Mark the liked user as existing in the liked list
+//        val likedUserRef = database.getReference("users/$userId/liked/$likedUserId")
+//        likedUserRef.setValue(true)
+//
+//        // Check if there's a match
+//        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
+//        if (hasUserLikedBack) {
+//            val matchId = getMatchId(userId, likedUserId)
+//
+//            // Create a new match in the database
+//            val matchRef = database.getReference("matches/$matchId")
+//            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
+//            matchRef.setValue(matchData)
+//
+//            // Retrieve the match data and return
+//            val matchSnapshot = matchRef.get().await()
+//            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
+//        }
+//        return null
+//    }
 
     private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
         val likedRef =
@@ -233,12 +233,37 @@ class FirebaseDataSource() {
             val matchRef =  FirebaseDatabase.getInstance().getReference("matches/$matchId")
             val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
             matchRef.setValue(matchData)
-
+            /**
+             * //THIS IS MY ADDITION
+             */
+            val matchSet = matchRef.child(likedUserId)
+            matchSet.setValue(setMatch(likedUserId))
+            val userSet = matchRef.child(userId)
+            userSet.setValue(setMatch(userId))
+            /**
+             * TO HERE I dunno if this is needed
+             */
             // Retrieve the match data and return
             val matchSnapshot = matchRef.get().await()
             return matchSnapshot.getValue(RealtimeDBMatch::class.java)
         }
         return null
+    }
+    private suspend fun setMatch(userId: String): Match {//TODO This should be done somewhere else
+        val userSnapshot = withContext(Dispatchers.IO) {
+            FirebaseDatabase.getInstance().getReference("users").child(userId).get().await()
+        }
+        val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
+        val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
+
+        return Match(
+            id = userId,
+            userId = userId,
+            userName = userName,
+            userPicture = userImage1,
+            //formattedDate = "", // Consider formatting the timestamp properly
+            lastMessage = ""
+        )
     }
 
 
@@ -277,9 +302,6 @@ class FirebaseDataSource() {
             query.removeEventListener(listener)
         }
     }
-
-
-
     /**
      * Function needed to convert birthday from String to Date
      */
@@ -292,19 +314,33 @@ class FirebaseDataSource() {
             it != (FirebaseAuth.getInstance().currentUser?.uid
                 ?: throw Exception("User not logged in"))
         } ?: return null
-        val user = MyApp.signedInUser.value!!
-        val picture = user.image1
+        val userSnapshot = withContext(Dispatchers.IO) {
+            FirebaseDatabase.getInstance().getReference("users").child(userId).get().await()
+        }
+        val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
+        val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
+
         return match.timestamp.toString().let {
             Match(
-                match.id,
-                calcAge(user.birthday), // need to properly calculate age from birthday
-                userId,
-                user.name,
-                picture,
-                it,
-                match.lastMessage
+                id = match.id,
+                userId = userId,
+                userName = userName,
+                userPicture = userImage1,
+                //formattedDate = it, // Consider formatting the timestamp properly
+                lastMessage = match.lastMessage
             )
         }
+//        val user = MyApp.signedInUser.value!!
+//        val matchId = getMatchId(userId, user.name)
+//        val userSnapshot = withContext(Dispatchers.IO) {
+//            FirebaseDatabase.getInstance().getReference("matches/$matchId/$userId").get().await()
+//        }
+//        //val matchRef =  FirebaseDatabase.getInstance().getReference("matches/$matchId/$userId")
+//        val userName = userSnapshot.child("userName").getValue(String::class.java) ?: ""
+//        val userAge = userSnapshot.child("age").getValue(Int::class.java) ?: 18
+//        val userImage1 = userSnapshot.child("userPicture").getValue(String::class.java) ?: ""
+//
+
     }
     fun getCurrentUserId(): String {
         return FirebaseAuth.getInstance().currentUser?.phoneNumber

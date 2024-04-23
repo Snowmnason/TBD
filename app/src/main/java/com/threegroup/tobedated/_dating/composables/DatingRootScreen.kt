@@ -143,7 +143,7 @@ fun TopAndBotBarsDating(
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if (item.badgeCount != null) {
+                                            if (item.badgeCount != 0 && item.badgeCount != null) {
                                                 Badge {
                                                     Text(text = item.badgeCount.toString())
                                                 }

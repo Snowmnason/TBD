@@ -72,7 +72,7 @@ fun leaningScreen(causalVM: CausalViewModel): Boolean {
 
     SignUpFormat(
         title = "What Role do you play",
-        label = "Peanut Butter always looks for jelly",
+        label = "What flavor ice-cream are you",
         enterField = {
             RadioButtonGroup(
                 options = leaningOptions,

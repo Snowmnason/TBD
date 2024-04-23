@@ -14,6 +14,7 @@ import com.threegroup.tobedated.RealtimeDBMatchProperties
 import com.threegroup.tobedated.shareclasses.models.AgeRange
 import com.threegroup.tobedated.shareclasses.models.CasualAdditions
 import com.threegroup.tobedated.shareclasses.models.Match
+import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.UserSearchPreferenceModel
@@ -124,15 +125,15 @@ class FirebaseDataSource() {
     /**
     Dating discovery related functions
      */
-    fun getPotentialUserData(): Flow<Pair<List<UserModel>, Int>> = callbackFlow {
+    fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> = callbackFlow {
         val dbRef: DatabaseReference =
             FirebaseDatabase.getInstance().getReference("users")
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val list = mutableListOf<UserModel>()
+                val list = mutableListOf<MatchedUserModel>()
                 for (data in snapshot.children) {
                     try {
-                        val userModel = data.getValue(UserModel::class.java)
+                        val userModel = data.getValue(MatchedUserModel::class.java)
                         if (userModel?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
                             userModel?.let {
                                 if (!it.seeMe) {
@@ -242,8 +243,7 @@ class FirebaseDataSource() {
 
 
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> = callbackFlow {
-        val db = FirebaseDatabase.getInstance()
-        val ref = db.getReference("matches")
+        val ref = FirebaseDatabase.getInstance().getReference("matches")
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val matches = mutableListOf<RealtimeDBMatch>()
@@ -251,29 +251,34 @@ class FirebaseDataSource() {
                     try {
                         val match = data.getValue(RealtimeDBMatch::class.java)
                         match?.let {
-                            matches.add(it)
+                            // Check if userId appears at the start or end of usersMatched field
+                            if (it.usersMatched.contains(userId)) {
+                                println(it)
+                                matches.add(it)
+                            }
                         }
                         Log.d("MATCH_TAG", "Succeeded parsing RealtimeDBMatch")
                     } catch (e: Exception) {
                         Log.d("MATCH_TAG", "Error parsing RealtimeDBMatch", e)
                     }
                 }
-                trySend(matches).isSuccess // this should emit the list of matches to the flow
-                println("HAHA IT WORKED")
-                println(matches)
+                trySend(matches).isSuccess // Emit the list of matches to the flow
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.d("MATCH_TAG", "Database error: ${error.message}")
             }
         }
-        ref.orderByChild(RealtimeDBMatchProperties.usersMatched)
-            .equalTo(userId)
-            .addListenerForSingleValueEvent(listener)
+
+        val query = ref.orderByChild(RealtimeDBMatchProperties.usersMatched)
+        query.addListenerForSingleValueEvent(listener)
+
         awaitClose {
-            ref.removeEventListener(listener)
+            query.removeEventListener(listener)
         }
     }
+
+
 
     /**
      * Function needed to convert birthday from String to Date
@@ -383,12 +388,12 @@ class FirebaseDataSource() {
         FirebaseDatabase.getInstance().getReference("chats")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var list = arrayListOf<String>()
-                    var newList = arrayListOf<String>()
+                    val list = arrayListOf<String>()
+                    val newList = arrayListOf<String>()
 
                     for (data in snapshot.children) {
                         if (data.key!!.contains(currentId!!)) {
-                            list.add(data.key!!.replace(currentId!!, ""))
+                            list.add(data.key!!.replace(currentId, ""))
                             newList.add(data.key!!)
                         }
                     }
@@ -422,10 +427,8 @@ class FirebaseDataSource() {
             val user = setUserProperties(UserModel(), map, location)
             emit(user)
         }
-        if(location == "doNot"){
-            databaseReference.child("status").setValue(System.currentTimeMillis())
-            databaseReference.child("location").setValue(location)
-        }
+        databaseReference.child("status").setValue(System.currentTimeMillis())
+        databaseReference.child("location").setValue(location)
 
 //        databaseReference.child("hasCasual").setValue(false)
 //        databaseReference.child("hasFriends").setValue(false)
@@ -536,6 +539,73 @@ class FirebaseDataSource() {
             sexHealth = map["sexHealth"] as? String ?: "",
             afterCare = map["afterCare"] as? String ?: ""
         )
+    }
+
+
+    suspend fun setMatchedInfo(number: String): Flow<MatchedUserModel?> = flow {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
+
+        val userDataMap = withContext(Dispatchers.IO) {
+            suspendCoroutine { continuation ->
+                val eventListener = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        continuation.resume(snapshot.value as? Map<*, *>)
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resumeWithException(error.toException())
+                    }
+                }
+                databaseReference.addListenerForSingleValueEvent(eventListener)
+            }
+        }
+        userDataMap?.let { map ->
+            val user = setMatchedProperties(MatchedUserModel(), map)
+            emit(user)
+        }
+    }
+    private fun setMatchedProperties(
+        user: MatchedUserModel,
+        userDataMap: Map<*, *>,
+    ): MatchedUserModel {
+        return user.apply {
+            name = userDataMap["name"] as? String ?: ""
+            birthday = userDataMap["birthday"] as? String ?: ""
+            pronoun = userDataMap["pronoun"] as? String ?: ""
+            user.gender = userDataMap["gender"] as? String ?: ""
+            user.height = userDataMap["height"] as? String ?: ""
+            user.ethnicity = userDataMap["ethnicity"] as? String ?: ""
+            user.star = userDataMap["star"] as? String ?: ""
+            user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
+            user.sex = userDataMap["sex"] as? String ?: ""
+            user.testResultsMbti = userDataMap["testResultsMbti"] as? String ?: "Not Taken"
+            user.children = userDataMap["children"] as? String ?: ""
+            user.family = userDataMap["family"] as? String ?: ""
+            user.education = userDataMap["education"] as? String ?: ""
+            user.religion = userDataMap["religion"] as? String ?: ""
+            user.politics = userDataMap["politics"] as? String ?: ""
+            user.relationship = userDataMap["relationship"] as? String ?: ""
+            user.intentions = userDataMap["intentions"] as? String ?: ""
+            user.drink = userDataMap["drink"] as? String ?: ""
+            user.smoke = userDataMap["smoke"] as? String ?: ""
+            user.weed = userDataMap["weed"] as? String ?: ""
+            user.meetUp = userDataMap["meetUp"] as? String ?: ""
+            user.promptQ1 = userDataMap["promptQ1"] as? String ?: ""
+            user.promptA1 = userDataMap["promptA1"] as? String ?: ""
+            user.promptQ2 = userDataMap["promptQ2"] as? String ?: ""
+            user.promptA2 = userDataMap["promptA2"] as? String ?: ""
+            user.promptQ3 = userDataMap["promptQ3"] as? String ?: ""
+            user.promptA3 = userDataMap["promptA3"] as? String ?: ""
+            user.bio = userDataMap["bio"] as? String ?: ""
+            user.image1 = userDataMap["image1"] as? String ?: ""
+            user.image2 = userDataMap["image2"] as? String ?: ""
+            user.image3 = userDataMap["image3"] as? String ?: ""
+            user.image4 = userDataMap["image4"] as? String ?: ""
+            user.location = userDataMap["location"] as? String ?: ""
+            user.status = userDataMap["status"] as? Long ?: 0
+            user.number = userDataMap["number"] as? String ?: ""
+            user.verified = userDataMap["verified"] as? Boolean ?: false
+            user.seeMe = userDataMap["Seen"] as? Boolean ?: false
+        }
     }
 }
 //fun updateStatus(number: String, location:String) {

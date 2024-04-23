@@ -56,8 +56,8 @@ import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
 import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
 import com.threegroup.tobedated.shareclasses.composables.getAddShadow
+import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
-import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
 
@@ -69,7 +69,7 @@ fun MessageStart(
     openChat: () -> Unit,
     notification:Boolean = false,
     ) {
-    var userLastMessage = ""
+    var userLastMessage = "Start your connections"
     if (userLast != null) {
         userLastMessage = userLast
     }
@@ -87,7 +87,7 @@ fun MessageStart(
             .padding(15.dp, 0.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Row(Modifier.clickable(onClick = openChat)){
+        Row(Modifier.clickable(onClick = openChat).fillMaxWidth()){
             if(userPhoto == "feedback"){
                 Image(painterResource(id = R.drawable.feedback), contentDescription = "Feedback photo",
                     modifier = Modifier.size(58.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
@@ -388,7 +388,7 @@ fun UserItem(userName: String, chatId: String, onItemClick: (userId: String, cha
 fun MessageScreen(
     chatId: String,
     viewModel: MessageViewModel,
-    match: UserModel = UserModel(),
+    match: MatchedUserModel = MatchedUserModel(),
     isFeedBack:Boolean = false,
     messageList: List<MessageModel>,
     currentUserSenderId: String,
@@ -408,7 +408,7 @@ fun MessageScreen(
                 val last = index == (messageList.size -1)
                 val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
                 val time = message.currentTime
-                if(isFeedBack){
+                if(!isFeedBack){
                     MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
                 }else{
                     MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
@@ -420,7 +420,7 @@ fun MessageScreen(
     }
 }
 @Composable
-fun MessageItem(match: UserModel, message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean) {
+fun MessageItem(match: MatchedUserModel, message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean) {
     if (!isCurrentUser) {
         if(!last){
             TheirMessage(replyMessage = message.message, time =  timeStamp, last = false, userPhoto = match.image1)

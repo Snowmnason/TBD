@@ -51,6 +51,7 @@ import com.threegroup.tobedated._dating.composables.MessageStart
 import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
+import com.threegroup.tobedated._dating.composables.SeekingUserInfo
 import com.threegroup.tobedated._dating.composables.SimpleBox
 import com.threegroup.tobedated._dating.composables.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.composables.UserInfo
@@ -62,7 +63,7 @@ import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.Comeback
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.OutLinedButton
-import com.threegroup.tobedated.shareclasses.models.UserModel
+import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -135,7 +136,7 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
-    val currentPotential = remember { mutableStateOf<UserModel?>(null) }
+    val currentPotential = remember { mutableStateOf<MatchedUserModel?>(null) }
     val state = rememberScrollState()
 
     // Reset scroll state when currentProfileIndex or isNext changes
@@ -181,7 +182,7 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
                     if(currentPotential.location != "" && vmDating.getUser().location != ""){
                         location = calcDistance(currentPotential.location, currentUser.location)
                     }
-                    UserInfo(
+                    SeekingUserInfo(
                         user = currentPotential,//usersArray[currentProfileIndex]
                         location = location,
                         bottomButtons = {
@@ -394,7 +395,7 @@ Start of Message Screens
  */
 @Composable
 fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dating: DatingActivity){
-    val matchedUsers = vmDating.getMatches() //TODO this has to be changed to be matches users
+    val matchedUsers = vmDating.getMatches() //TODO this has to be changed to be matches user
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState()
@@ -411,6 +412,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
         star = vmDating.getUser().star,
         currentScreen = {
             matchedUsers.forEach { matchUser ->
+                println(matchedUsers)
                 MessageStart(
                     notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.userPicture,
@@ -418,7 +420,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
                     userLast = matchUser.lastMessage, //TODO Last message goes here message.message (some how last)
                     openChat = {
                         navController.navigate("MessagerScreen")
-                        //vmDating.setTalkedUser(matchUser.userId)
+                        vmDating.setTalkedUser(matchUser.userId)
                     }
                 )
             }
@@ -436,39 +438,51 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
 }
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
-    val talkedUser = vmDating.getTalkedUser()
-    val senderId = vmDating.getUser().number
-    val receiverId = talkedUser.number
-    val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
-    //TODO need to make this nested I think
-    var message by rememberSaveable { mutableStateOf("") }
-    val messageModel = viewModel { MessageViewModel(MyApp.x) }
+    val talkedUser by vmDating.selectedUser.collectAsState()
+    val avail by remember {mutableStateOf(talkedUser == null)}
+    if(avail && talkedUser == null){
+        InsideMessages(
+            nav = navController,
+            titleText = "Loading",
+            onValueChange = {},
+            sendMessage = {},
+            chatSettings = {},
+            messages = {}
+        )
+    }else{
+        val senderId = vmDating.getUser().number
+        val receiverId = talkedUser!!.number
+        val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
+        //TODO need to make this nested I think
+        var message by rememberSaveable { mutableStateOf("") }
+        val messageModel = viewModel { MessageViewModel(MyApp.x) }
 
-    val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
+        val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
 
 
-    InsideMessages(
-        nav = navController,
-        titleText = talkedUser.name,
-        value = message,
-        onValueChange = { message = it},
-        sendMessage = { messageModel.storeChatData(chatId, message)
-            message = ""},
-        goToProfile = { navController.navigate("MatchedUserProfile") },
-        chatSettings = {},
-        startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
-        startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
-        sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
-        messages = {
-            MessageScreen(
-                chatId = chatId,
-                viewModel = messageModel,
-                match = talkedUser,
-                messageList = messageList,
-                currentUserSenderId = messageModel.getCurrentUserSenderId(),
-            )
-        }
-    )
+        InsideMessages(
+            nav = navController,
+            titleText = talkedUser!!.name,
+            value = message,
+            onValueChange = { message = it},
+            sendMessage = { messageModel.storeChatData(chatId, message)
+                message = ""},
+            goToProfile = { navController.navigate("MatchedUserProfile") },
+            chatSettings = {},
+            startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
+            startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
+            sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
+            messages = {
+                MessageScreen(
+                    chatId = chatId,
+                    viewModel = messageModel,
+                    match = talkedUser!!,
+                    messageList = messageList,
+                    currentUserSenderId = messageModel.getCurrentUserSenderId(),
+                )
+            }
+        )
+    }
 }
 @Composable
 fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
@@ -510,7 +524,7 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel){
         title = talkedUser.name,
         editProfile = {
             val location = calcDistance(talkedUser.location, vmDating.getUser().location)
-            UserInfo(
+            SeekingUserInfo(
                 user = talkedUser,//usersArray[currentProfileIndex]
                 location = location,
                 bottomButtons = {

@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.models.Match
+import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
@@ -15,29 +16,23 @@ class Repository(
     suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         return firebaseDataSource.signInWithPhoneAuthCredential(credential)
     }
-
     suspend fun checkUserExist(number: String) {
         return firebaseDataSource.checkUserExist(number)
     }
-
-    fun getCurrentUserSenderId(): String {
-        return firebaseDataSource.getCurrentUserSenderId()
-    }
-
     suspend fun storeUserData(data: UserModel) {
         return firebaseDataSource.storeUserData(data)
     }
-
     suspend fun getUserData(): ArrayList<UserModel>? {
         return firebaseDataSource.getUserData()
     }
-
     suspend fun updateUserData(userUpdates: UserModel) {
         return firebaseDataSource.updateUserData(userUpdates)
     }
-
     suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         return firebaseDataSource.likeUser(userId, likedUserId, isLike)
+    }
+    fun getCurrentUserSenderId(): String {
+        return firebaseDataSource.getCurrentUserSenderId()
     }
     suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         return firebaseDataSource.likeOrPass(userId, likedUserId, isLike)
@@ -48,7 +43,7 @@ class Repository(
     fun getCurrentUserId(): String {
         return firebaseDataSource.getCurrentUserId()
     }
-    fun getPotentialUserData(): Flow<Pair<List<UserModel>, Int>> {
+    fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> {
         return firebaseDataSource.getPotentialUserData()
     }
 
@@ -82,6 +77,9 @@ class Repository(
     }
     suspend fun getMatch(match: RealtimeDBMatch): Match?{
         return firebaseDataSource.getMatch(match)
+    }
+    suspend fun setMatchInfo(number: String):Flow<MatchedUserModel?>{
+        return firebaseDataSource.setMatchedInfo(number)
     }
 }
 

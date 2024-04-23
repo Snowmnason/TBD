@@ -11,10 +11,10 @@ fun fetchHoroscope(sign: String, day: String) {
             if (response.isSuccessful) {
                 response.body()?.let {
                     // Horoscope data should go here
-                    println("Horoscope: ${it.description}")
+                    //println("Horoscope: ${it.description}")
                 }
             } else {
-               println("Error: ${response.errorBody()?.string()}")
+               //println("Error: ${response.errorBody()?.string()}")
             }
         }
 

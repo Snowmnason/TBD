@@ -3,6 +3,7 @@ package com.threegroup.tobedated.shareclasses
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.threegroup.tobedated.RealtimeDBMatch
+import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
@@ -78,6 +79,9 @@ class Repository(
 
     suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> {
         return firebaseDataSource.setUserInfo(number, location)
+    }
+    suspend fun getMatch(match: RealtimeDBMatch): Match?{
+        return firebaseDataSource.getMatch(match)
     }
 }
 

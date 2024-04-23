@@ -259,6 +259,8 @@ class FirebaseDataSource() {
                     }
                 }
                 trySend(matches).isSuccess // this should emit the list of matches to the flow
+                println("HAHA IT WORKED")
+                println(matches)
             }
 
             override fun onCancelled(error: DatabaseError) {

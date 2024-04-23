@@ -131,6 +131,7 @@ Start of Seeking Screen
  */
 @Composable
 fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navController: NavHostController) {
+    val currentUser = vmDating.getUser()
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
@@ -153,7 +154,8 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
 
 
     ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an avilibe user to prevent crashes
-    fun nextProfile(newPotential: UserModel?){
+    fun nextProfile(){
+        val newPotential = vmDating.getNextPotential(currentProfileIndex)
         if(newPotential != null){
             currentPotential.value = newPotential///MIGHT change this
         }else{
@@ -171,27 +173,29 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         state = state,
-        star = vmDating.getUser().star,
+        star = currentUser.star,
         currentScreen = {
             if (isNext) {
-                currentPotential.value?.let { user ->
+                currentPotential.value?.let { currentPotential ->
                     var location  = "x miles"
-                    if(user.location != "" && vmDating.getUser().location != ""){
-                        location = calcDistance(user.location, vmDating.getUser().location)
+                    if(currentPotential.location != "" && vmDating.getUser().location != ""){
+                        location = calcDistance(currentPotential.location, currentUser.location)
                     }
                     UserInfo(
-                        user = user,//usersArray[currentProfileIndex]
+                        user = currentPotential,//usersArray[currentProfileIndex]
                         location = location,
                         bottomButtons = {
                             SearchingButtons(
                                 onClickLike = {
                                     currentProfileIndex++
-                                    nextProfile(vmDating.likedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                                    vmDating.likeCurrentProfile(currentUser.number, currentPotential)
+                                    nextProfile()
                                     /*TODO Add an animation or something*/
                                 },
                                 onClickPass = {
                                     currentProfileIndex++//THIS SHIT CAN GO
-                                    nextProfile(vmDating.passedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                                    vmDating.passCurrentProfile(currentUser.number, currentPotential)
+                                    nextProfile()
                                     /*TODO Add an animation or something*/
                                 },
                                 onClickReport = { showReport = true /*TODO Add an animation or something*/},
@@ -211,7 +215,9 @@ fun SearchingScreen(vmDating: DatingViewModel, dating: DatingActivity, navContro
             dialogText = "This account will be looked into and they will not be able to view your profile",
             onConfirmation = { showReport = false
                 currentProfileIndex++
-                nextProfile(vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!))
+                vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
+                nextProfile()
+                //nextProfile(vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!))
             }
         )
     }
@@ -367,6 +373,7 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
                 OutLinedButton(onClick = {/*TODO deactivate account*/   }, text = "Deactivate Account", outLineColor = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutLinedButton(onClick = {/*TODO report and delete account*/   }, text = "Delete Account", outLineColor = Color.Red, textColor = Color.Red)
+                Spacer(modifier = Modifier.height(25.dp))
             }
         }
     )
@@ -406,12 +413,12 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
             matchedUsers.forEach { matchUser ->
                 MessageStart(
                     notification = true, //TODO set this passed on if they have a new message
-                    userPhoto = matchUser.image1,
-                    userName = matchUser.name,
-                    userLastMessage = matchUser.bio, //TODO Last message goes here message.message (some how last)
+                    userPhoto = matchUser.userPicture,
+                    userName = matchUser.userName,
+                    userLast = matchUser.lastMessage, //TODO Last message goes here message.message (some how last)
                     openChat = {
                         navController.navigate("MessagerScreen")
-                        vmDating.setTalkedUser(matchUser)
+                        //vmDating.setTalkedUser(matchUser.userId)
                     }
                 )
             }
@@ -420,7 +427,7 @@ fun ChatsScreen(navController: NavHostController, vmDating: DatingViewModel, dat
             MessageStart(
                 userPhoto = "feedback",
                 userName = "FeedBack System",
-                userLastMessage = "Message success",
+                userLast = "Message success",
                 openChat = {
                     navController.navigate("FeedBackMessagerScreen")
                 })

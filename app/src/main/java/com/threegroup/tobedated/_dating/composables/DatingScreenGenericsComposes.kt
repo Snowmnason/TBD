@@ -131,7 +131,8 @@ fun SimpleIconBox(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserInfo(
-    user: UserModel,
+    user: UserModel = UserModel(),
+    //matchUser: MatchUserModel = MatchUserModel(),
     bioClick: () -> Unit = {},
     prompt1Click: () -> Unit = {},
     prompt2Click: () -> Unit = {},
@@ -171,7 +172,7 @@ fun UserInfo(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SimpleIconBox(answer = calcAge(user.birthday.split("/")), icon = null, divider = true)
+                    SimpleIconBox(answer = (calcAge(user.birthday).toString()), icon = null, divider = true)
                     SimpleIconBox(answer = user.ethnicity, icon = null, divider = true)
                     SimpleIconBox(answer = user.pronoun, icon = null)
                 }

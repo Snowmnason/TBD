@@ -65,10 +65,15 @@ import com.threegroup.tobedated.shareclasses.theme.AppTheme
 fun MessageStart(
     userPhoto:String,
     userName:String,
-    userLastMessage:String,
+    userLast:String?,
     openChat: () -> Unit,
     notification:Boolean = false,
     ) {
+    var userLastMessage = ""
+    if (userLast != null) {
+        userLastMessage = userLast
+    }
+
     val maxLength = 35
     val cleanedMessage = userLastMessage.replace("\n", " ")
     val displayedMessage = if (cleanedMessage.length > maxLength) {

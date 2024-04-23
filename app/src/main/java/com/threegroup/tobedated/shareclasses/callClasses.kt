@@ -11,7 +11,12 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -76,26 +81,19 @@ fun getFileFromContentUri(contentUri: Uri, contentResolver: ContentResolver): St
     }
     return filePath
 }
-
-fun calcAge(birth: List<String>?): String{
-    val month = (birth?.getOrNull(0)?.substring(0, 2))?.toInt()
-    val day = birth?.getOrNull(1)?.substring(0, 2)?.toInt()
-    val year = birth?.getOrNull(2)?.substring(0, 4)?.toInt()
-    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    val currentMonth = (Calendar.getInstance().get(Calendar.MONTH))+1
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-    val age = currentYear.minus(year!!)
-    if(year == (currentYear - 18)){
-        if (month != null) {
-            if (day != null) {
-                if (month > currentMonth || (month == currentMonth && day >= currentDay)) {
-                    return (age - 1).toString()
-                }
-            }
-        }
-    }
-    return age.toString()
-    //return "calculatedAge"
+fun stringToDate(dateString: String, format: String): Date {
+    val formatter = DateTimeFormatter.ofPattern(format)
+    val localDate = LocalDate.parse(dateString, formatter)
+    return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+}
+fun calcAge(bdayString: String): Int{
+    val format = "MM/dd/yyyy"
+    val bdayDate = stringToDate(bdayString, format)
+    val now = GregorianCalendar()
+    now.time = Date()
+    val birthdate = GregorianCalendar()
+    birthdate.time = bdayDate
+    return now.get(Calendar.YEAR) - birthdate.get(Calendar.YEAR)
 }
 fun calcDistance(potential:String, current:String):String{
     val distance: String

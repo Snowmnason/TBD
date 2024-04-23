@@ -5,7 +5,7 @@ import com.google.firebase.database.ServerValue
 data class RealtimeDBMatch(
     var id: String="",
     val usersMatched: List<String> = emptyList(),
-    val timestamp: Map<String, String> = mapOf(),
+    val timestamp: Long = 0,
     val lastMessage: String?=null
 )
 object RealtimeDBMatchProperties{

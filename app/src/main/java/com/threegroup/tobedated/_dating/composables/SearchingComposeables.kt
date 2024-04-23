@@ -51,6 +51,7 @@ import com.threegroup.tobedated.R
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
+import com.threegroup.tobedated.shareclasses.composables.SimpleBox
 import com.threegroup.tobedated.shareclasses.composables.TopBarText
 import com.threegroup.tobedated.shareclasses.models.AgeRange
 import com.threegroup.tobedated.shareclasses.models.UserModel

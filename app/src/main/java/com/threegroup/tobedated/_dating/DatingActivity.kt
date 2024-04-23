@@ -52,7 +52,6 @@ import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
 import com.threegroup.tobedated._dating.composables.SeekingUserInfo
-import com.threegroup.tobedated._dating.composables.SimpleBox
 import com.threegroup.tobedated._dating.composables.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.composables.UserInfo
 import com.threegroup.tobedated._friends.FriendsActivity
@@ -63,6 +62,7 @@ import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
 import com.threegroup.tobedated.shareclasses.composables.Comeback
 import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
 import com.threegroup.tobedated.shareclasses.composables.OutLinedButton
+import com.threegroup.tobedated.shareclasses.composables.SimpleBox
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme

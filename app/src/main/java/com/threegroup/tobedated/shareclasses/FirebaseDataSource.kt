@@ -573,7 +573,13 @@ class FirebaseDataSource() {
             location = map["location"] as? String ?: "",
             comm = map["comm"] as? String ?: "",
             sexHealth = map["sexHealth"] as? String ?: "",
-            afterCare = map["afterCare"] as? String ?: ""
+            afterCare = map["afterCare"] as? String ?: "",
+            promptQ1 = map["promptQ1"] as? String ?: "",
+            promptA1 = map["promptA1"] as? String ?: "",
+            promptQ2 = map["promptQ2"] as? String ?: "",
+            promptA2 = map["promptA2"] as? String ?: "",
+            promptQ3 = map["promptQ3"] as? String ?: "",
+            promptA3 = map["promptA3"] as? String ?: "",
         )
     }
 

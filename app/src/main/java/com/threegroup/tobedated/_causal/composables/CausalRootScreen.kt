@@ -58,7 +58,7 @@ fun TopAndBotBarsCausal(
     notifiSearching:Boolean = false,
     currentScreen: @Composable () -> Unit = {},
     titleText:String = "To Be Causal",
-    isPhoto:Boolean,
+    isPhoto:Boolean = false,
     nav: NavHostController,
     selectedItemIndex: Int,
     settingsButton: () -> Unit,
@@ -148,7 +148,7 @@ fun TopAndBotBarsCausal(
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if (item.badgeCount != null) {
+                                            if (item.badgeCount != 0 && item.badgeCount != null) {
                                                 Badge {
                                                     Text(text = item.badgeCount.toString())
                                                 }

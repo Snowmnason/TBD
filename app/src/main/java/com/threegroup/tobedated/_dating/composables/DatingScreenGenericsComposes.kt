@@ -1,8 +1,6 @@
 package com.threegroup.tobedated._dating.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -29,12 +24,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -50,85 +43,18 @@ import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
 import com.threegroup.tobedated.shareclasses.composables.PagerIndicator
+import com.threegroup.tobedated.shareclasses.composables.SimpleBox
+import com.threegroup.tobedated.shareclasses.composables.SimpleIconBox
 import com.threegroup.tobedated.shareclasses.composables.TopBarText
 import com.threegroup.tobedated.shareclasses.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.getMBTIColor
-import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starColorMap
 import com.threegroup.tobedated.shareclasses.models.starColors
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
 
-@Composable
-fun SimpleBox(
-    verify: Boolean = false,
-    whatsInsideTheBox: @Composable () -> Unit = {},
-    edit:Boolean = false,
-    onClick: () -> Unit = {}
-){
-    val thickness = 1
-    val boardColor= Color(0xFFB39DB7)
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(thickness.dp, boardColor, shape = RoundedCornerShape(4.dp)),
-        color = AppTheme.colorScheme.background,
-        contentColor = AppTheme.colorScheme.onBackground,
-        shape = RoundedCornerShape(4.dp)
-    ) {
-        Box(modifier = Modifier
-            .padding(4.dp, 8.dp)
-            .clickable(enabled = edit, onClick = onClick)) {
-            whatsInsideTheBox()
-        }
-    }
-}
-
-@Composable
-fun SimpleIconBox(
-    //whatsInsideTheBox: @Composable () -> Unit = {},
-    verify:String = "false",
-    answer: String,
-    icon: ImageVector?,
-    divider:Boolean = false,
-    color:Color = AppTheme.colorScheme.onBackground,
-){
-
-    Box(modifier = Modifier) {
-        if (icon != null) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Icon(
-                    imageVector = icon, contentDescription = "icon", modifier = Modifier
-                        .offset(y = (-2).dp)
-                        .size(25.dp), tint = AppTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = answer,
-                    style = getSmallerTextStyle(color),
-                    modifier = Modifier.offset(y = 3.dp),
-                )
-            }
-        } else {
-            Text(
-                text = answer,
-                style = getSmallerTextStyle(color),
-                modifier = Modifier.offset(y = 3.dp)
-            )
-        }
-    }
-    if(divider){
-        VerticalDivider(
-            modifier = Modifier.height(20.dp),
-            color = Color(0xFFB39DB7),
-            thickness = 2.dp
-        )
-    }
-}
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserInfo(

@@ -643,9 +643,9 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-        val wordOfDay = "Underwhelm"
-        val descriptive = "verb"
-        val phonetic = "un-der-WELM"
+        val wordOfDay = "noils"
+        val partOfSpeech = "noun plural"
+        val source = "gcide"
         val def = "To underwhelm someone is to fail to impress or excite them."
         Spacer(modifier = Modifier.height(24.dp))
         Column {
@@ -662,10 +662,10 @@ fun NavDraw(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
-                        GenericBodyText(text = descriptive)
+                        GenericBodyText(text = partOfSpeech)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        GenericBodyText(text = phonetic)
+                        GenericBodyText(text = source)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))

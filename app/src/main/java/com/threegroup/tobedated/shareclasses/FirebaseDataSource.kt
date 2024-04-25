@@ -278,7 +278,6 @@ class FirebaseDataSource() {
                         match?.let {
                             // Check if userId appears at the start or end of usersMatched field
                             if (it.usersMatched.contains(userId)) {
-                                println(it)
                                 matches.add(it)
                             }
                         }
@@ -440,7 +439,16 @@ class FirebaseDataSource() {
             })
     }
 
-
+    fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onFailure(e)
+            }
+    }
 
     suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> = flow {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)

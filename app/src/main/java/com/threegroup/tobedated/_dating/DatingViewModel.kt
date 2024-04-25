@@ -140,4 +140,14 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun setLoggedInUser() {
         signedInUser = MyApp.signedInUser
     }
+    fun deleteProfile(number:String, datingActivity: DatingActivity) {
+        repository.deleteProfile(number,
+            onSuccess = {
+                datingActivity.clearUserToken()
+            },
+            onFailure = { exception ->
+                println(exception)
+            }
+        )
+    }
 }

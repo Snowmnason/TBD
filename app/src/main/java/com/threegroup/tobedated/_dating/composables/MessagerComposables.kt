@@ -8,18 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -130,6 +126,7 @@ fun MessageStart(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsideMessages(
+    messageBar: @Composable () -> Unit = {},
     messages: @Composable () -> Unit,
     titleText:String,
     goToProfile: () -> Unit = {},
@@ -186,64 +183,14 @@ fun InsideMessages(
                     }
                 )
             },
-//            bottomBar = {
-//                if(hideCall){
-//                    Box(modifier = Modifier
-//                        .background(AppTheme.colorScheme.onTertiary)
-//                        .fillMaxWidth()
-//                        .padding(12.dp)){
-//                        Row (
-//                            modifier = Modifier.fillMaxWidth(),
-//                            //horizontalArrangement = Arrangement.SpaceEvenly
-//                        ){
-//                            IconButton(onClick = sendAttachment,
-//                                modifier = Modifier
-//                                    .offset(y = 5.dp)
-//                                    .weight(1.0F),
-//                                colors= IconButtonDefaults.iconButtonColors(
-//                                    containerColor = Color.Transparent,
-//                                    contentColor = AppTheme.colorScheme.secondary,
-//                                ),
-//                            ) {
-//                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
-//                            }
-//                            OutlinedTextField(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .weight(7.5F),
-//                                value = value, onValueChange = onValueChange,
-//                                textStyle = baseAppTextTheme(),
-//                                keyboardOptions = KeyboardOptions(
-//                                    keyboardType = KeyboardType.Text,
-//                                    capitalization = KeyboardCapitalization.Sentences,
-//                                    autoCorrect = true,
-//                                ),
-//                                maxLines = 4,
-//
-//                                )
-//                            IconButton(onClick = sendMessage,
-//                                modifier = Modifier
-//                                    .offset(y = 5.dp)
-//                                    .weight(1.0F),
-//                                colors= IconButtonDefaults.iconButtonColors(
-//                                    containerColor = Color.Transparent,
-//                                    contentColor = AppTheme.colorScheme.secondary,
-//                                ),
-//                            ) {
-//                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.send), contentDescription = "Send")
-//                            }
-//                        }
-//                    }
-//                }
-//            },
+            bottomBar = {
+                messageBar()
+            },
         ) {
                 paddingValues ->
-            //val state = rememberScrollState()
-            //LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
             Column(
                 Modifier
                     .padding(paddingValues)
-                    //.verticalScroll(state)
                     .fillMaxSize()
             ){
                 messages()
@@ -259,10 +206,10 @@ fun TextSectionAndKeyBoard(
     messageList:List<MessageModel>,
     currentUserSenderId:String,
     match:MatchedUserModel = MatchedUserModel(),
-    message:String,
-    sendMessage: () -> Unit,
-    sendAttachment: () -> Unit,
-    messageChange: (String) -> Unit,
+    message:String = "",
+    sendMessage: () -> Unit = {},
+    sendAttachment: () -> Unit = {},
+    messageChange: (String) -> Unit = {},
     feedBack:Boolean = false
 ){
     Column(
@@ -271,8 +218,8 @@ fun TextSectionAndKeyBoard(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .weight(1f)
+//                .statusBarsPadding()
+//                .weight(1f)
                 .imePadding(),
             state = lazyListState
         ) {
@@ -286,21 +233,21 @@ fun TextSectionAndKeyBoard(
                     MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
                 }
             }
-            item(key = "keyboard"){
-
-            }
-            item{
-                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
-                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-            }
+//            item(key = "keyboard"){
+//
+//            }
+//            item{
+//                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
+//                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
+//            }
         }
-        MessagingBar(
-            modifier = Modifier.weight(1f),
-            message = message,
-            messageChange = messageChange,
-            sendMessage = sendMessage,
-            sendAttachment = sendAttachment
-        )
+//        MessagingBar(
+//            modifier = Modifier.weight(1f),
+//            message = message,
+//            messageChange = messageChange,
+//            sendMessage = sendMessage,
+//            sendAttachment = sendAttachment
+//        )
     }
 }
 @Composable

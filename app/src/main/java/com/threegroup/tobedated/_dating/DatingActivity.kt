@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -48,6 +49,7 @@ import com.threegroup.tobedated._dating.composables.InsideProfileSettings
 import com.threegroup.tobedated._dating.composables.InsideSearchSettings
 import com.threegroup.tobedated._dating.composables.LogOut
 import com.threegroup.tobedated._dating.composables.MessageStart
+import com.threegroup.tobedated._dating.composables.MessagingBar
 import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
@@ -67,7 +69,6 @@ import com.threegroup.tobedated.shareclasses.composables.SimpleBox
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 //val notifiSearching = Random.nextBoolean()
@@ -454,11 +455,10 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
         val messageModel = viewModel { MessageViewModel(MyApp.x) }
         val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
         //TODO need to make this work
-        var scrollValue by remember { mutableIntStateOf(messageList.size) }
+        var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
         val lazyListState = rememberLazyListState()
-        LaunchedEffect(scrollValue) {
-            delay(200)
-            lazyListState.scrollToItem(scrollValue+1)
+        LaunchedEffect(messageList) {
+            lazyListState.scrollToItem(scrollValue) //NEED this to update when keybaord opens
         }
         InsideMessages(
             nav = navController,
@@ -467,22 +467,25 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
             chatSettings = {},
             startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
             startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
+            messageBar = {MessagingBar(
+                modifier = Modifier.imePadding(),
+                message = message,
+                messageChange = { message = it },
+                sendMessage = {
+                    if (message != "") {
+                        messageModel.storeChatData(chatId, message)
+                    }
+                    message = ""
+                    scrollValue = messageList.size + 2
+                },
+                sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ }
+            )},
             messages = {
                 TextSectionAndKeyBoard(
                     lazyListState = lazyListState,
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
                     match = talkedUser!!,
-                    message = message,
-                    messageChange = { message = it },
-                    sendMessage = {
-                        if (message != "") {
-                            messageModel.storeChatData(chatId, message)
-                        }
-                        message = ""
-                        scrollValue = messageList.size + 2
-                    },
-                    sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ }
                 )
             },
         )

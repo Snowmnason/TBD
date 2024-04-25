@@ -1,6 +1,5 @@
 package com.threegroup.tobedated.shareclasses.api.horoscope
 
-import com.threegroup.tobedated.shareclasses.api.RetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

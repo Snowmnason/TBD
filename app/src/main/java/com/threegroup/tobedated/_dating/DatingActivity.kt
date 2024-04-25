@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
@@ -46,12 +47,12 @@ import com.threegroup.tobedated._dating.composables.InsideMessages
 import com.threegroup.tobedated._dating.composables.InsideProfileSettings
 import com.threegroup.tobedated._dating.composables.InsideSearchSettings
 import com.threegroup.tobedated._dating.composables.LogOut
-import com.threegroup.tobedated._dating.composables.MessageScreen
 import com.threegroup.tobedated._dating.composables.MessageStart
 import com.threegroup.tobedated._dating.composables.OtherPreferences
 import com.threegroup.tobedated._dating.composables.SearchingButtons
 import com.threegroup.tobedated._dating.composables.SeekingBox
 import com.threegroup.tobedated._dating.composables.SeekingUserInfo
+import com.threegroup.tobedated._dating.composables.TextSectionAndKeyBoard
 import com.threegroup.tobedated._dating.composables.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.composables.UserInfo
 import com.threegroup.tobedated._friends.FriendsActivity
@@ -66,6 +67,7 @@ import com.threegroup.tobedated.shareclasses.composables.SimpleBox
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 //val notifiSearching = Random.nextBoolean()
@@ -84,7 +86,7 @@ class DatingActivity : ComponentActivity() {
             AppTheme(
                 activity = "dating"
             ) {
-                DatingNav(this@DatingActivity)
+                    DatingNav(this@DatingActivity)
             }
         }
     }
@@ -372,7 +374,7 @@ fun EditProfileScreen(navController: NavHostController, dating: DatingActivity, 
             ) {
                 OutLinedButton(onClick = {/*TODO deactivate account*/   }, text = "Deactivate Account", outLineColor = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
-                OutLinedButton(onClick = {/*TODO report and delete account*/   }, text = "Delete Account", outLineColor = Color.Red, textColor = Color.Red)
+                OutLinedButton(onClick = { vmDating.deleteProfile(currentUser.number, dating) }, text = "Delete Account", outLineColor = Color.Red, textColor = Color.Red)
                 Spacer(modifier = Modifier.height(25.dp))
             }
         }
@@ -443,43 +445,46 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel){
         InsideMessages(
             nav = navController,
             titleText = "Loading",
-            onValueChange = {},
-            sendMessage = {},
             chatSettings = {},
             messages = {}
         )
     }else{
-        val senderId = vmDating.getUser().number
-        val receiverId = talkedUser!!.number
-        val chatId = vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
-        //TODO need to make this nested I think
+        val chatId = vmDating.getChatId(vmDating.getUser().number, talkedUser!!.number) //change to UID later need to account for reverses
         var message by rememberSaveable { mutableStateOf("") }
         val messageModel = viewModel { MessageViewModel(MyApp.x) }
-
         val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
-
-
+        //TODO need to make this work
+        var scrollValue by remember { mutableIntStateOf(messageList.size) }
+        val lazyListState = rememberLazyListState()
+        LaunchedEffect(scrollValue) {
+            delay(200)
+            lazyListState.scrollToItem(scrollValue+1)
+        }
         InsideMessages(
             nav = navController,
             titleText = talkedUser!!.name,
-            value = message,
-            onValueChange = { message = it},
-            sendMessage = { messageModel.storeChatData(chatId, message)
-                message = ""},
             goToProfile = { navController.navigate("MatchedUserProfile") },
             chatSettings = {},
             startCall = {/* TODO Start normal Call (Need to make a screen for it)*/},
             startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/},
-            sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
             messages = {
-                MessageScreen(
-                    chatId = chatId,
-                    viewModel = messageModel,
-                    match = talkedUser!!,
+                TextSectionAndKeyBoard(
+                    lazyListState = lazyListState,
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
+                    match = talkedUser!!,
+                    message = message,
+                    messageChange = { message = it },
+                    sendMessage = {
+                        if (message != "") {
+                            messageModel.storeChatData(chatId, message)
+                        }
+                        message = ""
+                        scrollValue = messageList.size + 2
+                    },
+                    sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ }
                 )
-            }
+            },
         )
     }
 }
@@ -492,25 +497,31 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
     val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
-
+    val state = rememberLazyListState()
+    LaunchedEffect(state) {
+        state.scrollToItem(Int.MAX_VALUE)
+    }
     InsideMessages(
         nav = navController,
         hideCallButtons = false,
         titleText = "Feedback",
-        value = message,
-        onValueChange = { message = it},
-        sendMessage = { messageModel.storeChatData(chatId, message)
-            message = ""},
-        goToProfile = {  },
         chatSettings = {},
-        sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/},
         messages = {
-            MessageScreen(
-                chatId = chatId,
-                viewModel = messageModel,
-                isFeedBack = true,
+            TextSectionAndKeyBoard(
+                lazyListState = state,
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),
+                message = "message",
+                messageChange = { message = it },
+                sendMessage = {
+                    if (message != "") {
+                        messageModel.storeChatData(chatId, message)
+                    }
+                    message = ""
+                    //scrollValue = messageList.size + 2
+                },
+                sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ },
+                feedBack = true
             )
         }
     )
@@ -577,6 +588,7 @@ fun GroupsScreen(navController: NavHostController, dating: DatingActivity){
 }
 @Composable
 fun SomeScreen(navController: NavHostController, dating: DatingActivity, vmDating: DatingViewModel){
+
     val passed = 12 //viewmodel call here
     val liked = 12 //viewmodel call here
     val seen = 12 //viewmodel call here

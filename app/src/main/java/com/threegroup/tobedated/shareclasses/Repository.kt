@@ -81,5 +81,8 @@ class Repository(
     suspend fun setMatchInfo(number: String):Flow<MatchedUserModel?>{
         return firebaseDataSource.setMatchedInfo(number)
     }
+    fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        firebaseDataSource.deleteProfile(number, onSuccess, onFailure)
+    }
 }
 

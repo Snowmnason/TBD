@@ -8,15 +8,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -127,15 +132,11 @@ fun MessageStart(
 fun InsideMessages(
     messages: @Composable () -> Unit,
     titleText:String,
-    value:String = "",
-    onValueChange: (String) -> Unit = {},
-    sendMessage: () -> Unit = {},
     goToProfile: () -> Unit = {},
     nav: NavHostController,
     startVideoCall: () -> Unit = {},
     startCall:() -> Unit = {},
     chatSettings:() -> Unit,
-    sendAttachment:() -> Unit = {},
     hideCall: Boolean = true,
     hideCallButtons:Boolean = true
 ) {
@@ -185,56 +186,56 @@ fun InsideMessages(
                     }
                 )
             },
-            bottomBar = {
-                if(hideCall){
-                    Box(modifier = Modifier
-                        .background(AppTheme.colorScheme.onTertiary)
-                        .fillMaxWidth()
-                        .padding(12.dp)){
-                        Row (
-                            modifier = Modifier.fillMaxWidth(),
-                            //horizontalArrangement = Arrangement.SpaceEvenly
-                        ){
-                            IconButton(onClick = sendAttachment,
-                                modifier = Modifier
-                                    .offset(y = 5.dp)
-                                    .weight(1.0F),
-                                colors= IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = AppTheme.colorScheme.secondary,
-                                ),
-                            ) {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
-                            }
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(7.5F),
-                                value = value, onValueChange = onValueChange,
-                                textStyle = baseAppTextTheme(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    capitalization = KeyboardCapitalization.Sentences,
-                                    autoCorrect = true,
-                                ),
-                                maxLines = 4,
-
-                                )
-                            IconButton(onClick = sendMessage,
-                                modifier = Modifier
-                                    .offset(y = 5.dp)
-                                    .weight(1.0F),
-                                colors= IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = AppTheme.colorScheme.secondary,
-                                ),
-                            ) {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.send), contentDescription = "Send")
-                            }
-                        }
-                    }
-                }
-            },
+//            bottomBar = {
+//                if(hideCall){
+//                    Box(modifier = Modifier
+//                        .background(AppTheme.colorScheme.onTertiary)
+//                        .fillMaxWidth()
+//                        .padding(12.dp)){
+//                        Row (
+//                            modifier = Modifier.fillMaxWidth(),
+//                            //horizontalArrangement = Arrangement.SpaceEvenly
+//                        ){
+//                            IconButton(onClick = sendAttachment,
+//                                modifier = Modifier
+//                                    .offset(y = 5.dp)
+//                                    .weight(1.0F),
+//                                colors= IconButtonDefaults.iconButtonColors(
+//                                    containerColor = Color.Transparent,
+//                                    contentColor = AppTheme.colorScheme.secondary,
+//                                ),
+//                            ) {
+//                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
+//                            }
+//                            OutlinedTextField(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .weight(7.5F),
+//                                value = value, onValueChange = onValueChange,
+//                                textStyle = baseAppTextTheme(),
+//                                keyboardOptions = KeyboardOptions(
+//                                    keyboardType = KeyboardType.Text,
+//                                    capitalization = KeyboardCapitalization.Sentences,
+//                                    autoCorrect = true,
+//                                ),
+//                                maxLines = 4,
+//
+//                                )
+//                            IconButton(onClick = sendMessage,
+//                                modifier = Modifier
+//                                    .offset(y = 5.dp)
+//                                    .weight(1.0F),
+//                                colors= IconButtonDefaults.iconButtonColors(
+//                                    containerColor = Color.Transparent,
+//                                    contentColor = AppTheme.colorScheme.secondary,
+//                                ),
+//                            ) {
+//                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.send), contentDescription = "Send")
+//                            }
+//                        }
+//                    }
+//                }
+//            },
         ) {
                 paddingValues ->
             //val state = rememberScrollState()
@@ -245,8 +246,115 @@ fun InsideMessages(
                     //.verticalScroll(state)
                     .fillMaxSize()
             ){
-                Spacer(modifier = Modifier.height(24.dp))
                 messages()
+
+            }
+        }
+    }
+}
+
+@Composable
+fun TextSectionAndKeyBoard(
+    lazyListState:LazyListState,
+    messageList:List<MessageModel>,
+    currentUserSenderId:String,
+    match:MatchedUserModel = MatchedUserModel(),
+    message:String,
+    sendMessage: () -> Unit,
+    sendAttachment: () -> Unit,
+    messageChange: (String) -> Unit,
+    feedBack:Boolean = false
+){
+    Column(
+        Modifier.fillMaxSize()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .weight(1f)
+                .imePadding(),
+            state = lazyListState
+        ) {
+            itemsIndexed(messageList) { index, message ->
+                val last = index == (messageList.size -1)
+                val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
+                val time = message.currentTime
+                if(feedBack){
+                    MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                }else{
+                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                }
+            }
+            item(key = "keyboard"){
+
+            }
+            item{
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
+            }
+        }
+        MessagingBar(
+            modifier = Modifier.weight(1f),
+            message = message,
+            messageChange = messageChange,
+            sendMessage = sendMessage,
+            sendAttachment = sendAttachment
+        )
+    }
+}
+@Composable
+fun MessagingBar(
+    modifier: Modifier,
+    message:String,
+    messageChange: (String) -> Unit,
+    sendMessage: () -> Unit,
+    sendAttachment: () -> Unit
+){
+    Row(modifier = Modifier
+        .background(AppTheme.colorScheme.onTertiary)
+        .fillMaxWidth()
+        //.weight(1f)
+        .padding(0.dp, 12.dp)){
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            //horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            IconButton(onClick = sendAttachment,
+                modifier = Modifier
+                    .offset(y = 0.dp)
+                    .weight(1.0F),
+                colors= IconButtonDefaults.iconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = AppTheme.colorScheme.secondary,
+                ),
+            ) {
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.attachment), contentDescription = "Send")
+            }
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(7.5F),
+                value = message, onValueChange = messageChange,
+                textStyle = baseAppTextTheme(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    autoCorrect = true,
+                ),
+                maxLines = 4,
+
+                )
+            IconButton(onClick = sendMessage,
+                modifier = Modifier
+                    .offset(y = 0.dp)
+                    .weight(1.0F),
+                colors= IconButtonDefaults.iconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = AppTheme.colorScheme.secondary,
+                ),
+            ) {
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.send), contentDescription = "Send")
             }
         }
     }
@@ -399,7 +507,7 @@ fun MessageScreen(
     }
     Column {
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().weight(9f)
                 .statusBarsPadding()
                 .imePadding(),
             state = state

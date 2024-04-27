@@ -643,7 +643,7 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-        val wordOfDay = "noils"
+        val wordOfDay = "Definition.word"
         val partOfSpeech = "noun plural"
         val source = "gcide"
         val def = "To underwhelm someone is to fail to impress or excite them."

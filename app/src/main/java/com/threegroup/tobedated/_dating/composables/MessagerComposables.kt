@@ -381,7 +381,7 @@ fun TheirMessage(
             if(last){
                 if(userPhoto == "feedback"){
                     Image(painterResource(id = R.drawable.feedback), contentDescription = "Feedback photo",
-                        modifier = Modifier.size(58.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
+                        modifier = Modifier.size(44.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
                 }else{
                     IconButton(onClick = photoClick) {
                         AsyncImage(

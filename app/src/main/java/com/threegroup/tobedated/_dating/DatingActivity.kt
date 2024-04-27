@@ -500,33 +500,37 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }
     val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
-    val state = rememberLazyListState()
-    LaunchedEffect(state) {
-        state.scrollToItem(Int.MAX_VALUE)
+    var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
+    val lazyListState = rememberLazyListState()
+    LaunchedEffect(messageList) {
+        lazyListState.scrollToItem(scrollValue) //NEED this to update when keybaord opens
     }
     InsideMessages(
         nav = navController,
         hideCallButtons = false,
         titleText = "Feedback",
         chatSettings = {},
+        messageBar = {MessagingBar(
+            modifier = Modifier.imePadding(),
+            message = message,
+            messageChange = { message = it },
+            sendMessage = {
+                if (message != "") {
+                    messageModel.storeChatData(chatId, message)
+                }
+                message = ""
+                scrollValue = messageList.size + 2
+            },
+            sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ }
+        )},
         messages = {
             TextSectionAndKeyBoard(
-                lazyListState = state,
+                lazyListState = lazyListState,
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),
-                message = "message",
-                messageChange = { message = it },
-                sendMessage = {
-                    if (message != "") {
-                        messageModel.storeChatData(chatId, message)
-                    }
-                    message = ""
-                    //scrollValue = messageList.size + 2
-                },
-                sendAttachment = {/* TODO photos or attachments Message...advise if we should keep*/ },
-                feedBack = true
+                feedBack = true,
             )
-        }
+        },
     )
 }
 @Composable

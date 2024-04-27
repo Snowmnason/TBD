@@ -14,6 +14,8 @@ interface WordnikService {
 }
 
 data class Definition(
-    val text: String
-    // Add other fields as necessary
+    val word: String = "",
+    val def:String = "",
+    val source:String = "",
+    val partOfSpeech:String = ""
 )

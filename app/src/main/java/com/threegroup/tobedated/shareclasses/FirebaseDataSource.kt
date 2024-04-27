@@ -134,6 +134,7 @@ class FirebaseDataSource() {
                 for (data in snapshot.children) {
                     try {
                         val userModel = data.getValue(MatchedUserModel::class.java)
+
                         if (userModel?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
                             userModel?.let {
                                 if (!it.seeMe) {
@@ -164,33 +165,6 @@ class FirebaseDataSource() {
     /**
     Likes and match related functions
      */
-//    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-//        val database = FirebaseDatabase.getInstance()
-//
-//        // Update user's liked or passed list
-//        val userRef = database.getReference("users/$userId")
-//        userRef.child(if (isLike) "liked" else "passed").push().setValue(likedUserId)
-//
-//        // Mark the liked user as existing in the liked list
-//        val likedUserRef = database.getReference("users/$userId/liked/$likedUserId")
-//        likedUserRef.setValue(true)
-//
-//        // Check if there's a match
-//        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
-//        if (hasUserLikedBack) {
-//            val matchId = getMatchId(userId, likedUserId)
-//
-//            // Create a new match in the database
-//            val matchRef = database.getReference("matches/$matchId")
-//            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
-//            matchRef.setValue(matchData)
-//
-//            // Retrieve the match data and return
-//            val matchSnapshot = matchRef.get().await()
-//            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
-//        }
-//        return null
-//    }
 
     private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
         val likedRef =
@@ -443,6 +417,7 @@ class FirebaseDataSource() {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
         databaseReference.removeValue()
             .addOnSuccessListener {
+
                 onSuccess()
             }
             .addOnFailureListener { e ->

@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.RealtimeDBMatchProperties
 import com.threegroup.tobedated.shareclasses.models.AgeRange
@@ -233,7 +234,7 @@ class FirebaseDataSource() {
 
         // Ensure "likeorpass" node exists
         val likeOrPassRef = database.getReference("likeorpass")
-        likeOrPassRef.keepSynced(true) // Keep the node synchronized for offline capabilities
+        // likeOrPassRef.keepSynced(true) // Keep the node synchronized for offline capabilities //TODO might need to comment out
 
         // Update user's liked or passed list
         val userLikeOrPassRef = likeOrPassRef.child(userId)
@@ -241,11 +242,13 @@ class FirebaseDataSource() {
         if (isLike) {
             userLikeOrPassRef.child("liked").child(likedUserId).setValue(true)
             // Reference to likedby node with likedUserId as the key
-            likedUserLikeOrPassRef.child("likedby").child(userId).setValue(true) // Set the value as the current userId
+            likedUserLikeOrPassRef.child("likedby").child(userId)
+                .setValue(true) // Set the value as the current userId
         } else {
             userLikeOrPassRef.child("passed").child(likedUserId).setValue(true)
             // Reference to passedby node with likedUserId as the key
-            likedUserLikeOrPassRef.child("passedby").child(userId).setValue(true) // Set the value as the current userId
+            likedUserLikeOrPassRef.child("passedby").child(userId)
+                .setValue(true) // Set the value as the current userId
         }
 
         // Check if there's a match
@@ -462,17 +465,148 @@ class FirebaseDataSource() {
             })
     }
 
-    fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
+//    fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+//        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
+//        databaseReference.removeValue()
+//            .addOnSuccessListener {
+//
+//                onSuccess()
+//            }
+//            .addOnFailureListener { e ->
+//                onFailure(e)
+//            }
+//    }
 
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
-            }
+    suspend fun deleteUserAndData(userId: String) {
+        try {
+            val database = FirebaseDatabase.getInstance()
+            val storage = FirebaseStorage.getInstance()
+
+            // Delete user data from Realtime Database
+            val userRef = database.getReference("/users/$userId")
+            userRef.removeValue().await()
+
+            // Remove like or pass data
+            removeLikeOrPassData(database, userId)
+
+            // Delete user's matches
+            deleteMatches(database, userId)
+
+            // Delete user's chats
+            deleteChats(database, userId)
+
+            // Delete user's data from Firebase Storage
+            deleteUserDataFromStorage(userId)
+
+            // Delete user from authentication list
+            deleteUserFromAuthentication()
+
+            // Log success message
+            Log.d("DeleteUserAndData", "User $userId and associated data deleted successfully")
+        } catch (e: Exception) {
+            Log.e("DeleteUserAndData", "Error deleting user data: ${e.message}", e)
+        }
     }
+
+    private suspend fun removeLikeOrPassData(database: FirebaseDatabase, userId: String) {
+        try {
+            val likeOrPassRef = database.getReference("likeorpass")
+            val likeOrPassSnapshot = likeOrPassRef.get().await()
+
+            // Delete instances of the user in other user's likeorpass children
+            likeOrPassSnapshot.children.forEach { userSnapshot ->
+                userSnapshot.children.forEach { subSnapshot ->
+                    subSnapshot.children.forEach { numberSnapshot ->
+                        if (numberSnapshot.key == userId) {
+                            numberSnapshot.ref.removeValue().await()
+                        }
+                    }
+                }
+            }
+
+            // Delete the user's likeorpass data
+            likeOrPassRef.child(userId).removeValue().await()
+
+            Log.d("RemoveLikeOrPassData", "Like or pass data removed successfully for user $userId")
+        } catch (e: Exception) {
+            Log.e("RemoveLikeOrPassData", "Error removing like or pass data: ${e.message}", e)
+        }
+    }
+
+    private suspend fun deleteMatches(database: FirebaseDatabase, userId: String) {
+        try {
+            val matchesRef = database.getReference("matches")
+            val matchesSnapshot = matchesRef.get().await()
+
+            matchesSnapshot.children.forEach { matchSnapshot ->
+                val matchId = matchSnapshot.key ?: ""
+                if (matchId.contains(userId)) {
+                    matchSnapshot.ref.removeValue().await()
+                }
+            }
+
+            Log.d("DeleteMatches", "Matches deleted successfully for user $userId")
+        } catch (e: Exception) {
+            Log.e("DeleteMatches", "Error deleting matches: ${e.message}", e)
+        }
+    }
+
+    private suspend fun deleteChats(database: FirebaseDatabase, userId: String) {
+        val chatsRef = database.getReference("chats")
+        val userChatsQuery = chatsRef.orderByKey().startAt(userId).endAt(userId + "\uf8ff")
+        val userChatsSnapshot = userChatsQuery.get().await()
+
+        userChatsSnapshot.children.forEach { chatSnapshot ->
+            chatSnapshot.ref.removeValue().await()
+        }
+    }
+
+    private suspend fun deleteUserDataFromStorage(userId: String) {
+        try {
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference
+            val userStorageRef = storageRef.child("users/$userId")
+
+            // Delete all files and subdirectories under the user's storage folder
+            userStorageRef.listAll().await().items.forEach { fileRef ->
+                fileRef.delete().await()
+            }
+
+            // Delete the user's storage folder itself
+            userStorageRef.delete().await()
+
+            Log.d(
+                "DeleteUserDataFromStorage",
+                "User data deleted successfully from Firebase Storage"
+            )
+        } catch (e: Exception) {
+            Log.e(
+                "DeleteUserDataFromStorage",
+                "Error deleting user data from Firebase Storage: ${e.message}",
+                e
+            )
+        }
+    }
+
+    private suspend fun deleteUserFromAuthentication(): Boolean {
+        return try {
+            val user = FirebaseAuth.getInstance().currentUser
+            user?.delete()?.await()
+            Log.d(
+                "DeleteUserFromAuthentication",
+                "User successfully deleted from Firebase Authentication"
+            )
+            true
+        } catch (e: Exception) {
+            Log.e(
+                "DeleteUserFromAuthentication",
+                "Error deleting user from Firebase Authentication: ${e.message}",
+                e
+            )
+            false
+        }
+    }
+
 
     suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> = flow {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)

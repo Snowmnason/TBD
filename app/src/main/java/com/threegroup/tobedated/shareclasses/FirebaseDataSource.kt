@@ -166,10 +166,18 @@ class FirebaseDataSource() {
     Likes and match related functions
      */
 
+//    private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
+//        val likedRef =
+//            FirebaseDatabase.getInstance().getReference("users/$likedUserId/liked/$userId")
+//        val likedSnapshot = likedRef.get().await()
+//        return likedSnapshot.exists()
+//    }
+
     private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
-        val likedRef =
-            FirebaseDatabase.getInstance().getReference("users/$likedUserId/liked/$userId")
-        val likedSnapshot = likedRef.get().await()
+        val likeOrPassRef = FirebaseDatabase.getInstance().getReference("likeorpass")
+        val likedNodeRef = likeOrPassRef.child(likedUserId).child("liked")
+
+        val likedSnapshot = likedNodeRef.child(userId).get().await()
         return likedSnapshot.exists()
     }
 
@@ -180,23 +188,65 @@ class FirebaseDataSource() {
             "$userId2-$userId1"
         }
     }
+// TODO (old function that stores like and pass info inside User's path)
 
+//   suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+//        val database = FirebaseDatabase.getInstance().getReference("users/$userId")
+//
+//        // Update user's liked or passed list
+//        if (isLike) {
+//            database.child("liked").push().setValue(likedUserId)
+//            // Mark the liked user as existing in the liked list
+//            database.child("liked/$likedUserId").setValue(true)
+//        } else {
+//            database.child("passed").push().setValue(likedUserId)
+//        }
+//        // Check if there's a match
+//        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
+//        if (hasUserLikedBack) {
+//            val matchId = getMatchId(userId, likedUserId)
+//
+//            // Create a new match in the database
+//            val matchRef = FirebaseDatabase.getInstance().getReference("matches/$matchId")
+//            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
+//            matchRef.setValue(matchData)
+//            /**
+//             * //THIS IS MY ADDITION
+//             */
+//            val matchSet = matchRef.child(likedUserId)
+//            matchSet.setValue(setMatch(likedUserId))
+//            val userSet = matchRef.child(userId)
+//            userSet.setValue(setMatch(userId))
+//            /**
+//             * TO HERE I dunno if this is needed
+//             */
+//            // Retrieve the match data and return
+//            val matchSnapshot = matchRef.get().await()
+//            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
+//        }
+//        return null
+//    }
+
+    // TODO (new function that creates a new path in database called "likeorpass" and stores like, pass, likedby, and passed by information)
     suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-        val database = FirebaseDatabase.getInstance().getReference("users/$userId")
+        val database = FirebaseDatabase.getInstance()
+
+        // Ensure "likeorpass" node exists
+        val likeOrPassRef = database.getReference("likeorpass")
+        likeOrPassRef.keepSynced(true) // Keep the node synchronized for offline capabilities
 
         // Update user's liked or passed list
-        if(isLike){
-            database.child("liked" ).push().setValue(likedUserId)
-            // Mark the liked user as existing in the liked list
-            database.child("liked/$likedUserId").setValue(true)
-        }else{
-            database.child("passed").push().setValue(likedUserId)
+        val userLikeOrPassRef = likeOrPassRef.child(userId)
+        val likedUserLikeOrPassRef = likeOrPassRef.child(likedUserId)
+        if (isLike) {
+            userLikeOrPassRef.child("liked").child(likedUserId).setValue(true)
+            // Reference to likedby node with likedUserId as the key
+            likedUserLikeOrPassRef.child("likedby").child(userId).setValue(true) // Set the value as the current userId
+        } else {
+            userLikeOrPassRef.child("passed").child(likedUserId).setValue(true)
+            // Reference to passedby node with likedUserId as the key
+            likedUserLikeOrPassRef.child("passedby").child(userId).setValue(true) // Set the value as the current userId
         }
-
-//
-//
-//        val likedUserRef = database.getReference("users/$userId/liked/$likedUserId")
-//        likedUserRef.setValue(true)
 
         // Check if there's a match
         val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
@@ -204,25 +254,23 @@ class FirebaseDataSource() {
             val matchId = getMatchId(userId, likedUserId)
 
             // Create a new match in the database
-            val matchRef =  FirebaseDatabase.getInstance().getReference("matches/$matchId")
+            val matchRef = database.getReference("matches/$matchId")
             val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
             matchRef.setValue(matchData)
-            /**
-             * //THIS IS MY ADDITION
-             */
-            val matchSet = matchRef.child(likedUserId)
-            matchSet.setValue(setMatch(likedUserId))
-            val userSet = matchRef.child(userId)
-            userSet.setValue(setMatch(userId))
-            /**
-             * TO HERE I dunno if this is needed
-             */
+
+            // Add the matched users to the match node
+            matchRef.child(likedUserId).setValue(setMatch(likedUserId))
+            matchRef.child(userId).setValue(setMatch(userId))
+
             // Retrieve the match data and return
             val matchSnapshot = matchRef.get().await()
             return matchSnapshot.getValue(RealtimeDBMatch::class.java)
         }
+
         return null
     }
+
+
     private suspend fun setMatch(userId: String): Match {//TODO This should be done somewhere else
         val userSnapshot = withContext(Dispatchers.IO) {
             FirebaseDatabase.getInstance().getReference("users").child(userId).get().await()
@@ -315,6 +363,7 @@ class FirebaseDataSource() {
 //
 
     }
+
     fun getCurrentUserId(): String {
         return FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
@@ -513,11 +562,13 @@ class FirebaseDataSource() {
             } ?: CasualAdditions()
         }
     }
+
     private fun getUserSearchPreference(map: Map<*, *>): UserSearchPreferenceModel {
         return UserSearchPreferenceModel(
             ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
             maxDistance = map["maxDistance"] as? Int ?: 25,
-            gender = (map["gender"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+            gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
+                ?: listOf("Doesn't Matter"),
             zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
                 ?: listOf("Doesn't Matter"),
             sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
@@ -548,7 +599,8 @@ class FirebaseDataSource() {
                 ?: listOf("Doesn't Matter"),
         )
     }
-    private fun getCasualAdditions(map: Map<*, *>):CasualAdditions{
+
+    private fun getCasualAdditions(map: Map<*, *>): CasualAdditions {
         return CasualAdditions(
             leaning = map["leaning"] as? String ?: "",
             lookingFor = map["lookingFor"] as? String ?: "",
@@ -576,6 +628,7 @@ class FirebaseDataSource() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         continuation.resume(snapshot.value as? Map<*, *>)
                     }
+
                     override fun onCancelled(error: DatabaseError) {
                         continuation.resumeWithException(error.toException())
                     }
@@ -588,6 +641,7 @@ class FirebaseDataSource() {
             emit(user)
         }
     }
+
     private fun setMatchedProperties(
         user: MatchedUserModel,
         userDataMap: Map<*, *>,

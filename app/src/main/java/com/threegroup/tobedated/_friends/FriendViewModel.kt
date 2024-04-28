@@ -1,7 +1,7 @@
 package com.threegroup.tobedated._friends
 
 import androidx.lifecycle.ViewModel
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.MutableStateFlow

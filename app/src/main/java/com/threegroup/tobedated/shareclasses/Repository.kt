@@ -56,8 +56,8 @@ class Repository(
     suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> {
         return firebaseDataSource.setUserInfo(number, location)
     }
-    suspend fun getMatch(match: RealtimeDBMatch): Match?{
-        return firebaseDataSource.getMatch(match)
+    suspend fun getMatch(match: RealtimeDBMatch, userId: String): Match{
+        return firebaseDataSource.getMatch(match, userId)
     }
     suspend fun setMatchInfo(number: String):Flow<MatchedUserModel?>{
         return firebaseDataSource.setMatchedInfo(number)
@@ -71,24 +71,7 @@ class Repository(
     suspend fun blockUser(blockedUserId: String, blockingUserId: String){
         firebaseDataSource.blockUser(blockedUserId, blockingUserId)
     }
+    suspend fun deleteMatch(matchedUser:String, userId:String){
+        firebaseDataSource.deleteMatch(matchedUser, userId)
+    }
 }
-
-//suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-//    return firebaseDataSource.signInWithPhoneAuthCredential(credential)
-//}
-//suspend fun checkUserExist(number: String) {
-//    return firebaseDataSource.checkUserExist(number)
-//}
-//suspend fun storeUserData(data: UserModel) {
-//    return firebaseDataSource.storeUserData(data)
-//}
-//suspend fun getUserData(): ArrayList<UserModel>? {
-//    return firebaseDataSource.getUserData()
-//}
-//suspend fun updateUserData(userUpdates: UserModel) {
-//    return firebaseDataSource.updateUserData(userUpdates)
-//}
-////    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-////        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
-////    }
-

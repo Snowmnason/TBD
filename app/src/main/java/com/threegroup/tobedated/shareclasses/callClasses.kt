@@ -207,3 +207,9 @@ fun formatPhoneNumber(code: String, userPhoneNumber: String): String {
     formattedPhoneNumber = code + formattedPhoneNumber
     return formattedPhoneNumber
 }
+
+fun getChatId(senderId: String, receiverId: String): String {
+    return if (senderId > receiverId) {
+        senderId + receiverId
+    } else receiverId + senderId
+}

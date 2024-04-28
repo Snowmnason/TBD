@@ -25,7 +25,7 @@ import com.threegroup.tobedated._dating.composes.SomeScreen
 import com.threegroup.tobedated.composeables.profiles.BioEdit
 import com.threegroup.tobedated.composeables.profiles.ChangePhoto
 import com.threegroup.tobedated.composeables.profiles.PromptEdit
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 
 @Composable
 fun DatingNav(dating: DatingActivity){

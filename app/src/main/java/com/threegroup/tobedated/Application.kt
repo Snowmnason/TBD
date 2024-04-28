@@ -1,7 +1,9 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated
 
 import android.app.Application
 import com.google.firebase.FirebaseApp
+import com.threegroup.tobedated.shareclasses.FirebaseDataSource
+import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

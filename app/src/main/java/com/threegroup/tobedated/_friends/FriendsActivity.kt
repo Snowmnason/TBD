@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.theme.AppTheme

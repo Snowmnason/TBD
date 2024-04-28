@@ -2,7 +2,7 @@ package com.threegroup.tobedated._causal
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.FirebaseDatabase
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.AdditionsIndex
 import com.threegroup.tobedated.shareclasses.models.CasualAdditions

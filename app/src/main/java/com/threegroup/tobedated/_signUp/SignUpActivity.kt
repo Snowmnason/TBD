@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

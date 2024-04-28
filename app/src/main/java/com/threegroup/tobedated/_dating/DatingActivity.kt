@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated.composeables.profiles.InsideMatchedProfile
-import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.composeables.composables.OutLinedButton
+import com.threegroup.tobedated.composeables.profiles.InsideMatchedProfile
+import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.theme.AppTheme
@@ -113,7 +113,8 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
                             .padding(25.dp, 0.dp)
                     ) {
                         OutLinedButton(
-                            onClick = {/*TODO report and unmatch account*/
+                            onClick = {
+                                vmDating.reportUser(talkedUser.number, vmDating.getUser().number)
                                 nav.navigate("ChatsScreen")
                             },
                             text = "Report",
@@ -122,7 +123,7 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutLinedButton(
-                            onClick = {/*TODO unmatch account*/
+                            onClick = { vmDating.deleteMatch(talkedUser.number, vmDating.getUser().number)
                                 nav.navigate("ChatsScreen")
                             },
                             text = "Unmatch",

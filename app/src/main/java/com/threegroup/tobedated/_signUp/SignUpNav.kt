@@ -47,7 +47,7 @@ import com.threegroup.tobedated._signUp.composes.relationshipScreen
 import com.threegroup.tobedated._signUp.composes.religiousScreen
 import com.threegroup.tobedated._signUp.composes.smokeScreen
 import com.threegroup.tobedated._signUp.composes.weedScreen
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.ProgressBar
 

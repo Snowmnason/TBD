@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
@@ -79,9 +79,9 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     private fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
             repository.getMatchesFlow(userId).collect { matches ->
-                val convertedMatches = matches.mapNotNull {
+                val convertedMatches = matches.map {
                         match ->
-                    repository.getMatch(match)
+                    repository.getMatch(match, userId)
                 }
                 _matchList.value = convertedMatches
             }
@@ -124,14 +124,15 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun getTalkedUser(): MatchedUserModel {
         return selectedUser.value!!
     }
+    fun deleteMatch(matchedUser:String, userId: String){
+        viewModelScope.launch(IO) {
+            repository.deleteMatch(matchedUser, userId)
+        }
+    }
         /**
          *  generates a unique chatId made from the UIDs of the sender and receiver
          */
-    fun getChatId(senderId: String, receiverId: String): String {
-        return if (senderId > receiverId) {
-            senderId + receiverId
-        } else receiverId + senderId
-    }
+
 
     /**
      *

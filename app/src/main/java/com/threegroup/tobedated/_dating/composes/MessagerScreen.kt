@@ -19,7 +19,8 @@ import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.messages.InsideMessages
 import com.threegroup.tobedated.composeables.messages.KeyBoard
 import com.threegroup.tobedated.composeables.messages.TextSection
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.shareclasses.getChatId
 
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel) {
@@ -33,7 +34,7 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel) 
             messages = {}
         )
     } else {
-        val chatId = vmDating.getChatId(
+        val chatId = getChatId(
             vmDating.getUser().number,
             talkedUser!!.number
         ) //change to UID later need to account for reverses
@@ -85,7 +86,7 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
     val senderId = vmDating.getUser().number
     val receiverId = "feedback"
     val chatId =
-        vmDating.getChatId(senderId, receiverId) //change to UID later need to account for reverses
+        getChatId(senderId, receiverId) //change to UID later need to account for reverses
     //TODO need to make this nested I think
     var message by rememberSaveable { mutableStateOf("") }
     val messageModel = viewModel { MessageViewModel(MyApp.x) }

@@ -51,11 +51,13 @@ suspend fun deleteMatches(database: FirebaseDatabase, userId: String) {
 
 suspend fun deleteChats(database: FirebaseDatabase, userId: String) {
     val chatsRef = database.getReference("chats")
-    val userChatsQuery = chatsRef.orderByKey().startAt(userId).endAt(userId + "\uf8ff")
-    val userChatsSnapshot = userChatsQuery.get().await()
+    val chatsSnapshot = chatsRef.get().await()
 
-    userChatsSnapshot.children.forEach { chatSnapshot ->
-        chatSnapshot.ref.removeValue().await()
+    chatsSnapshot.children.forEach { chatSnapshot ->
+        val chatId = chatSnapshot.key ?: ""
+        if (chatId.contains(userId)) {
+            chatSnapshot.ref.removeValue().await()
+        }
     }
 }
 

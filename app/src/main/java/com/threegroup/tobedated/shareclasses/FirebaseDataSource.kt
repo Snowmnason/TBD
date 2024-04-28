@@ -251,8 +251,7 @@ class FirebaseDataSource {
                     println("Transaction successful.")
                     // Remove reported user from matches and chats
                     CoroutineScope(Dispatchers.IO).launch {
-                        deleteMatches(database, reportedUserId)
-                        deleteChats(database, reportedUserId)
+                        deleteMatch(reportedUserId, reportedUserId)
                     }
                 }
             }
@@ -276,11 +275,8 @@ class FirebaseDataSource {
     /**
      * Function to get a single instance of a match
      */
-    suspend fun getMatch(match: RealtimeDBMatch): Match? {
-        val userId = match.usersMatched.firstOrNull {
-            it != (FirebaseAuth.getInstance().currentUser?.uid
-                ?: throw Exception("User not logged in"))
-        } ?: return null
+    suspend fun getMatch(match: RealtimeDBMatch, currUser:String): Match {
+        val userId = if(match.usersMatched[0] == currUser) match.usersMatched[1] else{ match.usersMatched[0]}
         val userSnapshot = withContext(Dispatchers.IO) {
             FirebaseDatabase.getInstance().getReference("users").child(userId).get().await()
         }
@@ -297,28 +293,36 @@ class FirebaseDataSource {
                 lastMessage = match.lastMessage
             )
         }
-//        val user = MyApp.signedInUser.value!!
-//        val matchId = getMatchId(userId, user.name)
-//        val userSnapshot = withContext(Dispatchers.IO) {
-//            FirebaseDatabase.getInstance().getReference("matches/$matchId/$userId").get().await()
-//        }
-//        //val matchRef =  FirebaseDatabase.getInstance().getReference("matches/$matchId/$userId")
-//        val userName = userSnapshot.child("userName").getValue(String::class.java) ?: ""
-//        val userAge = userSnapshot.child("age").getValue(Int::class.java) ?: 18
-//        val userImage1 = userSnapshot.child("userPicture").getValue(String::class.java) ?: ""
-//
+    }
+    suspend fun deleteMatch(matchedUser: String, currUser: String) {
+        try {
+            val matchesRef = FirebaseDatabase.getInstance().getReference("matches")
+            val matchSnapshot = matchesRef.get().await()
 
+            val matchId = matchSnapshot.key ?: ""
+            if (matchId.contains(matchedUser)) {
+                matchSnapshot.ref.removeValue().await()
+            }
+
+            deleteChat(getChatId(matchedUser, currUser)!!)
+            Log.d("DeleteMatches", "Matches deleted successfully for user $matchedUser")
+        } catch (e: Exception) {
+            Log.e("DeleteMatches", "Error deleting matches: ${e.message}", e)
+        }
+    }
+    private suspend fun deleteChat(chatId: String) {
+        val chatsRef = FirebaseDatabase.getInstance()
+            .getReference("chats").child(chatId)
+        chatsRef.removeValue().await()
     }
 
 
 
-    /*
-        Message related functions
-     */
 //TODO check all code related to chats/messages for functionality
     /**
      * Function to get chats from database
      * takes the chat id
+     * message related stuff
      */
     fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
         val dbRef: DatabaseReference =
@@ -497,125 +501,3 @@ class FirebaseDataSource {
         }
     }
 }
-///*
-//   Log in and authentication functions
-// */
-///**
-// * Function for user to sign in by phone number and verification code
-// */
-//suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-//    FirebaseAuth.getInstance().signInWithCredential(credential)
-//}
-//
-///**
-// * Function to check if a user exists in the database
-// * takes a phone number as a parameter
-// */
-//suspend fun checkUserExist(number: String) {
-//    FirebaseDatabase.getInstance().getReference("users").child("+1$number")
-//}
-//
-///*
-//  Sign up functions
-//*/
-///**
-// * Function to store users data after making an account
-// * takes an UserModel type object which will contain all the user's input and adds it to database
-// */
-//suspend fun storeUserData(data: UserModel) {
-//    FirebaseDatabase.getInstance().getReference("users")
-//        .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!)
-//        .setValue(data)
-//}
-//
-///*
-//      User data related functions
-// */
-//
-//private fun getCurrentFirebaseUser(): FirebaseUser? {
-//    return FirebaseAuth.getInstance().currentUser
-//}
-/**
- * Function to pull the list of users (not including current user)
- * meant to be used for dating discovery
- */
-//suspend fun getUserData(): ArrayList<UserModel>? { //TODO look into converting from DataSnapshot to Flow and StateFLow
-//    var list: ArrayList<UserModel>? = null
-//    try {
-//        FirebaseDatabase.getInstance().getReference("users")
-//            .addValueEventListener(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    Log.d("MYTAG", "onDataChange: ${snapshot.toString()}")
-//
-//                    if (snapshot.exists()) {
-//                        list = arrayListOf()
-//                        for (data in snapshot.children) {
-//                            val model = data.getValue(UserModel::class.java)
-//
-//                            if (model!!.number != FirebaseAuth.getInstance().currentUser!!.phoneNumber) { // TODO check this; not sure if it works
-//                                list!!.add(model)
-//                            }
-//
-//                        }
-//                    }
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    Log.d("MY_DEBUGGER", Log.ERROR.toString())
-//                }
-//            })
-//    } catch (e: Exception) {
-//        Log.d("MY_DEBUGGER", Log.ERROR.toString())
-//    }
-//    return list
-//}
-//
-///**
-// * Function to update user's profile
-// * currently takes a UserModel as a parameter but we may want to change this to the specific variables being updated
-// */
-//suspend fun updateUserData(userUpdates: UserModel) {
-//    //TODO check if this properly updates the changed values the user put in and does not create a duplicate user (resulting in an error most likely) or anything else strange
-//    FirebaseDatabase.getInstance().getReference("users")
-//        .child(FirebaseAuth.getInstance().currentUser!!.phoneNumber!!)
-//        .setValue(userUpdates)
-//}
-
-// TODO (old function that stores like and pass info inside User's path)
-
-//   suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-//        val database = FirebaseDatabase.getInstance().getReference("users/$userId")
-//
-//        // Update user's liked or passed list
-//        if (isLike) {
-//            database.child("liked").push().setValue(likedUserId)
-//            // Mark the liked user as existing in the liked list
-//            database.child("liked/$likedUserId").setValue(true)
-//        } else {
-//            database.child("passed").push().setValue(likedUserId)
-//        }
-//        // Check if there's a match
-//        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
-//        if (hasUserLikedBack) {
-//            val matchId = getMatchId(userId, likedUserId)
-//
-//            // Create a new match in the database
-//            val matchRef = FirebaseDatabase.getInstance().getReference("matches/$matchId")
-//            val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
-//            matchRef.setValue(matchData)
-//            /**
-//             * //THIS IS MY ADDITION
-//             */
-//            val matchSet = matchRef.child(likedUserId)
-//            matchSet.setValue(setMatch(likedUserId))
-//            val userSet = matchRef.child(userId)
-//            userSet.setValue(setMatch(userId))
-//            /**
-//             * TO HERE I dunno if this is needed
-//             */
-//            // Retrieve the match data and return
-//            val matchSnapshot = matchRef.get().await()
-//            return matchSnapshot.getValue(RealtimeDBMatch::class.java)
-//        }
-//        return null
-//    }

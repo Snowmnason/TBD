@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._signUp.SignUpActivity
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
-import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.formatPhoneNumber
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers

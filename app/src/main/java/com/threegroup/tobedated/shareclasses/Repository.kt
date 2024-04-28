@@ -65,6 +65,12 @@ class Repository(
     suspend fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         firebaseDataSource.deleteProfile(number, onSuccess, onFailure)
     }
+    suspend fun reportUser(reportedUserId: String, reportingUserId: String) {
+        firebaseDataSource.reportUser(reportedUserId,reportingUserId)
+    }
+    suspend fun blockUser(blockedUserId: String, blockingUserId: String){
+        firebaseDataSource.blockUser(blockedUserId, blockingUserId)
+    }
 }
 
 //suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {

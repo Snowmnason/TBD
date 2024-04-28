@@ -6,6 +6,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.RealtimeDBMatchProperties
@@ -20,11 +22,13 @@ import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -212,8 +216,62 @@ class FirebaseDataSource {
         }
     }
     /**
-     * Function needed to convert birthday from String to Date
+     * Functions related to blocking and reporting
      */
+    suspend fun reportUser(reportedUserId: String, reportingUserId: String) {
+        val database = FirebaseDatabase.getInstance()
+        val reportsRef = database.getReference("reports")
+
+        // Update report list with reported user's number as the key
+        val userReportedRef = reportsRef.child(reportedUserId)
+
+        // Add the reporting user as a value for field "reported by"
+        userReportedRef.child("reportedby").push().setValue(reportingUserId)
+
+        // Increment the report count
+        userReportedRef.child("count").runTransaction(object : Transaction.Handler {
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                var count = currentData.getValue(Int::class.java) ?: 0
+                count++
+                currentData.value = count
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                currentData: DataSnapshot?
+            ) {
+                if (error != null) {
+                    // Failure
+                    println("Transaction failed.")
+
+                } else {
+                    // Success
+                    println("Transaction successful.")
+                    // Remove reported user from matches and chats
+                    CoroutineScope(Dispatchers.IO).launch {
+                        deleteMatches(database, reportedUserId)
+                        deleteChats(database, reportedUserId)
+                    }
+                }
+            }
+        })
+    }
+
+    suspend fun blockUser(blockedUserId: String, blockingUserId: String) {
+        // Get database reference to "users" path
+        val database = FirebaseDatabase.getInstance()
+        val databaseRef = database.getReference("users")
+
+        // Update users blocked list
+        val userBlockedRef = databaseRef.child(blockingUserId).child("blocked").child(blockedUserId)
+        userBlockedRef.setValue(true)
+
+        // Remove blocked user from matches and chats
+        deleteMatches(database, blockedUserId)
+        deleteChats(database, blockedUserId)
+    }
 
     /**
      * Function to get a single instance of a match

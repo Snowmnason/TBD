@@ -12,14 +12,14 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated.composeables.searching.SearchingButtons
-import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated._dating.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
-import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.Comeback
+import com.threegroup.tobedated.composeables.searching.SearchingButtons
+import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
+import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 
 /*
@@ -128,6 +128,7 @@ fun SearchingScreen(
                 showReport = false
                 currentProfileIndex++
                 vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
+                vmDating.reportUser(currentPotential.value!!.number, currentUser.number)
                 nextProfile()
                 //nextProfile(vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!))
             }

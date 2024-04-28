@@ -50,7 +50,7 @@ fun SeekingUserInfo(
     prompt3Click: () -> Unit = {},
     photoClick: () -> Unit = {},
     bottomButtons: @Composable () -> Unit = {},
-    location:String = "X Miles",
+    location:String,
     doesEdit:Boolean = false,
 ) {
     val photos = listOf(user.image1, user.image2, user.image3, user.image4)

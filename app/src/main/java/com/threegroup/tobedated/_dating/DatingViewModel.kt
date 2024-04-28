@@ -87,6 +87,20 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
+    /**
+     * This is for blocking
+     */
+    fun reportUser(reportedUserId: String, reportingUserId: String) {
+        viewModelScope.launch(IO) {
+            repository.reportUser(reportedUserId, reportingUserId)
+        }
+    }
+
+    fun blockUser(blockedUserId: String, blockingUserId: String) {
+        viewModelScope.launch(IO) {
+            repository.blockUser(blockedUserId, blockingUserId)
+        }
+    }
 
 
     /**

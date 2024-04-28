@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,13 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated.composeables.composables.AlertDialogBox
+import com.threegroup.tobedated.composeables.composables.GenericTitleText
+import com.threegroup.tobedated.composeables.composables.OutLinedButton
+import com.threegroup.tobedated.composeables.composables.SimpleBox
 import com.threegroup.tobedated.composeables.profiles.ChangeProfile
 import com.threegroup.tobedated.composeables.profiles.EditProfile
 import com.threegroup.tobedated.composeables.profiles.InsideProfileSettings
 import com.threegroup.tobedated.composeables.profiles.LogOut
-import com.threegroup.tobedated.composeables.composables.GenericTitleText
-import com.threegroup.tobedated.composeables.composables.OutLinedButton
-import com.threegroup.tobedated.composeables.composables.SimpleBox
 
 @Composable
 fun EditProfileScreen(
@@ -37,6 +39,7 @@ fun EditProfileScreen(
     vmDating: DatingViewModel
 ) {
     val currentUser = vmDating.getUser()
+    var showDelete by rememberSaveable { mutableStateOf(false) }
     var seen by remember { mutableStateOf(currentUser.seeMe) }
 //currentUser.mbti,
     val userSettings = listOf(currentUser.ethnicity, currentUser.pronoun, currentUser.gender, currentUser.sexOrientation, currentUser.meetUp, currentUser.relationship, currentUser.intentions, currentUser.star,
@@ -100,8 +103,11 @@ fun EditProfileScreen(
                     outLineColor = Color.Red
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
+
+
                 OutLinedButton(
-                    onClick = { vmDating.deleteProfile(currentUser.number, dating) },
+                    onClick = { showDelete = true },
                     text = "Delete Account",
                     outLineColor = Color.Red,
                     textColor = Color.Red
@@ -110,6 +116,17 @@ fun EditProfileScreen(
             }
         }
     )
+    if (showDelete) {
+        AlertDialogBox(
+            dialogTitle = "Are you sure?",
+            onDismissRequest = { showDelete = false },
+            dialogText = "if you confirm your account and everything connected will be deleted",
+            onConfirmation = {
+                vmDating.deleteProfile(currentUser.number, dating)
+
+            }
+        )
+    }
 }
 
 @Composable

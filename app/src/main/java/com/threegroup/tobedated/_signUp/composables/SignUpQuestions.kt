@@ -65,18 +65,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated.shareclasses.composables.BasicPicker
-import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
-import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
-import com.threegroup.tobedated.shareclasses.composables.PickerState
-import com.threegroup.tobedated.shareclasses.composables.PlainTextButton
-import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
-import com.threegroup.tobedated.shareclasses.composables.getAddShadow
+import com.threegroup.tobedated.composeables.composables.BasicPicker
+import com.threegroup.tobedated.composeables.composables.GenericBodyText
+import com.threegroup.tobedated.composeables.composables.GenericLabelText
+import com.threegroup.tobedated.composeables.composables.PickerState
+import com.threegroup.tobedated.composeables.composables.PlainTextButton
+import com.threegroup.tobedated.composeables.composables.baseAppTextTheme
+import com.threegroup.tobedated.composeables.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.curiositiesANDImaginations
 import com.threegroup.tobedated.shareclasses.models.insightsANDReflections
 import com.threegroup.tobedated.shareclasses.models.passionsANDInterests
 import com.threegroup.tobedated.shareclasses.models.tabs
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun NameQuestion( //FOR SIGN UP

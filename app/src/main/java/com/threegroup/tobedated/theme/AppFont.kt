@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.theme
+package com.threegroup.tobedated.theme
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,7 +28,4 @@ val JoseFinSans = FontFamily(
 
     Font(R.font.josefinsans_thin,           FontWeight.Thin,    FontStyle.Normal),
     Font(R.font.josefinsans_thinitalic,     FontWeight.Thin,    FontStyle.Italic),
-)
-val zodiac = FontFamily(
-    Font(R.font.zodiac,       FontWeight.Bold,            FontStyle.Normal),
 )

@@ -1,8 +1,7 @@
-package com.threegroup.tobedated._dating.composables
+package com.threegroup.tobedated.composeables.messages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,30 +14,19 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,166 +38,21 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.threegroup.tobedated.MessageViewModel
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
-import com.threegroup.tobedated.shareclasses.composables.baseAppTextTheme
-import com.threegroup.tobedated.shareclasses.composables.getAddShadow
+import com.threegroup.tobedated.composeables.composables.GenericLabelText
+import com.threegroup.tobedated.composeables.composables.baseAppTextTheme
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 
 
 @Composable
-fun MessageStart(
-    userPhoto:String,
-    userName:String,
-    userLast:String?,
-    openChat: () -> Unit,
-    notification:Boolean = false,
-    ) {
-    var userLastMessage = "Start your connections"
-    if (userLast != null) {
-        userLastMessage = userLast
-    }
-
-    val maxLength = 35
-    val cleanedMessage = userLastMessage.replace("\n", " ")
-    val displayedMessage = if (cleanedMessage.length > maxLength) {
-        "${cleanedMessage.take(maxLength)}..."
-    } else {
-        cleanedMessage
-    }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(15.dp, 0.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(Modifier.clickable(onClick = openChat).fillMaxWidth()){
-            if(userPhoto == "feedback"){
-                Image(painterResource(id = R.drawable.feedback), contentDescription = "Feedback photo",
-                    modifier = Modifier.size(58.dp).clip(shape = CircleShape), contentScale = ContentScale.Crop)
-            }else{
-                AsyncImage(
-                    modifier = Modifier
-                        .size(58.dp)
-                        .clip(shape = CircleShape),
-                    model = userPhoto,
-                    contentDescription = "UserPfp",
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            Column(
-                modifier = Modifier.padding(15.dp, 6.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Row{
-                    Text(text = userName, style = AppTheme.typography.titleSmall, color = AppTheme.colorScheme.onBackground)
-                    if(notification){
-                        Icon(imageVector = ImageVector.vectorResource(R.drawable.notification), contentDescription = "New Message",
-                            modifier = Modifier.offset(y= (-4).dp), tint = AppTheme.colorScheme.primary)
-                    }
-                }
-                Spacer(modifier = Modifier.height(14.dp))
-                Text(text = displayedMessage,
-                    style = AppTheme.typography.labelSmall, color = AppTheme.colorScheme.onBackground)
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(modifier = Modifier.height(20.dp),color = Color(0xDDB39DB7), thickness = 1.dp)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InsideMessages(
-    messageBar: @Composable () -> Unit = {},
-    messages: @Composable () -> Unit,
-    titleText:String,
-    goToProfile: () -> Unit = {},
-    nav: NavHostController,
-    startVideoCall: () -> Unit = {},
-    startCall:() -> Unit = {},
-    chatSettings:() -> Unit,
-    hideCall: Boolean = true,
-    hideCallButtons:Boolean = true
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize(),
-        color = AppTheme.colorScheme.background,
-    ) {
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                CenterAlignedTopAppBar(
-                    modifier = Modifier.height(46.dp),
-                    colors = TopAppBarColors(
-                        containerColor = AppTheme.colorScheme.onTertiary,
-                        navigationIconContentColor = AppTheme.colorScheme.primary,
-                        titleContentColor = AppTheme.colorScheme.secondary,
-                        actionIconContentColor = AppTheme.colorScheme.primary,
-                        scrolledContainerColor = AppTheme.colorScheme.background
-                    ),
-                    title = { Button(onClick = goToProfile,
-                        colors = ButtonColors(
-                            contentColor = AppTheme.colorScheme.onBackground,
-                            containerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            disabledContentColor = Color.Transparent
-                        ),
-                    ) { Text(text = titleText, style = getAddShadow(style = AppTheme.typography.titleMedium, "med")) }
-                    },//TitleTextGen(title= titleText)},
-                    navigationIcon = {
-                        IconButton(onClick = { nav.popBackStack() }) { //Showing in stuff like messages, editing profile and stuff
-                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back), contentDescription = "Go back")
-                        }
-                    },
-                    actions = {
-                        if(hideCall && hideCallButtons){
-                            IconButton(onClick = startVideoCall) {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.videocall), contentDescription = "Settings")
-                            }
-                            IconButton(onClick = startCall) {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.call), contentDescription = "Settings")
-                            }
-                        }
-                        IconButton(onClick = chatSettings) {
-                            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.settings), contentDescription = "Settings")
-                        }
-                    }
-                )
-            },
-            bottomBar = {
-                messageBar()
-            },
-        ) {
-                paddingValues ->
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-            ){
-                messages()
-
-            }
-        }
-    }
-}
-
-@Composable
-fun TextSectionAndKeyBoard(
+fun TextSection(
     lazyListState:LazyListState,
     messageList:List<MessageModel>,
     currentUserSenderId:String,
     match:MatchedUserModel = MatchedUserModel(),
-    message:String = "",
-    sendMessage: () -> Unit = {},
-    sendAttachment: () -> Unit = {},
-    messageChange: (String) -> Unit = {},
     feedBack:Boolean = false
 ){
     Column(
@@ -233,32 +76,18 @@ fun TextSectionAndKeyBoard(
                     MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
                 }
             }
-//            item(key = "keyboard"){
-//
-//            }
-//            item{
-//                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
-//                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-//            }
         }
-//        MessagingBar(
-//            modifier = Modifier.weight(1f),
-//            message = message,
-//            messageChange = messageChange,
-//            sendMessage = sendMessage,
-//            sendAttachment = sendAttachment
-//        )
     }
 }
 @Composable
-fun MessagingBar(
+fun KeyBoard(
     modifier: Modifier,
     message:String,
     messageChange: (String) -> Unit,
     sendMessage: () -> Unit,
     sendAttachment: () -> Unit
 ){
-    Row(modifier = Modifier
+    Row(modifier = modifier
         .background(AppTheme.colorScheme.onTertiary)
         .fillMaxWidth()
         //.weight(1f)
@@ -314,7 +143,7 @@ fun UserMessage(
     last: Boolean,
     read:Boolean,
 
-){
+    ){
     Column {
         Row(
             modifier = Modifier
@@ -407,71 +236,6 @@ fun TheirMessage(
             GenericLabelText(text = time)
         }
         Spacer(modifier = Modifier.height(6.dp))
-    }
-}
-
-// TODO make this template work with the app
-// My attempt to get messages working--These are just basic composable functions
-@Composable
-fun MessageUserList(
-    userList: List<String>,
-    chatKeys: List<String>,
-    onItemClick: (userName: String, chatId: String) -> Unit
-) {
-    //val state = rememberScrollState()
-    //LaunchedEffect(Unit) { state.animateScrollTo(state.maxValue) }
-    LazyColumn {
-        items(userList) { userName ->
-            val index = userList.indexOf(userName)
-            val chatId = chatKeys[index]
-            UserItem(userName, chatId, onItemClick)
-        }
-    }
-}
-
-@Composable
-fun UserItem(userName: String, chatId: String, onItemClick: (userId: String, chatId: String) -> Unit) {
-    // Implement UI for a single user item here
-    // TODO Rework this as it is only a skeleton
-    Text(
-        text = "User Name: $userName",
-        modifier = Modifier.clickable { onItemClick(userName, chatId) }
-    )
-}
-
-@Composable
-fun MessageScreen(
-    chatId: String,
-    viewModel: MessageViewModel,
-    match: MatchedUserModel = MatchedUserModel(),
-    isFeedBack:Boolean = false,
-    messageList: List<MessageModel>,
-    currentUserSenderId: String,
-) {
-    val state = rememberLazyListState()
-    LaunchedEffect(state) {
-        state.scrollToItem(Int.MAX_VALUE)
-    }
-    Column {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().weight(9f)
-                .statusBarsPadding()
-                .imePadding(),
-            state = state
-        ) {
-            itemsIndexed(messageList) { index, message ->
-                val last = index == (messageList.size -1)
-                val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
-                val time = message.currentTime
-                if(!isFeedBack){
-                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
-                }else{
-                    MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
-                }
-
-
-            }
-        }
     }
 }
 @Composable

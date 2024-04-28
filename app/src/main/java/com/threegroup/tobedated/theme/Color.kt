@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.theme
+package com.threegroup.tobedated.theme
 
 import androidx.compose.ui.graphics.Color
 

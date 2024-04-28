@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated.shareclasses.composables.NavDraw
-import com.threegroup.tobedated.shareclasses.composables.TopBarText
-import com.threegroup.tobedated.shareclasses.composables.getBottomColors
-import com.threegroup.tobedated.shareclasses.composables.getTopColors
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.composeables.composables.NavDraw
+import com.threegroup.tobedated.composeables.composables.TopBarText
+import com.threegroup.tobedated.composeables.composables.getBottomColors
+import com.threegroup.tobedated.composeables.composables.getTopColors
+import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
 
 data class BotNavItem(

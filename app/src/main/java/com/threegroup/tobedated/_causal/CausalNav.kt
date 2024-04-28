@@ -22,8 +22,8 @@ import androidx.navigation.navArgument
 import com.threegroup.tobedated._causal.composables.PromptQuestionsC
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
-import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
-import com.threegroup.tobedated.shareclasses.composables.ProgressBar
+import com.threegroup.tobedated.composeables.composables.AlertDialogBox
+import com.threegroup.tobedated.composeables.composables.ProgressBar
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 

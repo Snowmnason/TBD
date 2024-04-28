@@ -19,9 +19,9 @@ import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated.shareclasses.MyApp
-import com.threegroup.tobedated.shareclasses.composables.Comeback
-import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.composeables.composables.Comeback
+import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.theme.AppTheme
 
 class CausalActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

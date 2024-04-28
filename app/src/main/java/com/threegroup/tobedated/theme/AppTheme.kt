@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.theme
+package com.threegroup.tobedated.theme
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme

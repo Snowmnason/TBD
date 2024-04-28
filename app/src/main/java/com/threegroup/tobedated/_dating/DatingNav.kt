@@ -12,9 +12,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.threegroup.tobedated._dating.composables.BioEdit
-import com.threegroup.tobedated._dating.composables.ChangePhoto
-import com.threegroup.tobedated._dating.composables.PromptEdit
+import com.threegroup.tobedated._dating.composes.ChangePreference
+import com.threegroup.tobedated._dating.composes.ChangeProfileScreen
+import com.threegroup.tobedated._dating.composes.ChatsScreen
+import com.threegroup.tobedated._dating.composes.EditProfileScreen
+import com.threegroup.tobedated._dating.composes.FeedBackMessagerScreen
+import com.threegroup.tobedated._dating.composes.MessagerScreen
+import com.threegroup.tobedated._dating.composes.ProfileScreen
+import com.threegroup.tobedated._dating.composes.SearchPreferenceScreen
+import com.threegroup.tobedated._dating.composes.SearchingScreen
+import com.threegroup.tobedated._dating.composes.SomeScreen
+import com.threegroup.tobedated.composeables.profiles.BioEdit
+import com.threegroup.tobedated.composeables.profiles.ChangePhoto
+import com.threegroup.tobedated.composeables.profiles.PromptEdit
 import com.threegroup.tobedated.shareclasses.MyApp
 
 @Composable
@@ -28,8 +38,8 @@ fun DatingNav(dating: DatingActivity){
     val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
     if (potentialUserDataState.value.first.isNotEmpty()) {
         potentialUserDataLoaded.value = true
-        val potentialUsers = potentialUserDataState.value.first
-        val currentProfileIndex = potentialUserDataState.value.second
+//        val potentialUsers = potentialUserDataState.value.first
+//        val currentProfileIndex = potentialUserDataState.value.second
     }
 
 

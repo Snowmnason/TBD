@@ -1,7 +1,6 @@
 package com.threegroup.tobedated.shareclasses
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
@@ -13,24 +12,6 @@ import kotlinx.coroutines.flow.map
 class Repository(
     private var firebaseDataSource: FirebaseDataSource
 ) {
-    suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        return firebaseDataSource.signInWithPhoneAuthCredential(credential)
-    }
-    suspend fun checkUserExist(number: String) {
-        return firebaseDataSource.checkUserExist(number)
-    }
-    suspend fun storeUserData(data: UserModel) {
-        return firebaseDataSource.storeUserData(data)
-    }
-    suspend fun getUserData(): ArrayList<UserModel>? {
-        return firebaseDataSource.getUserData()
-    }
-    suspend fun updateUserData(userUpdates: UserModel) {
-        return firebaseDataSource.updateUserData(userUpdates)
-    }
-//    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-//        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
-//    }
     fun getCurrentUserSenderId(): String {
         return firebaseDataSource.getCurrentUserSenderId()
     }
@@ -64,11 +45,11 @@ class Repository(
             }
         }
 
-    suspend fun storeChatData(chatId: String, message: String) {
+    fun storeChatData(chatId: String, message: String) {
         return firebaseDataSource.storeChatData(chatId, message)
     }
 
-    suspend fun displayChats() {
+    fun displayChats() {
         return firebaseDataSource.displayChats()
     }
 
@@ -81,12 +62,27 @@ class Repository(
     suspend fun setMatchInfo(number: String):Flow<MatchedUserModel?>{
         return firebaseDataSource.setMatchedInfo(number)
     }
-//    fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-//        firebaseDataSource.deleteProfile(number, onSuccess, onFailure)
-//    }
-
-    suspend fun deleteUserAndData(userId: String) {
-        firebaseDataSource.deleteUserAndData(userId)
+    suspend fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        firebaseDataSource.deleteProfile(number, onSuccess, onFailure)
     }
 }
+
+//suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+//    return firebaseDataSource.signInWithPhoneAuthCredential(credential)
+//}
+//suspend fun checkUserExist(number: String) {
+//    return firebaseDataSource.checkUserExist(number)
+//}
+//suspend fun storeUserData(data: UserModel) {
+//    return firebaseDataSource.storeUserData(data)
+//}
+//suspend fun getUserData(): ArrayList<UserModel>? {
+//    return firebaseDataSource.getUserData()
+//}
+//suspend fun updateUserData(userUpdates: UserModel) {
+//    return firebaseDataSource.updateUserData(userUpdates)
+//}
+////    suspend fun likeUser(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+////        return firebaseDataSource.likeUser(userId, likedUserId, isLike)
+////    }
 

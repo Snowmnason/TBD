@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses
+package com.threegroup.tobedated
 
 import android.Manifest
 import android.content.Context
@@ -18,9 +18,10 @@ import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
-import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
-import com.threegroup.tobedated.shareclasses.composables.SplashScreen
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.composeables.composables.SplashScreen
+import com.threegroup.tobedated.shareclasses.MyApp
+import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,7 +43,19 @@ class MainActivity : ComponentActivity() {
                 activity = activityToken
             ) {
                 PolkaDotCanvas()
-                SplashScreen(activity = activityToken)
+                when (activityToken) {
+                    "dating" -> {
+                        SplashScreen(activity = activityToken, text1 = "To Be Dated")
+                    }
+
+                    "causal" -> {
+                        SplashScreen(activity = activityToken, text1 = "To Be Casual")
+                    }
+
+                    "friend" -> {
+                        SplashScreen(activity = activityToken, text1 = "To Be Friended")
+                    }
+                }
             }
         }
 

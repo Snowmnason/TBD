@@ -24,13 +24,13 @@ import com.threegroup.tobedated._signUp.composables.BioQuestion
 import com.threegroup.tobedated._signUp.composables.PromptAnswer
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated._signUp.composables.getCustomButtonStyle
-import com.threegroup.tobedated.shareclasses.composables.AlertDialogBox
-import com.threegroup.tobedated.shareclasses.composables.GenTextOnlyButton
-import com.threegroup.tobedated.shareclasses.composables.GenericBodyText
-import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
-import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
-import com.threegroup.tobedated.shareclasses.composables.RadioButtonGroup
-import com.threegroup.tobedated.shareclasses.composables.getAddShadow
+import com.threegroup.tobedated.composeables.composables.AlertDialogBox
+import com.threegroup.tobedated.composeables.composables.GenTextOnlyButton
+import com.threegroup.tobedated.composeables.composables.GenericBodyText
+import com.threegroup.tobedated.composeables.composables.GenericLabelText
+import com.threegroup.tobedated.composeables.composables.GenericTitleText
+import com.threegroup.tobedated.composeables.composables.RadioButtonGroup
+import com.threegroup.tobedated.composeables.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.models.afterCareOptions
 import com.threegroup.tobedated.shareclasses.models.commOptions
 import com.threegroup.tobedated.shareclasses.models.experienceOptions
@@ -38,7 +38,7 @@ import com.threegroup.tobedated.shareclasses.models.leaningOptions
 import com.threegroup.tobedated.shareclasses.models.locationOptions
 import com.threegroup.tobedated.shareclasses.models.lookingForOptions
 import com.threegroup.tobedated.shareclasses.models.sexHealthOptions
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun welcomeScreenC():Boolean {

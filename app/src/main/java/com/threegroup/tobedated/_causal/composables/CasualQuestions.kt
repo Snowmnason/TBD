@@ -24,12 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.threegroup.tobedated._causal.CausalViewModel
-import com.threegroup.tobedated.shareclasses.composables.PlainTextButton
+import com.threegroup.tobedated.composeables.composables.PlainTextButton
 import com.threegroup.tobedated.shareclasses.models.expectationsANDCommunication
 import com.threegroup.tobedated.shareclasses.models.limitsANDBoundaries
 import com.threegroup.tobedated.shareclasses.models.preferencesAndDesires
 import com.threegroup.tobedated.shareclasses.models.tabsCasual
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun PromptQuestionsC(nav: NavController, causalVM: CausalViewModel, questionNumber:Int){

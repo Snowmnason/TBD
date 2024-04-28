@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.composables
+package com.threegroup.tobedated.composeables.composables
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -82,8 +82,8 @@ import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starOptions
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
+import com.threegroup.tobedated.theme.AppTheme
+import com.threegroup.tobedated.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 

@@ -2,8 +2,6 @@ package com.threegroup.tobedated._dating
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -89,9 +87,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
-    fun getCurrentUserId(): String {
-        return repository.getCurrentUserId()
-    }
+
 
     /**
      *
@@ -142,26 +138,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun setLoggedInUser() {
         signedInUser = MyApp.signedInUser
     }
-//    fun deleteProfile(number:String, datingActivity: DatingActivity) {
-//        repository.deleteProfile(number,
-//            onSuccess = {
-//                datingActivity.clearUserToken()
-//            },
-//            onFailure = { exception ->
-//                println(exception)
-//            }
-//        )
-//    }
-
-    fun deleteUserAndData(userId: String) {
+    fun deleteProfile(number:String, datingActivity: DatingActivity) {
         viewModelScope.launch {
-            try {
-                repository.deleteUserAndData(userId)
-                // Optionally, perform any additional cleanup or navigation after deletion
-            } catch (e: Exception) {
-                // Handle any errors, such as network issues or database errors
-            }
+            repository.deleteProfile(number,
+                onSuccess = {
+                    datingActivity.clearUserToken()
+                },
+                onFailure = { exception ->
+                    println(exception)
+                }
+            )
         }
     }
-
 }
+//fun getCurrentUserId(): String {
+//    return repository.getCurrentUserId()
+//}

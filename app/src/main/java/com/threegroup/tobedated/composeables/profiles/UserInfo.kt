@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal.composables
+package com.threegroup.tobedated.composeables.profiles
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -35,11 +35,15 @@ import com.threegroup.tobedated.composeables.composables.getAddShadow
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
+import com.threegroup.tobedated.shareclasses.models.getMBTIColor
+import com.threegroup.tobedated.shareclasses.models.getStarSymbol
+import com.threegroup.tobedated.shareclasses.models.starColorMap
+import com.threegroup.tobedated.shareclasses.models.starColors
 import com.threegroup.tobedated.theme.AppTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun UserInfoC(
+fun UserInfo(
     user: UserModel = UserModel(),
     matchUser: MatchedUserModel = MatchedUserModel(),
     bioClick: () -> Unit = {},
@@ -56,6 +60,9 @@ fun UserInfoC(
     if (photos[3] == "") {
         subtract = 1
     }
+    //Sign Sign MBTI
+    val mbtiColor = getMBTIColor(user.testResultsMbti)
+    val starSymbol = getStarSymbol(user.star)
     Column(
         Modifier
             .fillMaxSize()
@@ -109,11 +116,8 @@ fun UserInfoC(
                     Spacer(modifier = Modifier.height(4.dp))
                     HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                     Spacer(modifier = Modifier.height(12.dp))
-                    if(user.casualAdditions.casualBio != ""){
-                        Text(text = user.casualAdditions.casualBio, style = AppTheme.typography.bodySmall) //Bio
-                    }else{
-                        Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
-                    }
+                    Text(text = user.bio, style = AppTheme.typography.bodySmall) //Bio
+
                 }
             },
             edit = doesEdit,
@@ -132,7 +136,7 @@ fun UserInfoC(
                 }
             }
         )
-        //relationship type, leaning
+        //relationship type, Intentions
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
@@ -141,7 +145,7 @@ fun UserInfoC(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     SimpleIconBox(answer = user.relationship, icon =  ImageVector.vectorResource(id = R.drawable.relationship_type), divider = true)
-                    SimpleIconBox(answer = user.casualAdditions.leaning, icon = ImageVector.vectorResource(id = R.drawable.icecream))
+                    SimpleIconBox(answer = user.intentions, icon = ImageVector.vectorResource(id = R.drawable.intentions))
                 }
             }
         )
@@ -149,17 +153,17 @@ fun UserInfoC(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
-                Text(text = user.casualAdditions.promptQ1, style = AppTheme.typography.labelSmall)//Prompt question
+                Text(text = user.promptQ1, style = AppTheme.typography.labelSmall)//Prompt question
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.casualAdditions.promptA1, style = AppTheme.typography.titleSmall) //Prompt Answer
+                Text(text = user.promptA1, style = AppTheme.typography.titleSmall) //Prompt Answer
             }
         },
             edit = doesEdit,
             onClick = prompt1Click
         )
-        //Looking, Experience
+        //Star Sign, MBTI
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
@@ -167,8 +171,8 @@ fun UserInfoC(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SimpleIconBox(answer = user.casualAdditions.lookingFor, icon = ImageVector.vectorResource(id = R.drawable.looking), divider = true)
-                    SimpleIconBox(answer = user.casualAdditions.experience, icon = null)
+                    SimpleIconBox(answer = user.star, icon = starSymbol, divider = true, color= starColors[starColorMap[user.star]!!])
+                    SimpleIconBox(answer = user.testResultsMbti, icon = null, color = mbtiColor)
                 }
             }
         )
@@ -176,17 +180,20 @@ fun UserInfoC(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
-                Text(text = user.casualAdditions.promptQ2, style = AppTheme.typography.labelSmall)///Prompt Questions2
+                Text(
+                    text = user.promptQ2,
+                    style = AppTheme.typography.labelSmall
+                )///Prompt Questions2
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.casualAdditions.promptA2, style = AppTheme.typography.titleSmall) //Prompt Answer 2
+                Text(text = user.promptA2, style = AppTheme.typography.titleSmall) //Prompt Answer 2
             }
         },
             edit = doesEdit,
             onClick = prompt2Click
         )
-        //after care, location
+        //Family, Kids
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
@@ -194,8 +201,8 @@ fun UserInfoC(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SimpleIconBox(answer = user.casualAdditions.afterCare, icon =  ImageVector.vectorResource(id = R.drawable.aftercare), divider = true)
-                    SimpleIconBox(answer = user.casualAdditions.location, icon = ImageVector.vectorResource(id = R.drawable.map))
+                    SimpleIconBox(answer = user.children, icon =  ImageVector.vectorResource(id = R.drawable.children), divider = true)
+                    SimpleIconBox(answer = user.family, icon = ImageVector.vectorResource(id = R.drawable.family))
                 }
             }
         )
@@ -203,17 +210,20 @@ fun UserInfoC(
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(whatsInsideTheBox = {
             Column(modifier = Modifier.fillMaxSize()) {
-                Text(text = user.casualAdditions.promptQ3, style = AppTheme.typography.labelSmall)//Prompt Question 3
+                Text(
+                    text = user.promptQ3,
+                    style = AppTheme.typography.labelSmall
+                )//Prompt Question 3
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = user.casualAdditions.promptA3, style = AppTheme.typography.titleSmall) ///Prompt answer 3
+                Text(text = user.promptA3, style = AppTheme.typography.titleSmall) ///Prompt answer 3
             }
         },
             edit = doesEdit,
             onClick = prompt3Click
         )
-        //Comm, SexHealth
+        //Smokes, drinks, weeds
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
@@ -221,8 +231,23 @@ fun UserInfoC(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SimpleIconBox(answer = user.casualAdditions.comm, icon = ImageVector.vectorResource(id = R.drawable.comm), divider = true)
-                    SimpleIconBox(answer = user.casualAdditions.sexHealth, icon = ImageVector.vectorResource(id = R.drawable.sexhealth))
+                    SimpleIconBox(answer = user.drink, icon = ImageVector.vectorResource(id = R.drawable.smoking), divider = true)
+                    SimpleIconBox(answer = user.smoke, icon = ImageVector.vectorResource(id = R.drawable.drinking), divider = true)
+                    SimpleIconBox(answer = user.weed, icon = ImageVector.vectorResource(id = R.drawable.weeds))
+                }
+            }
+        )
+        //Politics Religion School
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(
+            whatsInsideTheBox = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    SimpleIconBox(answer = user.politics, icon = ImageVector.vectorResource(id = R.drawable.politics), divider = true)
+                    SimpleIconBox(answer = user.religion, icon = ImageVector.vectorResource(id = R.drawable.religion), divider = true)
+                    SimpleIconBox(answer = user.education, icon = ImageVector.vectorResource(id = R.drawable.school))
                 }
             }
         )

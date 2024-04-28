@@ -13,9 +13,9 @@ import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
 import com.threegroup.tobedated.shareclasses.MyApp
-import com.threegroup.tobedated.shareclasses.composables.Comeback
-import com.threegroup.tobedated.shareclasses.composables.PolkaDotCanvas
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.composeables.composables.Comeback
+import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.theme.AppTheme
 import kotlin.random.Random
 
 val notifiGroup = Random.nextBoolean()

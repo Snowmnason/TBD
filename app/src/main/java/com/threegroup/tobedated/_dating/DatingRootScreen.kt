@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composables
+package com.threegroup.tobedated._dating
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -34,12 +34,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated._dating.DatingActivity
-import com.threegroup.tobedated.shareclasses.composables.NavDraw
-import com.threegroup.tobedated.shareclasses.composables.TopBarText
-import com.threegroup.tobedated.shareclasses.composables.getBottomColors
-import com.threegroup.tobedated.shareclasses.composables.getTopColors
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.composeables.composables.NavDraw
+import com.threegroup.tobedated.composeables.composables.TopBarText
+import com.threegroup.tobedated.composeables.composables.getBottomColors
+import com.threegroup.tobedated.composeables.composables.getTopColors
+import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
 
 data class BotNavItem(

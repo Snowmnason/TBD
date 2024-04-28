@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.composables
+package com.threegroup.tobedated.composeables.composables
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 import kotlin.math.ceil
 
 @Composable
@@ -115,14 +115,14 @@ fun SplashScreen(
                     contentScale = ContentScale.FillBounds)
             }
             Text(
-                text = "To Be Dated",
+                text = text1,
                 modifier = Modifier,
                 fontSize = 24.sp,
                 style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
                 color = AppTheme.colorScheme.onBackground
             )
             Text(
-                text = "the dating app made for connections",
+                text = text2,
                 modifier = Modifier,
                 fontSize = 15.sp,
                 style = getAddShadow(style = AppTheme.typography.labelMedium, "label"),

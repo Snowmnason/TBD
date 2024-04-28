@@ -8,8 +8,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
+import com.threegroup.tobedated.theme.AppTheme
+import com.threegroup.tobedated.theme.JoseFinSans
 
 data class AgeRange(
     var min: Int = 0,

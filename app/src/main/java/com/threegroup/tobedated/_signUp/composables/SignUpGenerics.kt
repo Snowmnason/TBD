@@ -37,11 +37,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.shareclasses.composables.GenericLabelText
-import com.threegroup.tobedated.shareclasses.composables.GenericTitleText
-import com.threegroup.tobedated.shareclasses.composables.getAddShadow
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
-import com.threegroup.tobedated.shareclasses.theme.JoseFinSans
+import com.threegroup.tobedated.composeables.composables.GenericLabelText
+import com.threegroup.tobedated.composeables.composables.GenericTitleText
+import com.threegroup.tobedated.composeables.composables.getAddShadow
+import com.threegroup.tobedated.theme.AppTheme
+import com.threegroup.tobedated.theme.JoseFinSans
 
 @Composable
 fun getCustomTextStyle(): TextStyle {

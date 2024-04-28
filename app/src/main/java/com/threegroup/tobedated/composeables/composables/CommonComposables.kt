@@ -1,4 +1,4 @@
-package com.threegroup.tobedated.shareclasses.composables
+package com.threegroup.tobedated.composeables.composables
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.threegroup.tobedated.shareclasses.models.getSmallerTextStyle
-import com.threegroup.tobedated.shareclasses.theme.AppTheme
+import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun SimpleBox(

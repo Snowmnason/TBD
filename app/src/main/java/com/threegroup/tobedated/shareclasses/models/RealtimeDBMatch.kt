@@ -6,12 +6,12 @@ data class RealtimeDBMatch(
     var id: String="",
     val usersMatched: List<String> = emptyList(),
     val timestamp: Long = 0,
-    val lastMessage: String?=null
+//    val lastMessage: String?=null
 )
 object RealtimeDBMatchProperties{
     const val usersMatched = "usersMatched"
     const val timestamp = "timestamp"
-    const val lastMessage = "lastMessage"
+//    const val lastMessage = "lastMessage"
 
     fun toData(user1: String, user2:String): Map<String, Any>{
         return mapOf(

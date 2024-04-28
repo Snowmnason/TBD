@@ -109,10 +109,10 @@ class FirebaseDataSource {
     }
 
     private fun getMatchId(userId1: String, userId2: String): String {
-        return if (userId1 < userId2) {
-            "$userId1-$userId2"
+        return if (userId1 > userId2) {
+            userId1+userId2
         } else {
-            "$userId2-$userId1"
+            userId2+userId1
         }
     }
 
@@ -290,10 +290,14 @@ class FirebaseDataSource {
                 userName = userName,
                 userPicture = userImage1,
                 //formattedDate = it, // Consider formatting the timestamp properly
-                lastMessage = match.lastMessage
+                lastMessage = getLastMessage(match.id)
             )
         }
     }
+
+        /**
+         * for unmatching
+         */
     suspend fun deleteMatch(matchedUser: String, currUser: String) {
         try {
             val matchesRef = FirebaseDatabase.getInstance().getReference("matches")
@@ -304,7 +308,7 @@ class FirebaseDataSource {
                 matchSnapshot.ref.removeValue().await()
             }
 
-            deleteChat(getChatId(matchedUser, currUser)!!)
+            deleteChat(getChatId(matchedUser, currUser))
             Log.d("DeleteMatches", "Matches deleted successfully for user $matchedUser")
         } catch (e: Exception) {
             Log.e("DeleteMatches", "Error deleting matches: ${e.message}", e)
@@ -324,6 +328,18 @@ class FirebaseDataSource {
      * takes the chat id
      * message related stuff
      */
+    private suspend fun getLastMessage(chatId: String): String {
+        return suspendCoroutine { continuation ->
+            val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+            chatsRef.orderByKey().limitToLast(1).get().addOnSuccessListener { dataSnapshot ->
+                val lastChild = dataSnapshot.children.firstOrNull()
+                val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
+                continuation.resume(lastMessage)
+            }.addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+        }
+    }
     fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
         val dbRef: DatabaseReference =
             FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)

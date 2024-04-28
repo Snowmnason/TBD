@@ -38,7 +38,7 @@ fun MessageStart(
     notification:Boolean = false,
     ) {
     var userLastMessage = "Start your connections"
-    if (userLast != null) {
+    if (userLast != null && userLast != "") {
         userLastMessage = userLast
     }
 

@@ -1,21 +1,21 @@
-package com.threegroup.tobedated.shareclasses.api.wordoftheday
-
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface WordnikService {
-    @GET("word.json/{word}/definitions")
-    fun getDefinitions(
-        @Path("word") word: String,
+interface WordNikService {
+    @GET("words.json/wordOfTheDay")
+    fun getWordOfTheDay(
+        @Query("date") date: String, // Optional: Fetch word of the day for a specific date
         @Query("api_key") apiKey: String
-    ): Call<List<Definition>>
+    ): Call<WordOfTheDayResponse>
 }
 
+data class WordOfTheDayResponse(
+    val word: String,
+    val definitions: List<Definition>
+)
+
 data class Definition(
-    val word: String = "",
-    val def:String = "",
-    val source:String = "",
-    val partOfSpeech:String = ""
+    val text: String,
+    val partOfSpeech: String
 )

@@ -86,6 +86,11 @@ import com.threegroup.tobedated.theme.AppTheme
 import com.threegroup.tobedated.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordViewModel
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.livedata.observeAsState
 
 @Composable
 fun baseAppTextTheme(): TextStyle {
@@ -643,10 +648,31 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-        val wordOfDay = "Definition.word"
-        val partOfSpeech = "noun plural"
-        val source = "gcide"
-        val def = "To underwhelm someone is to fail to impress or excite them."
+
+        val wordOfDay: String?
+        val partOfSpeech: String?
+        val source: String?
+        val def: String?
+
+        @Composable
+        fun MyWordDisplay(wordViewModel: WordViewModel = viewModel()) {
+            // LiveData observed as state in Compose
+            val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
+            val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
+            val source by wordViewModel.source.observeAsState("")
+            val def by wordViewModel.def.observeAsState("")
+
+            Column {
+                Text(text = "Word of the Day: $wordOfDay")
+                Text(text = "Part of Speech: $partOfSpeech")
+                Text(text = "Source: $source")
+                Text(text = "Definition: $def")
+            }
+        }
+
+
+
+
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Column {

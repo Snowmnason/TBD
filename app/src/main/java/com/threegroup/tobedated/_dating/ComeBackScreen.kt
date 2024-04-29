@@ -13,7 +13,7 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity) {
         titleText = "To Be Dated",
         isPhoto = true,
         nav = navController,
-        selectedItemIndex = 0,
+        selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         star = "Ask me",
         currentScreen = {

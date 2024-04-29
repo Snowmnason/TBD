@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.composes.ChangePreference
 import com.threegroup.tobedated._dating.composes.ChangeProfileScreen
 import com.threegroup.tobedated._dating.composes.ChatsScreen
@@ -25,7 +26,6 @@ import com.threegroup.tobedated._dating.composes.SomeScreen
 import com.threegroup.tobedated.composeables.profiles.BioEdit
 import com.threegroup.tobedated.composeables.profiles.ChangePhoto
 import com.threegroup.tobedated.composeables.profiles.PromptEdit
-import com.threegroup.tobedated.MyApp
 
 @Composable
 fun DatingNav(dating: DatingActivity){

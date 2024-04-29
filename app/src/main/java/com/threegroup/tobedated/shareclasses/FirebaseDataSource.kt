@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.RealtimeDBMatchProperties
 import com.threegroup.tobedated.shareclasses.firebasedatasource.deleteChats
@@ -22,6 +23,7 @@ import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
+import com.threegroup.tobedated.shareclasses.models.UserSearchPreferenceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -44,6 +46,7 @@ class FirebaseDataSource {
         return FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
     }
+
     fun getCurrentUserSenderId(): String {
         return FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
@@ -53,6 +56,9 @@ class FirebaseDataSource {
     Dating discovery related functions
      */
     fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> = callbackFlow {
+        val user = MyApp.signedInUser.value!!
+        val userPref: UserSearchPreferenceModel = user.userPref
+
         val dbRef: DatabaseReference =
             FirebaseDatabase.getInstance().getReference("users")
         val valueEventListener = object : ValueEventListener {
@@ -60,12 +66,34 @@ class FirebaseDataSource {
                 val list = mutableListOf<MatchedUserModel>()
                 for (data in snapshot.children) {
                     try {
-                        val userModel = data.getValue(MatchedUserModel::class.java)
+                        //Potential User
+                        val potential = data.getValue(MatchedUserModel::class.java)
+                        potential.let {
+                            if (it!!.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    if (isProfileInteractedByUser(it.number, user.number)) {
+                                        val userAge = calcAge(it.birthday)
 
-                        if (userModel?.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
-                            userModel?.let {
-                                if (!it.seeMe) {
-                                    list.add(it)
+                                        // Check if user's age is within the preferred age range
+                                        val isAgeInRange =
+                                            userAge in userPref.ageRange.min..userPref.ageRange.max
+
+                                        // Check if user's location is within the preferred max distance
+                                        val isLocationWithinDistance = calcDistance(
+                                            it.location,
+                                            user.location
+                                        ).toInt() <= userPref.maxDistance
+                                        //is Sex match
+                                        var isSexMatch = true
+                                        if (user.seeking != "Everyone") {
+                                            isSexMatch = it.sex == user.seeking
+                                        }
+
+
+                                        if (!it.seeMe && isAgeInRange && isSexMatch && isLocationWithinDistance) {//
+                                            list.add(it)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -89,6 +117,78 @@ class FirebaseDataSource {
         }
     }
 
+
+    private suspend fun isProfileMatchingPreferences(
+        potentialUser: MatchedUserModel,
+
+        ): Boolean {
+        val user = MyApp.signedInUser.value!!
+        val userPref: UserSearchPreferenceModel = user.userPref
+
+        // Calculate user age
+
+        // Check other preferences
+        val isGenderMatch =
+            userPref.gender.isEmpty() || userPref.gender.equals(potentialUser.gender)
+        val isChildrenMatch =
+            userPref.children.isEmpty() || (userPref.children.equals(potentialUser.children))
+        val isEthnicityMatch =
+            userPref.mbti.isEmpty() || userPref.mbti.equals(potentialUser.testResultsMbti)
+        val isFamilyMatch =
+            userPref.familyPlans.isEmpty() || userPref.familyPlans.equals(potentialUser.family)
+        val isDrinkMatch =
+            userPref.drink.isEmpty() || userPref.drink.equals(potentialUser.drink)
+        val isEducationMatch =
+            userPref.education.isEmpty() || userPref.education.equals(potentialUser.education)
+        val isIntentionsMatch =
+            userPref.intentions.isEmpty() || userPref.intentions.equals(potentialUser.intentions)
+        val isMeetUpMatch =
+            userPref.meetUp.isEmpty() || userPref.meetUp.equals(potentialUser.meetUp)
+        val isPoliticsMatch =
+            userPref.politicalViews.isEmpty() || userPref.politicalViews.equals(potentialUser.politics)
+        val isRelationshipMatch =
+            userPref.relationshipType.isEmpty() || userPref.relationshipType.equals(
+                potentialUser.relationship
+            )
+        val isReligionMatch =
+            userPref.religion.isEmpty() || userPref.religion.equals(potentialUser.religion)
+        val isSexOriMatch =
+            userPref.sexualOri.isEmpty() || userPref.sexualOri.equals(potentialUser.sexOrientation)
+        val isSmokeMatch =
+            userPref.smoke.isEmpty() || userPref.smoke.equals(potentialUser.smoke)
+        val isWeedMatch = userPref.weed.isEmpty() || userPref.weed.equals(potentialUser.weed)
+
+        // Combine all checks
+        return isGenderMatch &&
+                isChildrenMatch &&
+                isEthnicityMatch &&
+                isFamilyMatch &&
+                isDrinkMatch &&
+                isEducationMatch &&
+                isIntentionsMatch &&
+                isMeetUpMatch &&
+                isPoliticsMatch &&
+                isRelationshipMatch &&
+                isReligionMatch &&
+                isSexOriMatch &&
+                isSmokeMatch &&
+                isWeedMatch
+    }
+
+
+    private suspend fun isProfileInteractedByUser(
+        potentialUser: String,
+        currentUserId: String
+    ): Boolean {
+//        val likePassNodeRef = FirebaseDatabase.getInstance().getReference("likeorpass").child(currentUserId)
+//        val snapshot = likePassNodeRef.get().await()
+//
+//        val likedSnapshot = snapshot.child("liked").child(potentialUser)
+//        val passedSnapshot = snapshot.child("passed").child(potentialUser)
+//        !(likedSnapshot.exists() || passedSnapshot.exists())
+        return true
+    }
+
     /**
     Likes and match related functions
      */
@@ -110,9 +210,9 @@ class FirebaseDataSource {
 
     private fun getMatchId(userId1: String, userId2: String): String {
         return if (userId1 > userId2) {
-            userId1+userId2
+            userId1 + userId2
         } else {
-            userId2+userId1
+            userId2 + userId1
         }
     }
 
@@ -215,6 +315,7 @@ class FirebaseDataSource {
             query.removeEventListener(listener)
         }
     }
+
     /**
      * Functions related to blocking and reporting
      */
@@ -251,7 +352,7 @@ class FirebaseDataSource {
                     println("Transaction successful.")
                     // Remove reported user from matches and chats
                     CoroutineScope(Dispatchers.IO).launch {
-                        deleteMatch(reportedUserId, reportedUserId)
+                        blockUser(reportedUserId, reportingUserId)
                     }
                 }
             }
@@ -268,15 +369,16 @@ class FirebaseDataSource {
         userBlockedRef.setValue(true)
 
         // Remove blocked user from matches and chats
-        deleteMatches(database, blockedUserId)
-        deleteChats(database, blockedUserId)
+        deleteMatch(blockedUserId, blockingUserId)
     }
 
     /**
      * Function to get a single instance of a match
      */
-    suspend fun getMatch(match: RealtimeDBMatch, currUser:String): Match {
-        val userId = if(match.usersMatched[0] == currUser) match.usersMatched[1] else{ match.usersMatched[0]}
+    suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
+        val userId = if (match.usersMatched[0] == currUser) match.usersMatched[1] else {
+            match.usersMatched[0]
+        }
         val userSnapshot = withContext(Dispatchers.IO) {
             FirebaseDatabase.getInstance().getReference("users").child(userId).get().await()
         }
@@ -295,9 +397,9 @@ class FirebaseDataSource {
         }
     }
 
-        /**
-         * for unmatching
-         */
+    /**
+     * for unmatching
+     */
     suspend fun deleteMatch(matchedUser: String, currUser: String) {
         try {
             val matchesRef = FirebaseDatabase.getInstance().getReference("matches")
@@ -314,12 +416,12 @@ class FirebaseDataSource {
             Log.e("DeleteMatches", "Error deleting matches: ${e.message}", e)
         }
     }
+
     private suspend fun deleteChat(chatId: String) {
         val chatsRef = FirebaseDatabase.getInstance()
             .getReference("chats").child(chatId)
         chatsRef.removeValue().await()
     }
-
 
 
 //TODO check all code related to chats/messages for functionality
@@ -340,6 +442,7 @@ class FirebaseDataSource {
             }
         }
     }
+
     fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
         val dbRef: DatabaseReference =
             FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
@@ -428,7 +531,11 @@ class FirebaseDataSource {
     /**
      * Deletes the user profile and all things connected to that profile
      */
-    suspend fun deleteProfile(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    suspend fun deleteProfile(
+        userId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         try {
             val database = FirebaseDatabase.getInstance()
             //val storage = FirebaseStorage.getInstance()

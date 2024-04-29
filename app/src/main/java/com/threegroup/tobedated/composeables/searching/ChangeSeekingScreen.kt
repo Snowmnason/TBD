@@ -30,7 +30,7 @@ fun ChangeSeekingScreen(
     title: String = "",
     index: Int
 ) {
-    val opts = listOf("Man", "Woman", "Everyone")
+    val opts = listOf("Male", "Female", "Everyone")
 
     val currentUser = vmDating.getUser()
     var currPref = currentUser.seeking

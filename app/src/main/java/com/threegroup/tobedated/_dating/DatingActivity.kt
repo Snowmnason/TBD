@@ -101,7 +101,7 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
         nav = nav,
         title = talkedUser.name,
         editProfile = {
-            val location = calcDistance(talkedUser.location, vmDating.getUser().location)
+            val location = calcDistance(talkedUser.location, vmDating.getUser().location) + " miles"
             SeekingUserInfo(
                 user = talkedUser,//usersArray[currentProfileIndex]
                 location = location,

@@ -114,10 +114,10 @@ fun calcDistance(potential:String, current:String):String{
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         val distanceInMiles = earthRadius * c
 
-        distance = "%.0f miles".format(distanceInMiles)
+        distance = "%.0f".format(distanceInMiles)
 
     }else{
-        distance = "x miles"
+        distance = "x"
     }
     return distance
 }

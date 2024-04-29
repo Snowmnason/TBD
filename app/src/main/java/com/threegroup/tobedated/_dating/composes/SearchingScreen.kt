@@ -82,7 +82,7 @@ fun SearchingScreen(
                 currentPotential.value?.let { currentPotential ->
                     var location = "x miles"
                     if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
-                        location = calcDistance(currentPotential.location, currentUser.location)
+                        location = calcDistance(currentPotential.location, currentUser.location) + " miles"
                     }
                     SeekingUserInfo(
                         user = currentPotential,//usersArray[currentProfileIndex]

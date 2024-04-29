@@ -69,7 +69,11 @@ fun setUserProperties(
 
 private fun getUserSearchPreference(map: Map<*, *>): UserSearchPreferenceModel {
     return UserSearchPreferenceModel(
-        ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),//TODO its taking this vaule for some reason
+        ageRange = (map["ageRange"] as? Map<*, *>)?.let { ageRangeMap ->
+            val min = ageRangeMap["min"] as? Int ?: 18
+            val max = ageRangeMap["max"] as? Int ?: 35
+            AgeRange(min, max)
+        } ?: AgeRange(18, 35),//TODO its taking this value for some reason
         maxDistance = map["maxDistance"] as? Int ?: 25,//TODO its taking this value for some reason
         gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
             ?: listOf("Doesn't Matter"),

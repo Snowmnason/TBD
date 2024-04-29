@@ -57,10 +57,10 @@ class FirebaseDataSource {
      */
     fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> = callbackFlow {
         val user = MyApp.signedInUser.value!!
-        val userPref: UserSearchPreferenceModel = user.userPref
+        val db = FirebaseDatabase.getInstance()
+        val dbRef: DatabaseReference = db.getReference("users")
+        val likePassNodeRef = db.getReference("likeorpass").child(user.number)
 
-        val dbRef: DatabaseReference =
-            FirebaseDatabase.getInstance().getReference("users")
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<MatchedUserModel>()
@@ -71,27 +71,14 @@ class FirebaseDataSource {
                         potential.let {
                             if (it!!.number != FirebaseAuth.getInstance().currentUser?.phoneNumber) {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    if (isProfileInteractedByUser(it.number, user.number)) {
-                                        val userAge = calcAge(it.birthday)
-
-                                        // Check if user's age is within the preferred age range
-                                        val isAgeInRange =
-                                            userAge in userPref.ageRange.min..userPref.ageRange.max
-
-                                        // Check if user's location is within the preferred max distance
-                                        val isLocationWithinDistance = calcDistance(
-                                            it.location,
-                                            user.location
-                                        ).toInt() <= userPref.maxDistance
-                                        //is Sex match
-                                        var isSexMatch = true
-                                        if (user.seeking != "Everyone") {
-                                            isSexMatch = it.sex == user.seeking
-                                        }
-
-
-                                        if (!it.seeMe && isAgeInRange && isSexMatch && isLocationWithinDistance) {//
-                                            list.add(it)
+                                    val likePassSnapshot = likePassNodeRef.get().await()
+                                    if(!passSeeMe(it, likePassSnapshot)){
+                                        if (isProfileInteractedByUser(it.number, likePassSnapshot)) {
+                                            if(passBasicPreferences(user, it)){
+                                                if(passPremiumPref(user, it,)){
+                                                    list.add(it)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -117,76 +104,69 @@ class FirebaseDataSource {
         }
     }
 
-
-    private suspend fun isProfileMatchingPreferences(
-        potentialUser: MatchedUserModel,
-
-        ): Boolean {
-        val user = MyApp.signedInUser.value!!
-        val userPref: UserSearchPreferenceModel = user.userPref
-
-        // Calculate user age
-
-        // Check other preferences
-        val isGenderMatch =
-            userPref.gender.isEmpty() || userPref.gender.equals(potentialUser.gender)
-        val isChildrenMatch =
-            userPref.children.isEmpty() || (userPref.children.equals(potentialUser.children))
-        val isEthnicityMatch =
-            userPref.mbti.isEmpty() || userPref.mbti.equals(potentialUser.testResultsMbti)
-        val isFamilyMatch =
-            userPref.familyPlans.isEmpty() || userPref.familyPlans.equals(potentialUser.family)
-        val isDrinkMatch =
-            userPref.drink.isEmpty() || userPref.drink.equals(potentialUser.drink)
-        val isEducationMatch =
-            userPref.education.isEmpty() || userPref.education.equals(potentialUser.education)
-        val isIntentionsMatch =
-            userPref.intentions.isEmpty() || userPref.intentions.equals(potentialUser.intentions)
-        val isMeetUpMatch =
-            userPref.meetUp.isEmpty() || userPref.meetUp.equals(potentialUser.meetUp)
-        val isPoliticsMatch =
-            userPref.politicalViews.isEmpty() || userPref.politicalViews.equals(potentialUser.politics)
-        val isRelationshipMatch =
-            userPref.relationshipType.isEmpty() || userPref.relationshipType.equals(
-                potentialUser.relationship
-            )
-        val isReligionMatch =
-            userPref.religion.isEmpty() || userPref.religion.equals(potentialUser.religion)
-        val isSexOriMatch =
-            userPref.sexualOri.isEmpty() || userPref.sexualOri.equals(potentialUser.sexOrientation)
-        val isSmokeMatch =
-            userPref.smoke.isEmpty() || userPref.smoke.equals(potentialUser.smoke)
-        val isWeedMatch = userPref.weed.isEmpty() || userPref.weed.equals(potentialUser.weed)
-
-        // Combine all checks
-        return isGenderMatch &&
-                isChildrenMatch &&
-                isEthnicityMatch &&
-                isFamilyMatch &&
-                isDrinkMatch &&
-                isEducationMatch &&
-                isIntentionsMatch &&
-                isMeetUpMatch &&
-                isPoliticsMatch &&
-                isRelationshipMatch &&
-                isReligionMatch &&
-                isSexOriMatch &&
-                isSmokeMatch &&
-                isWeedMatch
+        /**
+         * This checks if the potential user has the "SeeMe" check, if they do, current users LikedBy
+         */
+    private fun passSeeMe(potentialUser: MatchedUserModel, snapshot: DataSnapshot):Boolean{
+        return if(potentialUser.seeMe){
+            true
+        }else{
+            val likedSnapshot = snapshot.child("likedby").child(potentialUser.number)
+            likedSnapshot.exists()
+        }
     }
 
-
-    private suspend fun isProfileInteractedByUser(
-        potentialUser: String,
-        currentUserId: String
-    ): Boolean {
-//        val likePassNodeRef = FirebaseDatabase.getInstance().getReference("likeorpass").child(currentUserId)
-//        val snapshot = likePassNodeRef.get().await()
-//
-//        val likedSnapshot = snapshot.child("liked").child(potentialUser)
-//        val passedSnapshot = snapshot.child("passed").child(potentialUser)
-//        !(likedSnapshot.exists() || passedSnapshot.exists())
+        /**
+         * This function checks if the current user ALREADY liked or passed them to remove seeing the same person twice
+         */
+    private fun isProfileInteractedByUser(potentialUser: String, snapshot: DataSnapshot): Boolean {
+        val likedSnapshot = snapshot.child("liked").child(potentialUser)
+        val passedSnapshot = snapshot.child("passed").child(potentialUser)
+        !(likedSnapshot.exists() || passedSnapshot.exists())
         return true
+    }
+
+        /**
+         * This function checks basic preferences, sex, age, distance
+         */
+    private fun passBasicPreferences(user:UserModel, potentialUser: MatchedUserModel):Boolean{
+        val userPref = user.userPref
+        val userAge = calcAge(potentialUser.birthday)
+        // Check if user's age is within the preferred age range
+        val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
+        // Check if user's location is within the preferred max distance
+        val isLocationWithinDistance = calcDistance(potentialUser.location, user.location).toInt() <= userPref.maxDistance
+        //is Sex match
+        var isSexMatch = true
+        if (user.seeking != "Everyone") {
+            isSexMatch = potentialUser.sex == user.seeking
+        }
+        return isAgeInRange && isLocationWithinDistance && isSexMatch
+    }
+
+        /**
+         * This checks the "premium" features
+         */
+    private fun passPremiumPref( user: UserModel, potentialUser: MatchedUserModel): Boolean {
+        val userPref: UserSearchPreferenceModel = user.userPref
+        // Check other preferences
+        val isGenderMatch = userPref.gender[0] == "Doesn't Matter" || userPref.gender.contains(potentialUser.gender)
+        val isChildrenMatch = userPref.children[0] == "Doesn't Matter" || (userPref.children.contains(potentialUser.children))
+        val isEthnicityMatch = userPref.mbti[0] == "Doesn't Matter" || userPref.mbti.contains(potentialUser.testResultsMbti)
+        val isFamilyMatch = userPref.familyPlans[0] == "Doesn't Matter" || userPref.familyPlans.contains(potentialUser.family)
+        val isDrinkMatch = userPref.drink[0] == "Doesn't Matter" || userPref.drink.contains(potentialUser.drink)
+        val isEducationMatch = userPref.education[0] == "Doesn't Matter" || userPref.education.contains(potentialUser.education)
+        val isIntentionsMatch = userPref.intentions[0] == "Doesn't Matter" || userPref.intentions.contains(potentialUser.intentions)
+        val isMeetUpMatch = userPref.meetUp[0] == "Doesn't Matter" || userPref.meetUp.contains(potentialUser.meetUp)
+        val isPoliticsMatch = userPref.politicalViews[0] == "Doesn't Matter" || userPref.politicalViews.contains(potentialUser.politics)
+        val isRelationshipMatch = userPref.relationshipType[0] == "Doesn't Matter" || userPref.relationshipType.contains(potentialUser.relationship)
+        val isReligionMatch = userPref.religion[0] == "Doesn't Matter" || userPref.religion.contains(potentialUser.religion)
+        val isSexOriMatch = userPref.sexualOri[0] == "Doesn't Matter" || userPref.sexualOri.contains(potentialUser.sexOrientation)
+        val isSmokeMatch = userPref.smoke[0] == "Doesn't Matter" || userPref.smoke.contains(potentialUser.smoke)
+        val isWeedMatch = userPref.weed[0] == "Doesn't Matter" || userPref.weed.contains(potentialUser.weed)
+        // Combine all checks
+        return isGenderMatch && isChildrenMatch && isEthnicityMatch && isFamilyMatch && isDrinkMatch && isEducationMatch && isIntentionsMatch
+                && isMeetUpMatch && isPoliticsMatch && isRelationshipMatch && isReligionMatch && isSexOriMatch && isSmokeMatch && isWeedMatch
     }
 
     /**

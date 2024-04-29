@@ -69,8 +69,8 @@ fun setUserProperties(
 
 private fun getUserSearchPreference(map: Map<*, *>): UserSearchPreferenceModel {
     return UserSearchPreferenceModel(
-        ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),
-        maxDistance = map["maxDistance"] as? Int ?: 25,
+        ageRange = map["ageRange"] as? AgeRange ?: AgeRange(18, 35),//TODO its taking this vaule for some reason
+        maxDistance = map["maxDistance"] as? Int ?: 25,//TODO its taking this value for some reason
         gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
             ?: listOf("Doesn't Matter"),
         zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()

@@ -79,7 +79,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
+import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
+import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.theme.AppTheme
@@ -593,7 +595,48 @@ fun PagerIndicator(
 fun Comeback(
     text: String
 ){
-    GenericBodyText(text = text)
+    SeekingUserInfo(
+        user = MatchedUserModel(
+            name = text,
+            birthday = "01/01/2024",
+            seeMe = false,
+            pronoun = "pronoun",
+            gender = "loading",
+            height = "6'9",
+            ethnicity = "ethnicity",
+            star = "Cancer",
+            sexOrientation = "Orientation",
+            sex = "other",
+            testResultsMbti = "INTP",
+            children = "children",
+            family = "family",
+            education = "education",
+            religion = "religion",
+            politics = "politics",
+            relationship = "relationship",
+            intentions = "intentions",
+            drink = "drink",
+            smoke = "smoke",
+            weed = "weed",
+            meetUp = "meetUp",
+            promptQ1 = "promptQ1",
+            promptA1 = "promptA1",
+            promptQ2 = "promptQ2",
+            promptA2 = "promptA2",
+            promptQ3 = "promptQ3",
+            promptA3 = "promptA3",
+            bio = "bio",
+            location = "",
+            image1 = "",
+            image2 = "",
+            image3 = "",
+            image4 = "",
+            number = "",
+            verified = true,
+
+        ),//usersArray[currentProfileIndex]
+        location = "Not Here",
+    )
 }
 @Composable
 fun NavDraw(
@@ -647,6 +690,14 @@ fun NavDraw(
         val partOfSpeech = "noun plural"
         val source = "gcide"
         val def = "To underwhelm someone is to fail to impress or excite them."
+//        val wordViewModel = viewModel { WordViewModel(WordRepository()) }
+//        val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
+//        val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
+//        val source by wordViewModel.source.observeAsState("")
+//        val def by wordViewModel.def.observeAsState("")
+
+
+
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Column {

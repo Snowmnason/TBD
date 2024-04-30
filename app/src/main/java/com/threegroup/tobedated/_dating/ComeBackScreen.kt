@@ -17,7 +17,7 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity) {
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         star = "Ask me",
         currentScreen = {
-            Comeback(text = "currently loading your future connection")
+            Comeback(text = "Loading")
         }
     )
 }

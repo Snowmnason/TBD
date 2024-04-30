@@ -116,7 +116,7 @@ fun SearchingScreen(
                     )
                 }
             } else {
-                Comeback(text = "Come Back when theres more people to see =0)")
+                Comeback(text = "Come Back")
             }
         })
     if (showReport) {

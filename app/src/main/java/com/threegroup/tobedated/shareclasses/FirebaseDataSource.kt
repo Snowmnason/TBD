@@ -74,7 +74,7 @@ class FirebaseDataSource {
                                         val potential = userSnapshot.getValue(MatchedUserModel::class.java)
                                         potential?.let {
                                             if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber &&
-                                                !passSeeMe(it, likePassSnapshot) &&
+                                                passSeeMe(it, likePassSnapshot) &&
                                                 isProfileInteractedByUser(it.number, likePassSnapshot) &&
                                                 passBasicPreferences(user, it) &&
                                                 passPremiumPref(user, it)) {
@@ -89,13 +89,11 @@ class FirebaseDataSource {
                                 val sortedList = list.sortedByDescending { it.status }
                                 trySend(Pair(sortedList, 0)).isSuccess
                             }
-
                             override fun onCancelled(error: DatabaseError) {
                                 Log.d("USER_TAG", "Database error: ${error.message}")
                             }
                         })
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         Log.d("USER_TAG", "Database error: ${error.message}")
                     }
@@ -114,7 +112,7 @@ class FirebaseDataSource {
 
 
     private fun passSeeMe(potentialUser: MatchedUserModel, snapshot: DataSnapshot): Boolean {
-        return if (potentialUser.seeMe) {
+        return if (!potentialUser.seeMe) {
             true
         } else {
             val likedSnapshot = snapshot.child("likedby").child(potentialUser.number)

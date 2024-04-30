@@ -22,9 +22,8 @@ fun setUserProperties(
         user.sexOrientation = userDataMap["sexOrientation"] as? String ?: ""
         user.seeking = userDataMap["seeking"] as? String ?: ""
         user.sex = userDataMap["sex"] as? String ?: ""
-        user.testResultsMbti =
-            userDataMap["testResultsMbti"] as? String ?: "Not Taken"
-        user.testResultTbd = userDataMap["testResultTbd"] as? Int ?: 10
+        user.testResultsMbti = userDataMap["testResultsMbti"] as? String ?: "Not Taken"
+        user.testResultTbd = (userDataMap["testResultTbd"] as? Long)?.toInt() ?: 18
         user.children = userDataMap["children"] as? String ?: ""
         user.family = userDataMap["family"] as? String ?: ""
         user.education = userDataMap["education"] as? String ?: ""
@@ -67,44 +66,40 @@ fun setUserProperties(
     }
 }
 
-private fun getUserSearchPreference(map: Map<*, *>): UserSearchPreferenceModel {
-    return UserSearchPreferenceModel(
-        ageRange = (map["ageRange"] as? Map<*, *>)?.let { ageRangeMap ->
-            val min = ageRangeMap["min"] as? Int ?: 18
-            val max = ageRangeMap["max"] as? Int ?: 35
+    private fun getUserSearchPreference(map: Map<*, *> ): UserSearchPreferenceModel {
+        val ageRangeData = map["ageRange"]
+        val ageRange: AgeRange = if (ageRangeData is Map<*, *>) {
+            val min = (ageRangeData["min"] as Long).toInt()
+            val max = (ageRangeData["max"] as Long).toInt()
             AgeRange(min, max)
-        } ?: AgeRange(18, 35),//TODO its taking this value for some reason
-        maxDistance = map["maxDistance"] as? Int ?: 25,//TODO its taking this value for some reason
-        gender = (map["gender"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        children = (map["children"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        education = (map["education"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        religion = (map["religion"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        drink = (map["drink"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
-        weed = (map["weed"] as? List<*>)?.filterIsInstance<String>()
-            ?: listOf("Doesn't Matter"),
+        } else {
+            AgeRange(18, 35)
+        }
+        val maxDistanceData = map["maxDistance"]
+        val maxDistance: Int = if (maxDistanceData is Int) {
+            maxDistanceData
+        } else {
+            val maxDistanceLong = maxDistanceData as? Long
+            maxDistanceLong?.toInt() ?: 25
+        }
+        return UserSearchPreferenceModel(
+        ageRange = ageRange,
+        maxDistance = maxDistance,
+        gender = (map["gender"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        zodiac = (map["zodiac"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        sexualOri = (map["sexualOri"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        mbti = (map["mbti"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        children = (map["children"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        familyPlans = (map["familyPlans"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        education = (map["education"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        meetUp = (map["meetUp"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        religion = (map["religion"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        politicalViews = (map["politicalViews"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        relationshipType = (map["relationshipType"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        intentions = (map["intentions"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        drink = (map["drink"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        weed = (map["weed"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
     )
 }
 

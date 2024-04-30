@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -24,11 +28,35 @@ fun SomeScreen(
     dating: DatingActivity,
     vmDating: DatingViewModel
 ) {
+    val userId = vmDating.getUser().number
+    var passed by remember { mutableIntStateOf(0) }
+    var liked by remember { mutableIntStateOf(0) }
+    var seen by remember { mutableIntStateOf(0) }
+    vmDating.getPasses(
+        userId,
+        onComplete = {
+            total -> passed = total
+        }
+    )
+    vmDating.getPasses(
+        userId,
+        onComplete = {
+                total -> liked = total
+        }
+    )
+    vmDating.getLikes(
+        userId,
+        onComplete = {
+                total -> passed = total
+        }
+    )
+    vmDating.getLikedAndPassedby(
+        userId,
+        onComplete = {
+                total -> seen = total
+        }
+    )
 
-    val passed = 12 //viewmodel call here
-    val liked = 12 //viewmodel call here
-    val seen = 12 //viewmodel call here
-    val missed = 12 //viewmodel call here
     val unmeet = 1 //viewmodel call here
     TopAndBotBarsDating(
         dating = dating,
@@ -57,8 +85,8 @@ fun SomeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 GenericTitleText(text = "• People who seen you: $seen")
                 Spacer(modifier = Modifier.height(8.dp))
-                GenericTitleText(text = "• Missed connections: $missed")
-                Spacer(modifier = Modifier.height(24.dp))
+//                GenericTitleText(text = "• Missed connections: $missed")
+//                Spacer(modifier = Modifier.height(24.dp))
                 GenericTitleText(
                     text = "Unmeet connections",
                     style = AppTheme.typography.titleLarge

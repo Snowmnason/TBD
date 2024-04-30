@@ -22,9 +22,6 @@ class Repository(
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> {
         return firebaseDataSource.getMatchesFlow(userId)
     }
-    fun getCurrentUserId(): String {
-        return firebaseDataSource.getCurrentUserId()
-    }
     fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> {
         return firebaseDataSource.getPotentialUserData()
     }
@@ -80,5 +77,15 @@ class Repository(
     }
     suspend fun getHoroscope(sign:String): JSONObject?{
         return firebaseDataSource.getHoroscope(sign)
+    }
+    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
+        firebaseDataSource.getLikes(userId, onComplete)
+    }
+
+    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
+        firebaseDataSource.getPasses(userId, onComplete)
+    }
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
+        firebaseDataSource.getLikedAndPassedby(userId, onComplete)
     }
 }

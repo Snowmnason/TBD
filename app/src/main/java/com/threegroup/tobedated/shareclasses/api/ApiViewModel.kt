@@ -1,6 +1,7 @@
 package com.threegroup.tobedated.shareclasses.api
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.threegroup.tobedated.shareclasses.Repository
@@ -19,7 +20,7 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
     private var source = ""
     private var def = ""
     fun fetchWordOfTheDay() {
-        viewModelScope.launch(Dispatchers.IO) {
+        try{
             viewModelScope.launch(Dispatchers.IO) {
                 val jsonObject = repository.getWord()
                 // Parse the JSONObject and extract required values
@@ -29,6 +30,8 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
                 source = definitionsArray?.getJSONObject(0)?.getString("source") ?: ""
                 def = definitionsArray?.getJSONObject(0)?.getString("text") ?: ""
             }
+        }catch (e: Exception) {
+            Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
         }
     }
     fun getWord(): String {
@@ -47,13 +50,22 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
 
     private var description = ""
     fun fetchHoroscope(sign: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val starSign = if(sign == "Ask me"){ starOptions.random() }else{sign.lowercase()}
-            val jsonObject = repository.getHoroscope(starSign)
-            // Parse the JSONObject and extract required values
-            val horoscopeObject = jsonObject?.optJSONObject("data")
-            val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
-            description = horoscopeData ?: ""
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                val starSign = if (sign == "Ask me") {
+                    starOptions.random()
+                } else {
+                    sign.lowercase()
+                }
+                val jsonObject = repository.getHoroscope(starSign)
+                // Parse the JSONObject and extract required values
+                val horoscopeObject = jsonObject?.optJSONObject("data")
+                val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
+                description = horoscopeData ?: ""
+            }
+        }
+        catch (e: Exception) {
+            Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
         }
     }
 

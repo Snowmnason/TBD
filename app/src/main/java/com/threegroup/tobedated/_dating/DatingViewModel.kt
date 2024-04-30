@@ -165,6 +165,18 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             )
         }
     }
+    /**
+     * This is for someScreen
+     */
+    fun getLikes(userId: String, onComplete: (Int) -> Unit){
+        repository.getLikes(userId, onComplete)
+    }
+    fun getPasses(userId: String, onComplete: (Int) -> Unit){
+        repository.getPasses(userId, onComplete)
+    }
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
+        repository.getLikedAndPassedby(userId, onComplete)
+    }
 }
 //fun getCurrentUserId(): String {
 //    return repository.getCurrentUserId()

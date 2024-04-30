@@ -631,4 +631,82 @@ class FirebaseDataSource {
             responseBody?.let { JSONObject(it) }
         }
     }
+    /**
+     * SomeScreen Calls
+     */
+    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
+        val db = FirebaseDatabase.getInstance()
+        val likePassNodeRef = db.getReference("likeorpass").child(userId).child("liked")
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val count = snapshot.childrenCount.toInt()
+                onComplete(count)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                onComplete(0) // Return 0 in case of error
+            }
+        }
+
+        likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
+    }
+    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
+        val db = FirebaseDatabase.getInstance()
+        val likePassNodeRef = db.getReference("likeorpass").child(userId).child("passed")
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val count = snapshot.childrenCount.toInt()
+                onComplete(count)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                onComplete(0) // Return 0 in case of error
+            }
+        }
+
+        likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
+    }
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
+        val db = FirebaseDatabase.getInstance()
+        val likeNodeRef = db.getReference("likeorpass").child(userId).child("likedby")
+        val passNodeRef = db.getReference("likeorpass").child(userId).child("passedby")
+
+        var likedCount = 0
+        var passedCount = 0
+
+        val likedListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                likedCount = snapshot.childrenCount.toInt()
+                calculateTotal(likedCount, passedCount, onComplete)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                calculateTotal(0,0, onComplete)
+            }
+        }
+
+        val passedListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                passedCount = snapshot.childrenCount.toInt()
+                calculateTotal(likedCount, passedCount, onComplete)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                calculateTotal(0,0, onComplete)
+            }
+        }
+
+        likeNodeRef.addListenerForSingleValueEvent(likedListener)
+        passNodeRef.addListenerForSingleValueEvent(passedListener)
+    }
+    fun calculateTotal(likedCount:Int, passedCount:Int, onComplete: (Int) -> Unit) {
+        val total = likedCount + passedCount
+        onComplete(total)
+    }
 }

@@ -74,6 +74,7 @@ class FirebaseDataSource {
                                         val potential = userSnapshot.getValue(MatchedUserModel::class.java)
                                         potential?.let {
                                             if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber &&
+                                                passBlocked(dbRef, user.number, it.number) &&
                                                 passSeeMe(it, likePassSnapshot) &&
                                                 isProfileInteractedByUser(it.number, likePassSnapshot) &&
                                                 passBasicPreferences(user, it) &&
@@ -110,6 +111,14 @@ class FirebaseDataSource {
         }
     }
 
+
+    private fun passBlocked(dbReference: DatabaseReference, userId: String, potentialUser: String): Boolean {
+        //val block = dbReference.child(userId).child("blocked").child(potentialUser)
+
+        //val exists = true
+
+        return true
+    }
 
     private fun passSeeMe(potentialUser: MatchedUserModel, snapshot: DataSnapshot): Boolean {
         return if (!potentialUser.seeMe) {

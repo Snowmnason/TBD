@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,11 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
+import com.threegroup.tobedated.composeables.composables.AlertDialogBoxWTextField
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.composables.OutLinedButton
 import com.threegroup.tobedated.composeables.composables.SimpleBox
@@ -40,6 +44,7 @@ fun EditProfileScreen(
 ) {
     val currentUser = vmDating.getUser()
     var showDelete by rememberSaveable { mutableStateOf(false) }
+    var showBlock by rememberSaveable { mutableStateOf(false) }
     var seen by remember { mutableStateOf(currentUser.seeMe) }
 //currentUser.mbti,
     val userSettings = listOf(currentUser.ethnicity, currentUser.pronoun, currentUser.gender, currentUser.sexOrientation, currentUser.meetUp, currentUser.relationship, currentUser.intentions, currentUser.star,
@@ -98,8 +103,8 @@ fun EditProfileScreen(
                     .padding(25.dp, 0.dp)
             ) {
                 OutLinedButton(
-                    onClick = {/*TODO deactivate account*/ },
-                    text = "Deactivate Account",
+                    onClick = { showBlock = true },
+                    text = "Block Numbers",
                     outLineColor = Color.Red
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -125,6 +130,32 @@ fun EditProfileScreen(
                 vmDating.deleteProfile(currentUser.number, dating)
 
             }
+        )
+    }
+    if (showBlock) {
+        var number by remember { mutableStateOf("") }
+        AlertDialogBoxWTextField(
+            dialogTitle = "Who do you want to block",
+            onDismissRequest = { showBlock = false },
+            dialogText = "Blocking someone prevents them seeing, this is not reversible",
+            onConfirmation = {
+                vmDating.blockUser(number, currentUser.number)
+                showBlock = false
+            },
+            number = number,
+            numberChange = {input -> number = input
+//                if (input.length <= 14 && currentUser.number.startsWith("+1")) {
+//                    number = formatPhone(input, "+1")
+//                }
+//                if (input.length <= 11) {
+//                    number = formatPhone(input, currentUser.number.substring(0, 3))
+//                }
+//                MoveCursorCommand(5)
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Phone
+            )
         )
     }
 }

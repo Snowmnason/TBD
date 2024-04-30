@@ -15,13 +15,12 @@ class WordViewModel(private val wordRepository: WordRepository) : ViewModel() {
 
     fun fetchWordOfTheDay() {
         viewModelScope.launch {
-            wordRepository.getWordOfTheDay("YOUR_DATE").let { response ->
-                response?.let {
-                    wordOfDay.postValue(it.word)
-                    partOfSpeech.postValue(it.definitions.firstOrNull()?.partOfSpeech)
-                    source.postValue("WordNik")
-                    def.postValue(it.definitions.firstOrNull()?.text)
-                }
+            val response = wordRepository.getWordOfTheDay()
+            if (response != null) {
+                wordOfDay.postValue(response.word)
+                partOfSpeech.postValue(response.definitions.firstOrNull()?.partOfSpeech)
+                source.postValue("WordNik") // Assuming source is static or needs to be derived
+                def.postValue(response.definitions.firstOrNull()?.text)
             }
         }
     }

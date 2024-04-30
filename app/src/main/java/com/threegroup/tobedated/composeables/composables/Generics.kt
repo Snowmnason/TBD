@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -37,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
@@ -292,6 +294,58 @@ fun AlertDialogBox(
         },
         text = {
             Text(text = dialogText, style = AppTheme.typography.body, color = AppTheme.colorScheme.onSurface)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text(text = "Confirm", color = AppTheme.colorScheme.secondary)
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text(text = "Dismiss", color = AppTheme.colorScheme.secondary)
+            }
+        }
+    )
+}
+@Composable
+fun AlertDialogBoxWTextField(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    number:String,
+    numberChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions,
+) {
+    AlertDialog(
+        containerColor = AppTheme.colorScheme.surface,
+        title = {
+            Text(text = dialogTitle, style = AppTheme.typography.titleLarge, color = AppTheme.colorScheme.onSurface)
+        },
+        text = {
+            Column {
+                Text(text = dialogText, style = AppTheme.typography.body, color = AppTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(value = number,
+                    onValueChange = numberChange,
+                    singleLine = true,
+                    keyboardOptions = keyboardOptions
+
+                )
+            }
+
         },
         onDismissRequest = {
             onDismissRequest()
@@ -703,13 +757,12 @@ fun NavDraw(
             .build()
             .create(WordNikService::class.java)
 
-// Create WordRepository with WordNikService instance
         val wordRepository = WordRepository(wordNikService)
 
-// Create WordViewModel with WordRepository instance
         val wordViewModel = viewModel { WordViewModel(wordRepository) }
+
         wordViewModel.fetchWordOfTheDay()
-// Observe the MutableLiveData properties
+
         val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
         val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
         val source by wordViewModel.source.observeAsState("")

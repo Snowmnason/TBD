@@ -688,7 +688,7 @@ fun NavDraw(
         }
         val wordOfDay = "Definition.word"
         val partOfSpeech = "noun plural"
-        val source = "gcide"
+        val source = "sucucide"
         val def = "To underwhelm someone is to fail to impress or excite them."
 //        val wordViewModel = viewModel { WordViewModel(WordRepository()) }
 //        val wordOfDay by wordViewModel.wordOfDay.observeAsState("")

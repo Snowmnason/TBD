@@ -33,6 +33,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -602,6 +605,30 @@ class FirebaseDataSource {
         userDataMap?.let { map ->
             val user = setMatchedProperties(MatchedUserModel(), map)
             emit(user)
+        }
+    }
+    /**
+     * API calls
+     */
+    suspend fun getWord(): JSONObject?{
+        val apiKey = "rd8wadogjxvq8mtpbsngll4mv6eokvk29vlx6rnlzkgof0475"
+        return withContext(Dispatchers.IO) {
+            val url = "https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=$apiKey"
+            val client = OkHttpClient()
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+            responseBody?.let { JSONObject(it) }
+        }
+    }
+    suspend fun getHoroscope(sign:String): JSONObject?{
+        return withContext(Dispatchers.IO) {
+            val url = "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=$sign&day=TODAY"
+            val client = OkHttpClient()
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+            responseBody?.let { JSONObject(it) }
         }
     }
 }

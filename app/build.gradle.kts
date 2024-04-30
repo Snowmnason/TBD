@@ -80,15 +80,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-auth")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
 }

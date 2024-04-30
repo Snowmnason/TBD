@@ -8,6 +8,7 @@ import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.json.JSONObject
 
 class Repository(
     private var firebaseDataSource: FirebaseDataSource
@@ -73,5 +74,11 @@ class Repository(
     }
     suspend fun deleteMatch(matchedUser:String, userId:String){
         firebaseDataSource.deleteMatch(matchedUser, userId)
+    }
+    suspend fun getWord(): JSONObject?{
+        return firebaseDataSource.getWord()
+    }
+    suspend fun getHoroscope(sign:String): JSONObject?{
+        return firebaseDataSource.getHoroscope(sign)
     }
 }

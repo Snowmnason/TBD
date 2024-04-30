@@ -48,7 +48,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,21 +81,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
-import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
-import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordNikService
-import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordRepository
-import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordViewModel
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
-import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.theme.AppTheme
 import com.threegroup.tobedated.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun baseAppTextTheme(): TextStyle {
@@ -747,28 +741,17 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-//        val wordOfDay = "Definition.word"
-//        val partOfSpeech = "noun plural"
-//        val source = "gcide"
-//        val def = "To underwhelm someone is to fail to impress or excite them."
-        val wordNikService = Retrofit.Builder()
-            .baseUrl("https://api.wordnik.com/v4/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(WordNikService::class.java)
-
-        val wordRepository = WordRepository(wordNikService)
-
-        val wordViewModel = viewModel { WordViewModel(wordRepository) }
-
-        wordViewModel.fetchWordOfTheDay()
-
-        val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
-        val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
-        val source by wordViewModel.source.observeAsState("")
-        val def by wordViewModel.def.observeAsState("")
-
-
+        val vmApi = viewModel { ApiViewModel(MyApp.x) }
+        vmApi.fetchWordOfTheDay()
+        vmApi.fetchHoroscope(star)
+        var description by remember { mutableStateOf("") }
+        var luckyTime by remember { mutableStateOf("") }
+        var luckyNumber by remember { mutableStateOf("") }
+        var mood by remember { mutableStateOf("") }
+        description = vmApi.getDescription()
+        luckyTime = vmApi.getTime(star)
+        luckyNumber = vmApi.getLuckyNumber(star)
+        mood = vmApi.getMood(star)
 
         Spacer(modifier = Modifier.height(24.dp))
         Column {
@@ -778,32 +761,23 @@ fun NavDraw(
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    GenericTitleText(text = wordOfDay, style = AppTheme.typography.titleLarge)
+                    GenericTitleText(text = vmApi.getWord(), style = AppTheme.typography.titleLarge)
                 }
                 Spacer(modifier = Modifier.height(3.dp))
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
-                        GenericBodyText(text = partOfSpeech)
+                        GenericBodyText(text = vmApi.getPartOfSpeech())
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        GenericBodyText(text = source)
+                        GenericBodyText(text = vmApi.getSource())
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                GenericBodyText(text = def)
+                GenericBodyText(text = vmApi.getDef())
             }
 
-            fetchHoroscope(if(star == "Ask me"){ starOptions.random() }else{star.lowercase()}, "today")
-            val date = "September, 23, 2017"
-            val comp = "Cancer"
-            val time = "12am"
-            val number = "64"
-            val mood = "Relaxed"
-            val description = "It's finally time for you to think about just" +
-                    "  one thing: what makes you happy. Fortunately, that happens to be a person who feels" +
-                    "  the same way. Give yourself the evening off. Refuse to be put in charge of anything."
             Spacer(modifier = Modifier.height(16.dp))
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
@@ -824,11 +798,11 @@ fun NavDraw(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Date: ")
-                        GenericBodyText(text = date)
+                        GenericBodyText(text = vmApi.getDate())
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         GenericLabelText(text = "Lucky Time: ")
-                        GenericBodyText(text = time)
+                        GenericBodyText(text = luckyTime)
                     }
                 }
                 Spacer(modifier = Modifier.height(3.dp))
@@ -840,25 +814,25 @@ fun NavDraw(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Lucky Number: ")
-                        GenericBodyText(text = number)
+                        GenericBodyText(text = luckyNumber)
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        GenericLabelText(text = "Compatibility: ")
-                        GenericBodyText(text = comp)
-                    }
-                }
-                Spacer(modifier = Modifier.height(3.dp))
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp, 0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Mood: ")
                         GenericBodyText(text = mood)
                     }
                 }
+//                Spacer(modifier = Modifier.height(3.dp))
+//                Row(modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(4.dp, 0.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Start
+//                ) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        GenericLabelText(text = "Compatibility: ")
+//                        GenericBodyText(text = vmApi.getComp())
+//                    }
+//                }
                 Spacer(modifier = Modifier.height(5.dp))
                 GenericBodyText(text = description)
             }

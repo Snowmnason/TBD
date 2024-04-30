@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,9 +79,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated.shareclasses.api.horoscope.fetchHoroscope
+import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordNikService
+import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordRepository
+import com.threegroup.tobedated.shareclasses.api.wordoftheday.WordViewModel
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.shareclasses.models.starOptions
@@ -88,6 +93,8 @@ import com.threegroup.tobedated.theme.AppTheme
 import com.threegroup.tobedated.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun baseAppTextTheme(): TextStyle {
@@ -686,15 +693,27 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-        val wordOfDay = "Definition.word"
-        val partOfSpeech = "noun plural"
-        val source = "sucucide"
-        val def = "To underwhelm someone is to fail to impress or excite them."
-//        val wordViewModel = viewModel { WordViewModel(WordRepository()) }
-//        val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
-//        val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
-//        val source by wordViewModel.source.observeAsState("")
-//        val def by wordViewModel.def.observeAsState("")
+//        val wordOfDay = "Definition.word"
+//        val partOfSpeech = "noun plural"
+//        val source = "gcide"
+//        val def = "To underwhelm someone is to fail to impress or excite them."
+        val wordNikService = Retrofit.Builder()
+            .baseUrl("https://api.wordnik.com/v4/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WordNikService::class.java)
+
+// Create WordRepository with WordNikService instance
+        val wordRepository = WordRepository(wordNikService)
+
+// Create WordViewModel with WordRepository instance
+        val wordViewModel = viewModel { WordViewModel(wordRepository) }
+        wordViewModel.fetchWordOfTheDay()
+// Observe the MutableLiveData properties
+        val wordOfDay by wordViewModel.wordOfDay.observeAsState("")
+        val partOfSpeech by wordViewModel.partOfSpeech.observeAsState("")
+        val source by wordViewModel.source.observeAsState("")
+        val def by wordViewModel.def.observeAsState("")
 
 
 

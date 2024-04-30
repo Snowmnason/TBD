@@ -379,12 +379,8 @@ class FirebaseDataSource {
     suspend fun deleteMatch(matchedUser: String, currUser: String) {
         try {
             val matchesRef = FirebaseDatabase.getInstance().getReference("matches")
-            val matchSnapshot = matchesRef.get().await()
-
-            val matchId = matchSnapshot.key ?: ""
-            if (matchId.contains(matchedUser)) {
-                matchSnapshot.ref.removeValue().await()
-            }
+            val matchId2 = matchesRef.child(getMatchId(matchedUser, currUser))
+            matchId2.removeValue().await()
 
             deleteChat(getChatId(matchedUser, currUser))
             Log.d("DeleteMatches", "Matches deleted successfully for user $matchedUser")

@@ -76,7 +76,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     private val matchList: State<List<Match>> = _matchList
     // call this in the composable as val matchlist by viewModel.matchList.observeAsState()
 
-    private fun getMatchesFlow(userId: String) {
+    fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
             repository.getMatchesFlow(userId).collect { matches ->
                 val convertedMatches = matches.map {
@@ -85,6 +85,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                 }
                 _matchList.value = convertedMatches
             }
+        }
+    }
+    fun getMatchSize():Int{
+        return if(matchList.value.isEmpty()){
+            0
+        }else{
+            matchList.value.size
         }
     }
     /**
@@ -111,7 +118,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     var selectedUser: StateFlow<MatchedUserModel?> = _selectedUser
     //Stuff for setting and getting matches
     fun getMatches(): List<Match> {
-        getMatchesFlow(signedInUser.value!!.number)
+        //getMatchesFlow(signedInUser.value!!.number)
         return matchList.value
     }
     fun setTalkedUser(number: String) {

@@ -17,7 +17,7 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity) {
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         star = "Ask me",
         currentScreen = {
-            Comeback(text = "Loading")
+            Comeback(text = "trouble getting possible connections", todo = "Check your internet connection, or come back later when the problem is resolved!")
         }
     )
 }

@@ -8,6 +8,7 @@ import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.json.JSONArray
 import org.json.JSONObject
 
 class Repository(
@@ -87,5 +88,8 @@ class Repository(
     }
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
         firebaseDataSource.getLikedAndPassedby(userId, onComplete)
+    }
+    suspend fun getPoem(): JSONArray?{
+        return firebaseDataSource.getPoem()
     }
 }

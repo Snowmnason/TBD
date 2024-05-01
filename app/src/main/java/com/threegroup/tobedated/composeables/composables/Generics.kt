@@ -83,9 +83,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
-import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
 import com.threegroup.tobedated.theme.AppTheme
 import com.threegroup.tobedated.theme.JoseFinSans
@@ -648,50 +646,73 @@ fun PagerIndicator(
 }
 @Composable
 fun Comeback(
-    text: String
+    text: String,
+    todo:String
 ){
-    SeekingUserInfo(
-        user = MatchedUserModel(
-            name = text,
-            birthday = "01/01/2024",
-            seeMe = false,
-            pronoun = "pronoun",
-            gender = "loading",
-            height = "6'9",
-            ethnicity = "ethnicity",
-            star = "Cancer",
-            sexOrientation = "Orientation",
-            sex = "other",
-            testResultsMbti = "INTP",
-            children = "children",
-            family = "family",
-            education = "education",
-            religion = "religion",
-            politics = "politics",
-            relationship = "relationship",
-            intentions = "intentions",
-            drink = "drink",
-            smoke = "smoke",
-            weed = "weed",
-            meetUp = "meetUp",
-            promptQ1 = "promptQ1",
-            promptA1 = "promptA1",
-            promptQ2 = "promptQ2",
-            promptA2 = "promptA2",
-            promptQ3 = "promptQ3",
-            promptA3 = "promptA3",
-            bio = "bio",
-            location = "",
-            image1 = "",
-            image2 = "",
-            image3 = "",
-            image4 = "",
-            number = "",
-            verified = true,
-
-        ),//usersArray[currentProfileIndex]
-        location = "Not Here",
-    )
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(15.dp, 0.dp)
+    ){
+        val vmApi = viewModel { ApiViewModel(MyApp.x) }
+        vmApi.fetchPoem()
+        SimpleBox(
+            whatsInsideTheBox = {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No User", style = getAddShadow(style = AppTheme.typography.titleMedium, "med"))
+                }
+            })
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(
+            whatsInsideTheBox = {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(text = "Reason", style = AppTheme.typography.labelSmall)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = text, style = AppTheme.typography.titleSmall)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(
+            whatsInsideTheBox = {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(text = "What to do", style = AppTheme.typography.labelSmall)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = todo, style = AppTheme.typography.titleSmall)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(
+            whatsInsideTheBox = {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Till then enjoy this poem", style = AppTheme.typography.bodyLarge)
+                }
+            })
+        Spacer(modifier = Modifier.height(12.dp))
+        SimpleBox(
+            whatsInsideTheBox = {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(text = "${vmApi.getPoemTitle()} \t\t ${vmApi.getPoemAuthor()}", style = AppTheme.typography.labelMedium)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = vmApi.getPoem(), style = AppTheme.typography.bodySmall)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+    }
 }
 @Composable
 fun NavDraw(

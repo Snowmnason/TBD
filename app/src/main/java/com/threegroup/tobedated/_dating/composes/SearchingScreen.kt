@@ -44,7 +44,7 @@ fun SearchingScreen(
     }
 
     LaunchedEffect(Unit) {
-        //TODO This checks to see if the list is empty or not, This NEEDs to be avilialbe some hows
+        //TODO This checks to see if the list is empty or not, This NEEDs to be available some hows
         if (vmDating.getNextPotential(currentProfileIndex) != null) {
             currentPotential.value =
                 vmDating.getNextPotential(currentProfileIndex)//MIGHT CHANGE THIS
@@ -55,7 +55,7 @@ fun SearchingScreen(
     }
 
 
-    ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an avilibe user to prevent crashes
+    ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an available user to prevent crashes
     fun nextProfile() {
         val newPotential = vmDating.getNextPotential(currentProfileIndex)
         if (newPotential != null) {
@@ -78,7 +78,8 @@ fun SearchingScreen(
         state = state,
         star = currentUser.star,
         currentScreen = {
-            if (isNext) {
+            if (isNext && (vmDating.getMatchSize() <= 3)) {
+                println(vmDating.getMatchSize())
                 currentPotential.value?.let { currentPotential ->
                     var location = "x miles"
                     if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
@@ -116,7 +117,12 @@ fun SearchingScreen(
                     )
                 }
             } else {
-                Comeback(text = "Come Back")
+                if(vmDating.getMatchSize() <= 3){
+                    Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!")
+                }else{
+                    Comeback(text = "There is no users that fit your filters", todo = "Open your filters to allow more possible connections")
+                }
+
             }
         })
     if (showReport) {

@@ -35,6 +35,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -629,6 +630,16 @@ class FirebaseDataSource {
             val response = client.newCall(request).execute()
             val responseBody = response.body?.string()
             responseBody?.let { JSONObject(it) }
+        }
+    }
+    suspend fun getPoem(): JSONArray? {
+        return withContext(Dispatchers.IO) {
+            val url = "https://poetrydb.org/random"
+            val client = OkHttpClient()
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+            responseBody?.let { JSONArray(it) }
         }
     }
     /**

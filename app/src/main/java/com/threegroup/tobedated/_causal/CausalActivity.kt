@@ -12,13 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._causal.composables.TopAndBotBarsCausal
 import com.threegroup.tobedated._causal.composables.UserInfoC
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated._friends.FriendsActivity
-import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.theme.AppTheme
@@ -211,7 +211,7 @@ fun ComeBackScreen(navController: NavHostController, causal: CausalActivity){
         selectedItemIndex = 0,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         currentScreen = {
-            Comeback(text = "currently loading your future connection")
+            Comeback(text = "currently loading your future connection", todo = "wait")
         }
     )
 }

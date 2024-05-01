@@ -9,10 +9,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
-import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.theme.AppTheme
@@ -78,7 +78,7 @@ fun SearchingScreen(navController: NavHostController, friend:FriendsActivity){
         settingsButton = { },
         state = state,
         currentScreen = {
-            Comeback(text = "Simple text")
+            Comeback(text = "Simple text", todo = "wait")
         }
     )
 }
@@ -186,7 +186,7 @@ fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity){
         selectedItemIndex = 0,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         currentScreen = {
-            Comeback(text = "currently loading your future connection")
+            Comeback(text = "currently loading your future connection", todo = "wait")
         }
     )
 }

@@ -33,6 +33,7 @@ fun DatingNav(dating: DatingActivity){
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser() //TODO make sure location works....
+    viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
 
     //TODO THIS is where the list of potenatial matches gets initialed def changing this
     val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))

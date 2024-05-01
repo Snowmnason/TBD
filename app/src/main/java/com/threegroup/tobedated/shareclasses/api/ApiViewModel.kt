@@ -8,6 +8,7 @@ import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.starOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
 import java.text.DateFormat.getDateInstance
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -24,13 +25,22 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 val jsonObject = repository.getWord()
                 // Parse the JSONObject and extract required values
-                wordOfDay = jsonObject?.getString("word") ?: "Word"
+                wordOfDay = jsonObject?.optString("word", "Word") ?: "Word"
                 val definitionsArray = jsonObject?.getJSONArray("definitions")
                 partOfSpeech = definitionsArray?.getJSONObject(0)?.getString("partOfSpeech") ?: "part of speech"
                 source = definitionsArray?.getJSONObject(0)?.getString("source") ?: "source"
                 def = definitionsArray?.getJSONObject(0)?.getString("text") ?: "definition"
             }
-        }catch (e: Exception) {
+        }catch (e: JSONException) {
+            // Handle JSONException
+            Log.e("fetchWordOfTheDay", "JSONException: ${e.message}")
+            // Set default values or handle the error accordingly
+            wordOfDay = "Word"
+            partOfSpeech = "part of speech"
+            source = "source"
+            def = "definition"
+        } catch (e: Exception) {
+            // Handle other exceptions
             Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
         }
     }
@@ -52,20 +62,18 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
     fun fetchHoroscope(sign: String) {
         try {
             viewModelScope.launch(Dispatchers.IO) {
-                val starSign = if (sign == "Ask me") {
-                    starOptions.random()
-                } else {
-                    sign.lowercase()
-                }
+                val starSign = if (sign == "Ask me") { starOptions.random() } else { sign.lowercase() }
                 val jsonObject = repository.getHoroscope(starSign)
-                // Parse the JSONObject and extract required values
-                val horoscopeObject = jsonObject?.optJSONObject("data")
-                val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
-                description = horoscopeData ?: "Description"
+                try {
+                    val horoscopeObject = jsonObject?.optJSONObject("data")
+                    val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
+                    description = horoscopeData ?: "Description"
+                } catch (e: JSONException) {
+                    Log.e("fetchHoroscope", "JSONException: ${e.message}")
+                }
             }
-        }
-        catch (e: Exception) {
-            Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("fetchHoroscope", "Exception: ${e.message}")
         }
     }
 
@@ -117,7 +125,6 @@ private val moods = listOf("Joyful", "Melancholic", "Anxious", "Relaxed", "Excit
                     // Get the first element of the array
                     val jsonObject = jsonArray.getJSONObject(0)
                     // Parse the JSONObject and extract required values
-                    println("jsonObject: $jsonObject")
                     poemTitle = jsonObject.optString("title", "Title")
                     poemAuthor = jsonObject.optString("author", "Author")
                     val linesArray = jsonObject.optJSONArray("lines")

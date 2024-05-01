@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.BirthdateQuestion
+import com.threegroup.tobedated._signUp.composables.questions.BirthdateQuestion
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated.shareclasses.checkBirthDate
 import com.threegroup.tobedated.shareclasses.checkDay

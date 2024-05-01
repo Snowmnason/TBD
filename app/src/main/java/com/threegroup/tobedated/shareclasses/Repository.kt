@@ -92,4 +92,10 @@ class Repository(
     suspend fun getPoem(): JSONArray?{
         return firebaseDataSource.getPoem()
     }
+    fun suggest(currentPotential:String, suggestion:String){
+        firebaseDataSource.suggest(currentPotential, suggestion)
+    }
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
+        firebaseDataSource.getSuggestions(currentUser, onComplete)
+    }
 }

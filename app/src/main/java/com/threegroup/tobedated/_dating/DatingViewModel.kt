@@ -71,6 +71,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             repository.likeOrPass(currentUserId, currentProfile.number, false)
         }
     }
+    fun suggestCurrentProfile(currentPotential:String, suggestion:String){
+        repository.suggest(currentPotential, suggestion)
+    }
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
+        repository.getSuggestion(currentUser, onComplete)
+    }
 
     private var _matchList = mutableStateOf(listOf<Match>())
     private val matchList: State<List<Match>> = _matchList

@@ -32,7 +32,7 @@ import com.threegroup.tobedated._signUp.composes.starScreen
 import com.threegroup.tobedated._signUp.composes.welcomeScreen
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
-import com.threegroup.tobedated._signUp.composables.PromptQuestions
+import com.threegroup.tobedated._signUp.composables.questions.PromptQuestions
 import com.threegroup.tobedated._signUp.composes.bioScreen
 import com.threegroup.tobedated._signUp.composes.childrenScreen
 import com.threegroup.tobedated._signUp.composes.drinkScreen

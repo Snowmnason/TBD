@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.rememberAsyncImagePainter
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.PhotoQuestion
+import com.threegroup.tobedated._signUp.composables.questions.PhotoQuestion
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated.composeables.composables.DialogWithImage
 

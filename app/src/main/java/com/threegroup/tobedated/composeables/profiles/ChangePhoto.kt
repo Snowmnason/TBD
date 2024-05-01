@@ -26,7 +26,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated._signUp.composables.PhotoQuestion
+import com.threegroup.tobedated._signUp.composables.questions.PhotoQuestion
 import com.threegroup.tobedated.composeables.composables.SimpleBox
 import com.threegroup.tobedated.composeables.searching.ChangePreferenceTopBar
 import com.threegroup.tobedated.theme.AppTheme

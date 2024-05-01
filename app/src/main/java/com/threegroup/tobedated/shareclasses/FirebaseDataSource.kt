@@ -1,5 +1,6 @@
 package com.threegroup.tobedated.shareclasses
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -40,6 +41,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -306,7 +308,7 @@ class FirebaseDataSource {
     }
 
     /**
-     * Functions related to blocking and reporting
+     * Functions related to blocking and reporting and suggesting
      */
     suspend fun reportUser(reportedUserId: String, reportingUserId: String) {
         val database = FirebaseDatabase.getInstance()
@@ -359,6 +361,34 @@ class FirebaseDataSource {
 
         // Remove blocked user from matches and chats
         deleteMatch(blockedUserId, blockingUserId)
+    }
+    fun suggest(currentPotential:String, suggestion:String){
+        val database = FirebaseDatabase.getInstance().getReference("users").child(currentPotential).child("suggestion")
+        database.setValue(suggestion)
+    }
+    fun getSuggestions(currentUser: String, onComplete: (List<String>) -> Unit) {
+        val database = FirebaseDatabase.getInstance().getReference("users").child(currentUser).child("suggestion")
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val suggestions = mutableListOf<String>()
+                for (childSnapshot in dataSnapshot.children) {
+                    val suggestion = childSnapshot.getValue(String::class.java)
+                    suggestion?.let {
+                        suggestions.add(it)
+                    }
+                }
+                // Call the onComplete callback with the list of suggestions
+                onComplete(suggestions)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+                Log.e(TAG, "Error fetching suggestions: ${databaseError.message}")
+            }
+        }
+
+        database.addListenerForSingleValueEvent(valueEventListener)
     }
 
     /**
@@ -622,14 +652,26 @@ class FirebaseDataSource {
             responseBody?.let { JSONObject(it) }
         }
     }
-    suspend fun getHoroscope(sign:String): JSONObject?{
-        return withContext(Dispatchers.IO) {
-            val url = "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=$sign&day=TODAY"
-            val client = OkHttpClient()
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
-            val responseBody = response.body?.string()
-            responseBody?.let { JSONObject(it) }
+    suspend fun getHoroscope(sign: String): JSONObject? {
+        return try {
+            withContext(Dispatchers.IO) {
+                val url = "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=$sign&day=TODAY"
+
+                // Increase timeout values to handle potential timeouts
+                val client = OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS) // Adjust timeout as needed
+                    .readTimeout(30, TimeUnit.SECONDS) // Adjust timeout as needed
+                    .build()
+
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+                responseBody?.let { JSONObject(it) }
+            }
+        } catch (e: Exception) {
+            // Handle exceptions gracefully
+            Log.e("getHoroscope", "Exception: ${e.message}")
+            null // Return null in case of failure
         }
     }
     suspend fun getPoem(): JSONArray? {

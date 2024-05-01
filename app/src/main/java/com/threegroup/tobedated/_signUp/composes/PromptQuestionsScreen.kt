@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.PromptAnswer
+import com.threegroup.tobedated._signUp.composables.questions.PromptAnswer
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated.composeables.composables.GenericLabelText
 

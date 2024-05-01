@@ -1,6 +1,18 @@
 package com.threegroup.tobedated._dating.composes
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
@@ -17,10 +31,12 @@ import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.Comeback
+import com.threegroup.tobedated.composeables.composables.baseAppTextTheme
 import com.threegroup.tobedated.composeables.searching.SearchingButtons
 import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
+import com.threegroup.tobedated.theme.AppTheme
 
 /*
 Start of Seeking Screen
@@ -34,6 +50,7 @@ fun SearchingScreen(
     val currentUser = vmDating.getUser()
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
+    var showSuggest by rememberSaveable { mutableStateOf(false) }
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
     val currentPotential = remember { mutableStateOf<MatchedUserModel?>(null) }
     val state = rememberScrollState()
@@ -79,7 +96,6 @@ fun SearchingScreen(
         star = currentUser.star,
         currentScreen = {
             if (isNext && (vmDating.getMatchSize() <= 3)) {
-                println(vmDating.getMatchSize())
                 currentPotential.value?.let { currentPotential ->
                     var location = "x miles"
                     if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
@@ -111,7 +127,7 @@ fun SearchingScreen(
                                 onClickReport = {
                                     showReport = true /*TODO Add an animation or something*/
                                 },
-                                onClickSuggest = { /*TODO Add an animation or something*/ },
+                                onClickSuggest = { showSuggest = true /*TODO Add an animation or something*/ },
                             )
                         },
                     )
@@ -136,8 +152,99 @@ fun SearchingScreen(
                 vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
                 vmDating.reportUser(currentPotential.value!!.number, currentUser.number)
                 nextProfile()
-                //nextProfile(vmDating.reportedCurrentPotential(currentProfileIndex, currentPotential.value!!))
             }
         )
     }
+    if (showSuggest) {
+        var selectedSuggest by rememberSaveable { mutableStateOf("Nothing") }
+        SuggestionDropDown(
+            selectedSuggestion = selectedSuggest,
+            onSuggestionSelect = { suggest -> selectedSuggest = suggest},
+            onDismissRequest = { showSuggest = false },
+            onConfirmation = {
+                showSuggest = false
+                currentProfileIndex++
+                vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
+                vmDating.suggestCurrentProfile(currentPotential.value!!.number, selectedSuggest)
+                nextProfile()
+            }
+        )
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SuggestionDropDown(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    selectedSuggestion:String,
+    onSuggestionSelect: (String) -> Unit,
+
+    ){
+    val opts = listOf("Fill out Bio", "Better Prompt Questions", "Fill out Prompt Questions", "Different Photos")
+    AlertDialog(
+        containerColor = AppTheme.colorScheme.surface,
+        title = {
+            Text(text = "Help make their profile send out!", style = AppTheme.typography.titleLarge, color = AppTheme.colorScheme.onSurface)
+        },
+        text = {
+            Column {
+                var isExpanded by remember { mutableStateOf(false) }
+                Text(text = "Please select what you think would help improve their profile!\nYou will pass them on confirm",
+                    style = AppTheme.typography.body, color = AppTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.height(12.dp))
+                ExposedDropdownMenuBox(isExpanded, { isExpanded = it }) {
+                    TextField(
+                        value = selectedSuggestion,
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier.menuAnchor(),
+                        colors =  TextFieldDefaults.colors(
+                            focusedContainerColor = AppTheme.colorScheme.secondary,
+                            unfocusedContainerColor = AppTheme.colorScheme.secondary
+                        ),
+                        textStyle = baseAppTextTheme(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = isExpanded,
+                        onDismissRequest = { isExpanded = false },
+                        modifier = Modifier
+                            .background(AppTheme.colorScheme.secondary)
+                            .height(250.dp)
+                    ) {
+                        opts.forEach{ result ->
+                            DropdownMenuItem(
+                                text = { Text(text = result, style = baseAppTextTheme()) },
+                                onClick = {
+                                    onSuggestionSelect(result)
+                                    isExpanded = false
+                                })
+                        }
+                    }
+                }
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+
+        confirmButton = {
+            TextButton(
+
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text(text = "Submit", color = AppTheme.colorScheme.secondary)
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text(text = "Cancel", color = AppTheme.colorScheme.secondary)
+            }
+        }
+    )
 }

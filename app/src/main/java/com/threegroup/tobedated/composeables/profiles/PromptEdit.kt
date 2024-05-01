@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated._signUp.composables.PromptAnswer
+import com.threegroup.tobedated._signUp.composables.questions.PromptAnswer
 import com.threegroup.tobedated.composeables.composables.PlainTextButton
 import com.threegroup.tobedated.composeables.composables.SimpleBox
 import com.threegroup.tobedated.composeables.searching.ChangePreferenceTopBar

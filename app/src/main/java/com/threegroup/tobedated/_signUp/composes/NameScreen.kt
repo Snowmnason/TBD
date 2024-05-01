@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.NameQuestion
+import com.threegroup.tobedated._signUp.composables.questions.NameQuestion
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 
 @Composable

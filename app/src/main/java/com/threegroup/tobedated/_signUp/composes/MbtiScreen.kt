@@ -19,9 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.MBTIDropDown
-import com.threegroup.tobedated._signUp.composables.PersonalityTest
 import com.threegroup.tobedated._signUp.composables.SignUpFormatLong
+import com.threegroup.tobedated._signUp.composables.questions.MBTIDropDown
+import com.threegroup.tobedated._signUp.composables.questions.PersonalityTest
 import com.threegroup.tobedated.composeables.composables.GenTextOnlyButton
 import com.threegroup.tobedated.shareclasses.models.mbtiQuestion
 

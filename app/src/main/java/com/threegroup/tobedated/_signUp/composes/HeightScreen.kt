@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.HeightQuestion
+import com.threegroup.tobedated._signUp.composables.questions.HeightQuestion
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated.composeables.composables.rememberPickerState
 

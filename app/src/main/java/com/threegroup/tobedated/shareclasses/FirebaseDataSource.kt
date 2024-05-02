@@ -64,6 +64,7 @@ class FirebaseDataSource {
     fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> = callbackFlow {
         val user = MyApp.signedInUser.value!!
         val db = FirebaseDatabase.getInstance()
+        val matchRef = db.getReference("matches")
         val dbRef: DatabaseReference = db.getReference("users")
         val likePassNodeRef = db.getReference("likeorpass").child(user.number)
 
@@ -84,6 +85,7 @@ class FirebaseDataSource {
                                                 passSeeMe(it, likePassSnapshot) &&
                                                 isProfileInteractedByUser(it.number, likePassSnapshot) &&
                                                 passBasicPreferences(user, it) &&
+                                                passMatch(it) &&
                                                 passPremiumPref(user, it)) {
                                                 list.add(it)
                                             }
@@ -135,6 +137,10 @@ class FirebaseDataSource {
         }
     }
 
+    private fun passMatch(potentialUser: MatchedUserModel): Boolean {
+        return potentialUser.hasThree
+    }
+
     private fun isProfileInteractedByUser(potentialUser: String, snapshot: DataSnapshot): Boolean {
         val likedSnapshot = snapshot.child("liked").child(potentialUser)
         val passedSnapshot = snapshot.child("passed").child(potentialUser)
@@ -144,41 +150,41 @@ class FirebaseDataSource {
         /**
          * This function checks basic preferences, sex, age, distance
          */
-        private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
-            val userPref = user.userPref
-            val userAge = calcAge(potentialUser.birthday)
+    private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
+        val userPref = user.userPref
+        val userAge = calcAge(potentialUser.birthday)
 
-            val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
-            val isLocationWithinDistance = calcDistance(potentialUser.location, user.location).toInt() <= userPref.maxDistance
-            val isSexMatch = user.seeking == "Everyone" || potentialUser.sex == user.seeking
-            return isAgeInRange && isLocationWithinDistance && isSexMatch
-        }
+        val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
+        val isLocationWithinDistance = calcDistance(potentialUser.location, user.location).toInt() <= userPref.maxDistance
+        val isSexMatch = user.seeking == "Everyone" || potentialUser.sex == user.seeking
+        return isAgeInRange && isLocationWithinDistance && isSexMatch
+    }
 
         /**
          * This checks the "premium" features
          */
-        private fun passPremiumPref(user: UserModel, potentialUser: MatchedUserModel): Boolean {
-            val userPref: UserSearchPreferenceModel = user.userPref
-            val preferences = listOf(
-                userPref.gender to potentialUser.gender,
-                userPref.children to potentialUser.children,
-                userPref.mbti to potentialUser.testResultsMbti,
-                userPref.familyPlans to potentialUser.family,
-                userPref.drink to potentialUser.drink,
-                userPref.education to potentialUser.education,
-                userPref.intentions to potentialUser.intentions,
-                userPref.meetUp to potentialUser.meetUp,
-                userPref.politicalViews to potentialUser.politics,
-                userPref.relationshipType to potentialUser.relationship,
-                userPref.religion to potentialUser.religion,
-                userPref.sexualOri to potentialUser.sexOrientation,
-                userPref.smoke to potentialUser.smoke,
-                userPref.weed to potentialUser.weed
-            )
-            return preferences.all { (userPrefList, userValue) ->
-                userPrefList[0] == "Doesn't Matter" || userPrefList.contains(userValue)
-            }
+    private fun passPremiumPref(user: UserModel, potentialUser: MatchedUserModel): Boolean {
+        val userPref: UserSearchPreferenceModel = user.userPref
+        val preferences = listOf(
+            userPref.gender to potentialUser.gender,
+            userPref.children to potentialUser.children,
+            userPref.mbti to potentialUser.testResultsMbti,
+            userPref.familyPlans to potentialUser.family,
+            userPref.drink to potentialUser.drink,
+            userPref.education to potentialUser.education,
+            userPref.intentions to potentialUser.intentions,
+            userPref.meetUp to potentialUser.meetUp,
+            userPref.politicalViews to potentialUser.politics,
+            userPref.relationshipType to potentialUser.relationship,
+            userPref.religion to potentialUser.religion,
+            userPref.sexualOri to potentialUser.sexOrientation,
+            userPref.smoke to potentialUser.smoke,
+            userPref.weed to potentialUser.weed
+        )
+        return preferences.all { (userPrefList, userValue) ->
+            userPrefList[0] == "Doesn't Matter" || userPrefList.contains(userValue)
         }
+    }
 
     /**
     Likes and match related functions

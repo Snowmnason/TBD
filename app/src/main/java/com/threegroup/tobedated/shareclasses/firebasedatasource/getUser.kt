@@ -60,6 +60,7 @@ fun setUserProperties(
         } ?: UserSearchPreferenceModel()
         hasCasual = userDataMap["hasCasual"] as? Boolean ?: false
         hasFriends = userDataMap["hasFriends"] as? Boolean ?: false
+        hasThree = userDataMap["hasThree"] as? Boolean ?: false
         casualAdditions = (userDataMap["casualAdditions"] as? Map<*, *>)?.let { map ->
             getCasualAdditions(map)
         } ?: CasualAdditions()
@@ -164,6 +165,7 @@ fun setMatchedProperties(
         user.location = userDataMap["location"] as? String ?: ""
         user.status = userDataMap["status"] as? Long ?: 0
         user.number = userDataMap["number"] as? String ?: ""
+        user.hasThree = userDataMap["hasThree"] as? Boolean ?: false
         user.verified = userDataMap["verified"] as? Boolean ?: false
         user.seeMe = userDataMap["Seen"] as? Boolean ?: false
     }

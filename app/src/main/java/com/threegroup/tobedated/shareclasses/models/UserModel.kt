@@ -8,7 +8,7 @@ data class UserModel(
     var height          : String = "",
     var ethnicity       : String = "",
     var star            : String = "",
-    var sexOrientation  :String = "",
+    var sexOrientation  : String = "",
     var seeking         : String = "",
     var sex             : String = "",
     var testResultsMbti : String = "Not Taken",
@@ -40,9 +40,10 @@ data class UserModel(
     var number          : String = "",
     var verified        : Boolean = false,
     var seeMe           : Boolean = false,
+    var hasThree        : Boolean = false,
     var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel(),
     var hasCasual       : Boolean = false,
-    var hasFriends      :Boolean = false,
+    var hasFriends      : Boolean = false,
     var casualAdditions : CasualAdditions = CasualAdditions()
 )
 data class CasualAdditions(

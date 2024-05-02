@@ -36,6 +36,7 @@ data class MatchedUserModel(
     var image3          : String = "",
     var image4          : String = "",
     var number          : String = "",
+    var hasThree        : Boolean = false,
     var status          : Long = 0,
     var verified        : Boolean = false,
 )

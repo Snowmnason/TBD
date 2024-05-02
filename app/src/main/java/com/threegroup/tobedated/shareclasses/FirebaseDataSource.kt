@@ -85,7 +85,7 @@ class FirebaseDataSource {
                                                 passSeeMe(it, likePassSnapshot) &&
                                                 isProfileInteractedByUser(it.number, likePassSnapshot) &&
                                                 passBasicPreferences(user, it) &&
-                                                passMatch(it) &&
+                                                !passMatch(it) &&
                                                 passPremiumPref(user, it)) {
                                                 list.add(it)
                                             }

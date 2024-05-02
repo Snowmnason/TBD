@@ -1,5 +1,6 @@
 package com.threegroup.tobedated.shareclasses.firebasedatasource
 
+import androidx.core.text.isDigitsOnly
 import com.threegroup.tobedated.shareclasses.models.AgeRange
 import com.threegroup.tobedated.shareclasses.models.CasualAdditions
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
@@ -46,10 +47,13 @@ fun setUserProperties(
         user.image2 = userDataMap["image2"] as? String ?: ""
         user.image3 = userDataMap["image3"] as? String ?: ""
         user.image4 = userDataMap["image4"] as? String ?: ""
-        this.location = if (location == "error/" || location == "/") {
-            userDataMap["location"] as? String ?: ""
-        } else {
+        val loc = location.split("/")
+        val latitudePotential = loc.first()
+        val longitudePotential = loc.last()
+        this.location = if (latitudePotential.isDigitsOnly() && longitudePotential.isDigitsOnly()) {
             location
+        } else {
+            userDataMap["location"] as? String ?: ""
         }
         status = System.currentTimeMillis()
         number = userDataMap["number"] as? String ?: ""

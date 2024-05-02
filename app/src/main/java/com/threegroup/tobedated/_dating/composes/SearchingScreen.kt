@@ -134,8 +134,6 @@ fun SearchingScreen(
                 }
             } else {
                 if(vmDating.getMatchSize() <= 3){
-                    currentUser.hasThree = true
-                    vmDating.updateUser(currentUser)
                     Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!")
                 }else{
                     Comeback(text = "There is no users that fit your filters", todo = "Open your filters to allow more possible connections")

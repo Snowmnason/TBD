@@ -100,7 +100,7 @@ fun SomeScreen(
                     Row( modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        GenericTitleText(text = "• People you passed on: ")
+                        GenericTitleText(text = "• People you Liked on: ")
                         GenericTitleText(text = liked.toString())
                     }
 
@@ -115,7 +115,7 @@ fun SomeScreen(
                     Row( modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        GenericTitleText(text = "• People you passed on: ")
+                        GenericTitleText(text = "• People who saw you: ")
                         GenericTitleText(text = seen.toString())
                     }
                 }

@@ -35,7 +35,7 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity, vmA
         currentScreen = {
             if(vmDating.getMatchSize() >= 3){
                 Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!")
-            }else if(hasPreferencesOtherThanDoesntMatter || currUser.seeking != "Everyone" || userPref.ageRange != AgeRange(18, 80) || userPref.maxDistance != 100){
+            }else if(hasPreferencesOtherThanDoesntMatter || userPref.ageRange != AgeRange(18, 80) || userPref.maxDistance != 100){
                 Comeback(text = "There are no users that fit your current filters",
                     todo = "Open your filters to allow more possible connections" //TODO maybe explain each case
                 )

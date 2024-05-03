@@ -3,7 +3,7 @@ package com.threegroup.tobedated._dating
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,13 +41,14 @@ fun DatingNav(dating: DatingActivity){
     vmApi.fetchWordOfTheDay()
     vmApi.fetchHoroscope(viewModelDating.getUser().star)
     vmApi.fetchPoem()
+    var update = 0
 
-    //TODO THIS is where the list of potenatial matches gets initialed def changing this
-    val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
-    if (potentialUserDataState.value.first.isNotEmpty()) {
-        potentialUserDataLoaded.value = true
-//        val potentialUsers = potentialUserDataState.value.first
-//        val currentProfileIndex = potentialUserDataState.value.second
+    LaunchedEffect(update) {
+        viewModelDating.potentialUserData.collect { userList ->
+            if (userList.isNotEmpty()) {
+                potentialUserDataLoaded.value = true
+            }
+        }
     }
 
 
@@ -61,6 +62,7 @@ fun DatingNav(dating: DatingActivity){
             if(potentialUserDataLoaded.value){
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
             }else{
+                update++
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
             }
         }

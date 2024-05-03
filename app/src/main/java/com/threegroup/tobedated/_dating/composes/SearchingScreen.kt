@@ -64,24 +64,20 @@ fun SearchingScreen(
 
     LaunchedEffect(Unit) {
         //TODO This checks to see if the list is empty or not, This NEEDs to be available some hows
-        if (vmDating.getNextPotential(currentProfileIndex) != null) {
-            currentPotential.value =
-                vmDating.getNextPotential(currentProfileIndex)//MIGHT CHANGE THIS
+        if (currentPotential.value != null) {
+            //do nothing
         } else {
-            isNext =
-                false//This is important, if there are no users this shows a blank screen and not crash
+            isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
     }
 
 
     ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an available user to prevent crashes
     fun nextProfile() {
-        val newPotential = vmDating.getNextPotential(currentProfileIndex)
-        if (newPotential != null) {
-            currentPotential.value = newPotential///MIGHT change this
+        if (currentPotential.value != null) {
+            //do nothing
         } else {
-            isNext =
-                false//This is important, if there are no users this shows a blank screen and not crash
+            isNext = false//This is important, if there are no users this shows a blank screen and not crash
         }
     }
 

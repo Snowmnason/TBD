@@ -63,79 +63,70 @@ class FirebaseDataSource {
     Dating discovery related functions
      */
     fun getPotentialUserData(): Flow<List<MatchedUserModel>> = callbackFlow {
-        println("In the function")
         val user = MyApp.signedInUser.value!!
         val db = FirebaseDatabase.getInstance()
-        val matchRef = db.getReference("matches")
         val dbRef: DatabaseReference = db.getReference("users")
         val likePassNodeRef = db.getReference("likeorpass").child(user.number)
 
-        val valueEventListener = object : ValueEventListener {
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                println("Inside listener")
-                val list = mutableListOf<MatchedUserModel>()
-                likePassNodeRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(likePassSnapshot: DataSnapshot) {
-                        val query = dbRef.orderByChild("status")
-                            .limitToLast(10) // Adjust the limit as needed
-                        query.addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(usersSnapshot: DataSnapshot) {
-                                usersSnapshot.children.forEach { userSnapshot ->
-                                    try {
-                                        println("Inside try")
-                                        val potential =
-                                            userSnapshot.getValue(MatchedUserModel::class.java)
-                                        potential?.let {
-                                            println("Before if statement")
-                                            if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
-                                                &&
-                                                passBlocked(dbRef, user.number, it.number)
-                                                && passSeeMe(it, likePassSnapshot)
-                                                && isProfileInteractedByUser(
-                                                    it.number,
-                                                    likePassSnapshot
-                                                )
-                                                && passBasicPreferences(user, it)
-                                                && !passMatch(it)
-                                                && passPremiumPref(user, it)
-                                            ) {
-                                                println("Before adding to list")
-                                                list.add(it)
-                                                println(it)
-                                            }
-                                        }
-                                        Log.d("USER_TAG", "Succeeded parsing UserModel")
-                                    } catch (e: Exception) {
-                                        Log.d("USER_TAG", "Error parsing UserModel", e)
+        val likePassListener = object : ValueEventListener {
+            override fun onDataChange(likePassSnapshot: DataSnapshot) {
+                val query = dbRef.orderByChild("status").limitToLast(10)
+                val usersListener = object : ValueEventListener {
+                    override fun onDataChange(usersSnapshot: DataSnapshot) {
+                        val list = mutableListOf<MatchedUserModel>()
+                        usersSnapshot.children.forEach { userSnapshot ->
+                            try {
+                                val potential = userSnapshot.getValue(MatchedUserModel::class.java)
+                                potential?.let {
+                                    if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
+                                        && passBlocked(dbRef, user.number, it.number)
+                                        && passSeeMe(it, likePassSnapshot)
+                                        && isProfileInteractedByUser(it.number, likePassSnapshot)
+                                        && passBasicPreferences(user, it)
+                                        && !passMatch(it)
+                                        && passPremiumPref(user, it)
+                                    ) {
+                                        list.add(it)
                                     }
                                 }
-                                val sortedList = list.sortedByDescending { it.status }
-                                trySend(sortedList).isSuccess
+                            } catch (e: Exception) {
+                                println("Error parsing UserModel: $e")
                             }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.d("USER_TAG", "Database error: ${error.message}")
-                            }
-                        })
+                        }
+                        val sortedList = list.sortedByDescending { it.status }
+                        trySend(sortedList).isSuccess
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.d("USER_TAG", "Database error: ${error.message}")
+                        println("Database error: ${error.message}")
                     }
-                })
+                }
+                query.addValueEventListener(usersListener)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("USER_TAG", "Database error: ${error.message}")
+                println("Database error: ${error.message}")
             }
         }
-        dbRef.addValueEventListener(valueEventListener)
-        awaitClose {
-            dbRef.removeEventListener(valueEventListener)
-        }
-    }
 
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                likePassNodeRef.addValueEventListener(likePassListener)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Database error: ${error.message}")
+            }
+        }
+
+        dbRef.addValueEventListener(valueEventListener)
+
+        awaitClose {
+            // Remove the listeners in reverse order
+            dbRef.removeEventListener(valueEventListener)
+            likePassNodeRef.removeEventListener(likePassListener)
+        }
+    }.flowOn(Dispatchers.IO)
 
     private fun passBlocked(
         dbReference: DatabaseReference,
@@ -159,12 +150,14 @@ class FirebaseDataSource {
     }
 
     private fun passMatch(potentialUser: MatchedUserModel): Boolean {
+
         return potentialUser.hasThree
     }
 
     private fun isProfileInteractedByUser(potentialUser: String, snapshot: DataSnapshot): Boolean {
         val likedSnapshot = snapshot.child("liked").child(potentialUser)
         val passedSnapshot = snapshot.child("passed").child(potentialUser)
+
         return !(likedSnapshot.exists() || passedSnapshot.exists())
     }
 
@@ -185,6 +178,7 @@ class FirebaseDataSource {
         val maxDistance = userPref.maxDistance
         val distance = calcDistance(potentialLocation, userLocation).toInt()
         val isLocationWithinDistance = distance <= maxDistance
+
         return isAgeInRange && isLocationWithinDistance && isSexMatch
     }
 
@@ -210,6 +204,7 @@ class FirebaseDataSource {
             userPref.smoke to potentialUser.smoke,
             userPref.weed to potentialUser.weed
         )
+
         return preferences.all { (userPrefList, userValue) ->
             userPrefList[0] == "Doesn't Matter" || userPrefList.contains(userValue)
         }

@@ -36,10 +36,28 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun DatingNav(dating: DatingActivity) {
-    val potentialUserDataLoaded = remember { mutableStateOf(false) }
+//    val potentialUserDataLoaded = remember { mutableStateOf(false) }
+//    val navController = rememberNavController()
+//    val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
+//    viewModelDating.setLoggedInUser() //TODO make sure location works....
+//    viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
+//    viewModelDating.fetchPotentialUserData()
+//    val vmApi = viewModel { ApiViewModel(MyApp.x) }
+//    vmApi.fetchWordOfTheDay()
+//    vmApi.fetchHoroscope(viewModelDating.getUser().star)
+//    vmApi.fetchPoem()
+//
+//    //TODO THIS is where the list of potential matches gets initialed def changing this
+//    var update = 0
+//    val userList by viewModelDating.potentialUserData.collectAsState()
+//
+//    if (userList.isNotEmpty()) {
+//        potentialUserDataLoaded.value = true
+//    }
+
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
-    viewModelDating.setLoggedInUser() //TODO make sure location works....
+    viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
     viewModelDating.fetchPotentialUserData()
     val vmApi = viewModel { ApiViewModel(MyApp.x) }
@@ -47,13 +65,8 @@ fun DatingNav(dating: DatingActivity) {
     vmApi.fetchHoroscope(viewModelDating.getUser().star)
     vmApi.fetchPoem()
 
-    //TODO THIS is where the list of potential matches gets initialed def changing this
-    var update = 0
     val userList by viewModelDating.potentialUserData.collectAsState()
-
-    if (userList.isNotEmpty()) {
-        potentialUserDataLoaded.value = true
-    }
+    val isPotentialUserDataLoaded = userList.isNotEmpty()
 
 
 
@@ -65,12 +78,12 @@ fun DatingNav(dating: DatingActivity) {
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-            if (potentialUserDataLoaded.value) {
+            if (isPotentialUserDataLoaded) {
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
             } else {
-                update++
+                //update++
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
-                println("Went to comeback screen")
+                //println("Went to comeback screen")
             }
         }
         composable(route = Dating.ProfileScreen.name) {

@@ -23,7 +23,7 @@ class Repository(
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> {
         return firebaseDataSource.getMatchesFlow(userId)
     }
-    fun getPotentialUserData(): Flow<List<MatchedUserModel>> {
+    suspend fun getPotentialUserData(): Flow<List<MatchedUserModel>> {
         return firebaseDataSource.getPotentialUserData()
     }
 

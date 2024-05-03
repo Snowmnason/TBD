@@ -40,6 +40,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         viewModelScope.launch {
             repository.getPotentialUserData().collect { userData ->
                 _potentialUserData.value = userData
+//                for (i in potentialUserData.value)
+//                    println("Potential user list: $i")
             }
         }
     }

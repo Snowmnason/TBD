@@ -52,14 +52,29 @@ fun SearchingScreen(
     vmApi: ApiViewModel
 ) {
     val currentUser = vmDating.getUser()
-    var isNext by rememberSaveable { mutableStateOf(true) }
+    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
+    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
+    val state = rememberScrollState()
+
+    val currentPotentialList = currentPotentialPairList
+
     var showReport by rememberSaveable { mutableStateOf(false) }
     var showSuggest by rememberSaveable { mutableStateOf(false) }
-    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
-    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0)}
-    val state = rememberScrollState()
-    val currentPotentialList = currentPotentialPairList
-    var currPotential = currentPotentialList[currentProfileIndex]
+
+    var isNext = currentPotentialList.isNotEmpty() && currentProfileIndex < currentPotentialList.size
+
+    var currPotential = if (isNext) currentPotentialList[currentProfileIndex] else MatchedUserModel()
+
+
+//    val currentUser = vmDating.getUser()
+//    var isNext by rememberSaveable { mutableStateOf(true) }
+//    var showReport by rememberSaveable { mutableStateOf(false) }
+//    var showSuggest by rememberSaveable { mutableStateOf(false) }
+//    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
+//    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0)}
+//    val state = rememberScrollState()
+//    val currentPotentialList = currentPotentialPairList
+//    var currPotential = currentPotentialList[currentProfileIndex]
 
 
 

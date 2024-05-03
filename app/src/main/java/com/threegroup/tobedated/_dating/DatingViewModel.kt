@@ -5,9 +5,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.Repository
+import com.threegroup.tobedated.shareclasses.getChatId
 import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.NewMatch
@@ -40,8 +45,6 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         viewModelScope.launch {
             repository.getPotentialUserData().collect { userData ->
                 _potentialUserData.value = userData
-//                for (i in potentialUserData.value)
-//                    println("Potential user list: $i")
             }
         }
     }
@@ -92,16 +95,51 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     val matchList = _matchList.asStateFlow()
     // call this in the composable as val matchlist by viewModel.matchList.observeAsState()
 
+//    fun getMatchesFlow(userId: String) {
+//        viewModelScope.launch(IO) {
+//            repository.getMatchesFlow(userId).collect { matches ->
+//                val convertedMatches = matches.map { match ->
+//                    repository.getMatch(match, userId)
+//                }
+//                _matchList.value = convertedMatches
+//                println("Match list: ${matchList.value}")
+//            }
+//        }
+//    }
+
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
             repository.getMatchesFlow(userId).collect { matches ->
                 val convertedMatches = matches.map { match ->
-                    repository.getMatch(match, userId)
+                    val updatedMatch = repository.getMatch(match, userId)
+                    observeLastMessage(match, updatedMatch)
                 }
-                _matchList.value = convertedMatches
+                _matchList.value = convertedMatches.filterIsInstance<Match>() // Filter out Unit
+                println("Match list: ${matchList.value}")
             }
         }
     }
+
+
+    private fun observeLastMessage(match: RealtimeDBMatch, updatedMatch: Match): Match {
+        val chatId = getChatId( match.usersMatched[0],match.usersMatched[1])
+        val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val lastChild = dataSnapshot.children.lastOrNull()
+                val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
+                updatedMatch.lastMessage = lastMessage
+                // Update match list
+                _matchList.value = _matchList.value.map { if (it.id == updatedMatch.id) updatedMatch else it }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        }
+        chatsRef.addValueEventListener(listener)
+        return updatedMatch // Return the updated match
+    }
+
 
     fun getMatchSize(): Int {
         return if (matchList.value.isEmpty()) {

@@ -40,7 +40,7 @@ fun ChatsScreen(
         vmApi = vmApi,
         currentScreen = {
             matchedUsers.forEach { matchUser ->
-//                println(matchedUsers)
+                println(matchUser.lastMessage)
                 MessageStart(
                     notification = true, //TODO set this passed on if they have a new message
                     userPhoto = matchUser.userPicture,

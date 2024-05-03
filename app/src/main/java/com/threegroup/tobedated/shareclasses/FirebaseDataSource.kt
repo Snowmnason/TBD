@@ -3,6 +3,7 @@ package com.threegroup.tobedated.shareclasses
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -291,7 +292,7 @@ class FirebaseDataSource {
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
 
-        return Match(
+        val newMatch =  Match(
             id = userId,
             userId = userId,
             userName = userName,
@@ -299,6 +300,8 @@ class FirebaseDataSource {
             //formattedDate = "", // Consider formatting the timestamp properly
             lastMessage = ""
         )
+        println("New Match is $newMatch")
+        return newMatch
     }
 
 
@@ -428,7 +431,9 @@ class FirebaseDataSource {
     /**
      * Function to get a single instance of a match
      */
-    suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
+        suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
+        println("Inside getMatch function")
+        println("Match's ID: ${getMatchId(match.usersMatched[0], match.usersMatched[1])}")
         val userId = if (match.usersMatched[0] == currUser) match.usersMatched[1] else {
             match.usersMatched[0]
         }
@@ -437,17 +442,19 @@ class FirebaseDataSource {
         }
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
-
-        return match.timestamp.toString().let {
+        println("Fetching match")
+        val retrievedMatch = match.timestamp.toString().let {
             Match(
                 id = match.id,
                 userId = userId,
                 userName = userName,
                 userPicture = userImage1,
                 //formattedDate = it, // Consider formatting the timestamp properly
-                lastMessage = getLastMessage(match.id)
+                lastMessage = getLastMessage(getMatchId(match.usersMatched[0], match.usersMatched[1]))
             )
         }
+        println(retrievedMatch)
+        return retrievedMatch
     }
 
     /**
@@ -483,6 +490,23 @@ class FirebaseDataSource {
      * takes the chat id
      * message related stuff
      */
+//    private suspend fun getLastMessage(chatId: String): String {
+//        println("Inside getLastMessage function")
+//        return suspendCoroutine { continuation ->
+//            val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+//            chatsRef.orderByKey().limitToLast(1).get().addOnSuccessListener { dataSnapshot ->
+//                val lastChild = dataSnapshot.children.firstOrNull()
+//                val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
+//                continuation.resume(lastMessage)
+//                println(lastMessage)
+//            }.addOnFailureListener { exception ->
+//                println("Error getting last message: $exception")
+//                continuation.resumeWithException(exception)
+//
+//            }
+//        }
+//    }
+
     private suspend fun getLastMessage(chatId: String): String {
         return suspendCoroutine { continuation ->
             val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
@@ -490,6 +514,7 @@ class FirebaseDataSource {
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
                 continuation.resume(lastMessage)
+                println(lastMessage)
             }.addOnFailureListener { exception ->
                 continuation.resumeWithException(exception)
             }

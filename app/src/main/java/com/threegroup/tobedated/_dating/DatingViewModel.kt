@@ -1,6 +1,7 @@
 package com.threegroup.tobedated._dating
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,14 +32,14 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      */
     private var _likedProfile = mutableStateOf(NewMatch())
     private val likedProfile: State<NewMatch> = _likedProfile
-    val potentialUserData: StateFlow<Pair<List<MatchedUserModel>, Int>> = repository.getPotentialUserData()
-        .map { (userList, currentIndex) -> userList to currentIndex }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(emptyList(), 0))
 
-    fun getNextPotential(currentProfileIndex: Int): MatchedUserModel? {
-        val potentialUsers = potentialUserData.value.first
-        return potentialUsers.getOrNull(currentProfileIndex)
+    private var _potentialUserData = MutableStateFlow(listOf<MatchedUserModel>())
+    val potentialUserData = _potentialUserData.asStateFlow()
+
+    fun getPotentialUserList(){
+
     }
+
     // TODO not 100% sure on this one--wrote it kinda fast
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
         viewModelScope.launch(IO) {

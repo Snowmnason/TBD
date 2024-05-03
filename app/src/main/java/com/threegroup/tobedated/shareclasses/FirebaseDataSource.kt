@@ -62,7 +62,8 @@ class FirebaseDataSource {
     /**
     Dating discovery related functions
      */
-    fun getPotentialUserData(): Flow<Pair<List<MatchedUserModel>, Int>> = callbackFlow {
+    fun getPotentialUserData(): Flow<List<MatchedUserModel>> = callbackFlow {
+        println("In the function")
         val user = MyApp.signedInUser.value!!
         val db = FirebaseDatabase.getInstance()
         val matchRef = db.getReference("matches")
@@ -89,6 +90,7 @@ class FirebaseDataSource {
                                                 !passMatch(it) &&
                                                 passPremiumPref(user, it)) {
                                                 list.add(it)
+                                                println(it)
                                             }
                                         }
                                         Log.d("USER_TAG", "Succeeded parsing UserModel")
@@ -97,7 +99,7 @@ class FirebaseDataSource {
                                     }
                                 }
                                 val sortedList = list.sortedByDescending { it.status }
-                                trySend(Pair(sortedList, 0)).isSuccess
+                                trySend(sortedList).isSuccess
                             }
                             override fun onCancelled(error: DatabaseError) {
                                 Log.d("USER_TAG", "Database error: ${error.message}")

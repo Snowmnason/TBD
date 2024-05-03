@@ -1,8 +1,10 @@
 package com.threegroup.tobedated._dating
 
+import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +31,7 @@ import com.threegroup.tobedated.composeables.profiles.BioEdit
 import com.threegroup.tobedated.composeables.profiles.ChangePhoto
 import com.threegroup.tobedated.composeables.profiles.PromptEdit
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun DatingNav(dating: DatingActivity){
@@ -42,13 +45,17 @@ fun DatingNav(dating: DatingActivity){
     vmApi.fetchHoroscope(viewModelDating.getUser().star)
     vmApi.fetchPoem()
 
-    //TODO THIS is where the list of potenatial matches gets initialed def changing this
-    val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
-    if (potentialUserDataState.value.first.isNotEmpty()) {
-        potentialUserDataLoaded.value = true
-//        val potentialUsers = potentialUserDataState.value.first
-//        val currentProfileIndex = potentialUserDataState.value.second
+    //TODO THIS is where the list of potential matches gets initialed def changing this
+    var update = 0
+
+    LaunchedEffect(update) {
+        viewModelDating.potentialUserData.collect { userList ->
+            if (userList.isNotEmpty()) {
+                potentialUserDataLoaded.value = true
+            }
+        }
     }
+
 
 
 
@@ -61,7 +68,9 @@ fun DatingNav(dating: DatingActivity){
             if(potentialUserDataLoaded.value){
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
             }else{
+                update++
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
+                println("Went to comeback screen")
             }
         }
         composable(route = Dating.ProfileScreen.name) {

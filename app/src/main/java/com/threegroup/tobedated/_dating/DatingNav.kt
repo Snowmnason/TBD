@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,12 +35,13 @@ import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import kotlinx.coroutines.runBlocking
 
 @Composable
-fun DatingNav(dating: DatingActivity){
+fun DatingNav(dating: DatingActivity) {
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser() //TODO make sure location works....
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
+    viewModelDating.fetchPotentialUserData()
     val vmApi = viewModel { ApiViewModel(MyApp.x) }
     vmApi.fetchWordOfTheDay()
     vmApi.fetchHoroscope(viewModelDating.getUser().star)
@@ -47,14 +49,12 @@ fun DatingNav(dating: DatingActivity){
 
     //TODO THIS is where the list of potential matches gets initialed def changing this
     var update = 0
+    val userList by viewModelDating.potentialUserData.collectAsState()
 
-    LaunchedEffect(update) {
-        viewModelDating.potentialUserData.collect { userList ->
-            if (userList.isNotEmpty()) {
-                potentialUserDataLoaded.value = true
-            }
-        }
+    if (userList.isNotEmpty()) {
+        potentialUserDataLoaded.value = true
     }
+
 
 
 
@@ -65,9 +65,9 @@ fun DatingNav(dating: DatingActivity){
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-            if(potentialUserDataLoaded.value){
+            if (potentialUserDataLoaded.value) {
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
-            }else{
+            } else {
                 update++
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
                 println("Went to comeback screen")
@@ -113,27 +113,27 @@ fun DatingNav(dating: DatingActivity){
             arguments = listOf(
                 navArgument("my_param") { type = NavType.StringType },
                 navArgument("index") { type = NavType.IntType },
-                )
+            )
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangeProfileScreen(navController, myParam, myIndex, viewModelDating)
         }
         composable(route = "BioEdit") {
-            BioEdit(nav = navController, vmDating= viewModelDating)
+            BioEdit(nav = navController, vmDating = viewModelDating)
         }
         composable(
             route = "PromptEdit/{index}",
-            arguments = listOf(navArgument("index") { type = NavType.IntType },)
+            arguments = listOf(navArgument("index") { type = NavType.IntType })
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             PromptEdit(navController, viewModelDating, myIndex)
         }
         composable(route = "ChangePhoto") {
-            ChangePhoto(nav = navController, vmDating= viewModelDating, dating = dating)
+            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = dating)
         }
         composable(route = "MatchedUserProfile") {
-            MatchedUserProfile(nav = navController, vmDating= viewModelDating)
+            MatchedUserProfile(nav = navController, vmDating = viewModelDating)
         }
     }
 

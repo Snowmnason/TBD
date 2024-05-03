@@ -15,17 +15,17 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     private lateinit var signedInUser: StateFlow<UserModel?>
+
     /**
      *
      * This is for matches
@@ -36,8 +36,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     private var _potentialUserData = MutableStateFlow(listOf<MatchedUserModel>())
     val potentialUserData = _potentialUserData.asStateFlow()
 
-    fun getPotentialUserList(){
-
+    fun fetchPotentialUserData() {
+        viewModelScope.launch {
+            repository.getPotentialUserData().collect { userData ->
+                _potentialUserData.value = userData
+            }
+        }
     }
 
     // TODO not 100% sure on this one--wrote it kinda fast
@@ -73,10 +77,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             repository.likeOrPass(currentUserId, currentProfile.number, false)
         }
     }
-    fun suggestCurrentProfile(currentPotential:String, suggestion:String){
+
+    fun suggestCurrentProfile(currentPotential: String, suggestion: String) {
         repository.suggest(currentPotential, suggestion)
     }
-    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
+
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit) {
         repository.getSuggestion(currentUser, onComplete)
     }
 
@@ -87,21 +93,22 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
             repository.getMatchesFlow(userId).collect { matches ->
-                val convertedMatches = matches.map {
-                        match ->
+                val convertedMatches = matches.map { match ->
                     repository.getMatch(match, userId)
                 }
                 _matchList.value = convertedMatches
             }
         }
     }
-    fun getMatchSize():Int{
-        return if(matchList.value.isEmpty()){
+
+    fun getMatchSize(): Int {
+        return if (matchList.value.isEmpty()) {
             0
-        }else{
+        } else {
             matchList.value.size
         }
     }
+
     /**
      * This is for blocking
      */
@@ -124,6 +131,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      */
     private var _selectedUser = MutableStateFlow<MatchedUserModel?>(null)
     var selectedUser: StateFlow<MatchedUserModel?> = _selectedUser
+
     //Stuff for setting and getting matches
     fun setTalkedUser(number: String) {
         viewModelScope.launch(IO) {
@@ -132,17 +140,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
+
     fun getTalkedUser(): MatchedUserModel {
         return selectedUser.value!!
     }
-    fun deleteMatch(matchedUser:String, userId: String){
+
+    fun deleteMatch(matchedUser: String, userId: String) {
         viewModelScope.launch(IO) {
             repository.deleteMatch(matchedUser, userId)
         }
     }
-        /**
-         *  generates a unique chatId made from the UIDs of the sender and receiver
-         */
+    /**
+     *  generates a unique chatId made from the UIDs of the sender and receiver
+     */
 
 
     /**
@@ -164,7 +174,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun setLoggedInUser() {
         signedInUser = MyApp.signedInUser
     }
-    fun deleteProfile(number:String, datingActivity: DatingActivity) {
+
+    fun deleteProfile(number: String, datingActivity: DatingActivity) {
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {
@@ -176,16 +187,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             )
         }
     }
+
     /**
      * This is for someScreen
      */
-    fun getLikes(userId: String, onComplete: (Int) -> Unit){
+    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikes(userId, onComplete)
     }
-    fun getPasses(userId: String, onComplete: (Int) -> Unit){
+
+    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
         repository.getPasses(userId, onComplete)
     }
-    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
+
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikedAndPassedby(userId, onComplete)
     }
 }

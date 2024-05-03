@@ -15,6 +15,7 @@ import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 import kotlin.random.Random
 
@@ -65,7 +66,7 @@ class FriendsActivity : ComponentActivity() {
     }
 }
 @Composable
-fun SearchingScreen(navController: NavHostController, friend:FriendsActivity){
+fun SearchingScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
@@ -77,13 +78,14 @@ fun SearchingScreen(navController: NavHostController, friend:FriendsActivity){
         selectedItemIndex = 2,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             Comeback(text = "Simple text", todo = "wait")
         }
     )
 }
 @Composable
-fun ProfileScreen(navController: NavHostController, friend:FriendsActivity){
+fun ProfileScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
@@ -95,6 +97,7 @@ fun ProfileScreen(navController: NavHostController, friend:FriendsActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
@@ -109,7 +112,7 @@ fun SearchPreferenceScreen(nav:NavHostController, vmFriends:FriendViewModel){
     PolkaDotCanvas()
 }
 @Composable
-fun ChatsScreen(navController: NavHostController, friend:FriendsActivity){
+fun ChatsScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
@@ -121,13 +124,14 @@ fun ChatsScreen(navController: NavHostController, friend:FriendsActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
     )
 }
 @Composable
-fun GroupsScreen(navController: NavHostController, friend:FriendsActivity){
+fun GroupsScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
@@ -139,13 +143,14 @@ fun GroupsScreen(navController: NavHostController, friend:FriendsActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
     )
 }
 @Composable
-fun SomeScreen(navController: NavHostController, friend:FriendsActivity){
+fun SomeScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsFriends(
         friend = friend,
@@ -157,6 +162,7 @@ fun SomeScreen(navController: NavHostController, friend:FriendsActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
@@ -175,7 +181,7 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
 
 }
 @Composable
-fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity){
+fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity, vmApi: ApiViewModel){
     TopAndBotBarsFriends(
         friend = friend,
         notifiChat = com.threegroup.tobedated._dating.notifiChat,
@@ -185,6 +191,7 @@ fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity){
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
+        vmApi = vmApi,
         currentScreen = {
             Comeback(text = "currently loading your future connection", todo = "wait")
         }

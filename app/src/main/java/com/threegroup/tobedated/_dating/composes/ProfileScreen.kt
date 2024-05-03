@@ -9,15 +9,17 @@ import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated._dating.TopAndBotBarsDating
-import com.threegroup.tobedated.composeables.profiles.UserInfo
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
+import com.threegroup.tobedated.composeables.profiles.UserInfo
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     vmDating: DatingViewModel,
-    dating: DatingActivity
+    dating: DatingActivity,
+    vmApi: ApiViewModel
 ) {
     val currentUser = vmDating.getUser()
     val isLoading = remember { mutableStateOf(true) }
@@ -37,7 +39,7 @@ fun ProfileScreen(
         selectedItemIndex = 4,
         settingsButton = { navController.navigate("EditProfileScreen") },
         state = state,
-        star = vmDating.getUser().star,
+        vmApi = vmApi,
         currentScreen = {
             UserInfo(
                 currentUser,

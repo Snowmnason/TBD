@@ -31,6 +31,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -168,6 +169,7 @@ class FirebaseDataSource {
         val preferences = listOf(
             userPref.gender to potentialUser.gender,
             userPref.children to potentialUser.children,
+            userPref.zodiac to potentialUser.star,
             userPref.mbti to potentialUser.testResultsMbti,
             userPref.familyPlans to potentialUser.family,
             userPref.drink to potentialUser.drink,
@@ -432,6 +434,8 @@ class FirebaseDataSource {
             matchId2.removeValue().await()
 
             deleteChat(getChatId(matchedUser, currUser))
+            val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(currUser).child("hasThree")
+            databaseReference.setValue(false)
             Log.d("DeleteMatches", "Matches deleted successfully for user $matchedUser")
         } catch (e: Exception) {
             Log.e("DeleteMatches", "Error deleting matches: ${e.message}", e)
@@ -680,15 +684,18 @@ class FirebaseDataSource {
             null // Return null in case of failure
         }
     }
-    suspend fun getPoem(): JSONArray? {
-        return withContext(Dispatchers.IO) {
+    fun getPoem(): Flow<JSONArray> {
+        return flow {
             val url = "https://poetrydb.org/random"
             val client = OkHttpClient()
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             val responseBody = response.body?.string()
-            responseBody?.let { JSONArray(it) }
-        }
+            responseBody?.let {
+                val jsonArray = JSONArray(it)
+                emit(jsonArray) // Emit the JSON array when API call completes
+            }
+        }.flowOn(Dispatchers.IO) // Perform API call on IO dispatcher
     }
     /**
      * SomeScreen Calls

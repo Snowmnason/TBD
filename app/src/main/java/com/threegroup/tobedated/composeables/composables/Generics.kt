@@ -655,7 +655,6 @@ fun Comeback(
             .padding(15.dp, 0.dp)
     ){
         val vmApi = viewModel { ApiViewModel(MyApp.x) }
-        vmApi.fetchPoem()
         SimpleBox(
             whatsInsideTheBox = {
                 Column(
@@ -696,18 +695,29 @@ fun Comeback(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Till then enjoy this poem", style = AppTheme.typography.bodyLarge)
+                    Text(text = "'Til then enjoy this poem", style = AppTheme.typography.bodyLarge)
                 }
             })
+
+        var poem by remember { mutableStateOf("poem") }
+        var title by remember { mutableStateOf("Title") }
+        var author by remember { mutableStateOf("Author") }
+
+        LaunchedEffect(vmApi._poem) {
+            poem = vmApi.getPoem()
+            title = vmApi.getPoemTitle()
+            author = vmApi.getPoemAuthor()
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Text(text = "${vmApi.getPoemTitle()} \t\t ${vmApi.getPoemAuthor()}", style = AppTheme.typography.labelMedium)
+                    Text(text = "$title \t\t $author", style = AppTheme.typography.labelMedium)
                     Spacer(modifier = Modifier.height(4.dp))
                     HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = vmApi.getPoem(), style = AppTheme.typography.bodySmall)
+                    Text(text = poem, style = AppTheme.typography.bodySmall)
                 }
             }
         )
@@ -722,7 +732,7 @@ fun NavDraw(
     datingClickable: () -> Unit = {},
     causalClickable: () -> Unit = {},
     friendsClickable: () -> Unit = {},
-    star:String
+    vmApi:ApiViewModel
     
 ){
 
@@ -762,17 +772,14 @@ fun NavDraw(
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
         }
-        val vmApi = viewModel { ApiViewModel(MyApp.x) }
-        vmApi.fetchWordOfTheDay()
-        vmApi.fetchHoroscope(star)
         var description by remember { mutableStateOf("") }
         var luckyTime by remember { mutableStateOf("") }
         var luckyNumber by remember { mutableStateOf("") }
         var mood by remember { mutableStateOf("") }
         description = vmApi.getDescription()
-        luckyTime = vmApi.getTime(star)
-        luckyNumber = vmApi.getLuckyNumber(star)
-        mood = vmApi.getMood(star)
+        luckyTime = vmApi.getTime()
+        luckyNumber = vmApi.getLuckyNumber()
+        mood = vmApi.getMood()
 
         Spacer(modifier = Modifier.height(24.dp))
         Column {
@@ -806,7 +813,7 @@ fun NavDraw(
                         .fillMaxWidth()
                         .padding(end = 20.dp)){
                     GenericTitleText(text = "Horoscope", style = getAddShadow(AppTheme.typography.titleMedium, "med"))
-                    Icon(imageVector = getStarSymbol(star), contentDescription = star, tint = AppTheme.colorScheme.onBackground)
+                    Icon(imageVector = getStarSymbol(vmApi.getStar()), contentDescription = vmApi.getStar(), tint = AppTheme.colorScheme.onBackground)
                 }
 
                 Spacer(modifier = Modifier.height(2.dp))

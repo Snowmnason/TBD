@@ -13,17 +13,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._causal.composables.PromptQuestionsC
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.ProgressBar
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
@@ -31,7 +34,7 @@ import kotlin.random.Random
 fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
     val navController = rememberNavController()
     navController.popBackStack()
-
+    val vmApi = viewModel { ApiViewModel(MyApp.x) }
     val notifiGroup = Random.nextBoolean()
     val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
     LaunchedEffect(Unit) {
@@ -45,15 +48,15 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
         popExitTransition = { ExitTransition.None }) {
         composable(route = Causal.SearchingScreen.name) {
             if (true) {//potentialUserDataLoaded.value
-                SearchingScreen(navController, causal, viewModelCausal)
+                SearchingScreen(navController, causal, viewModelCausal, vmApi)
             } else {
-                ComeBackScreen(navController, causal)
+                ComeBackScreen(navController, causal, vmApi)
                 //do nothing yet
             }
 
         }
         composable(route = Causal.ProfileScreen.name) {
-            ProfileScreen(navController, causal, viewModelCausal)
+            ProfileScreen(navController, causal, viewModelCausal, vmApi)
         }
         composable(route = Causal.EditProfileScreen.name) {
             EditProfileScreen(navController, causal, viewModelCausal)
@@ -62,13 +65,13 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
             SearchPreferenceScreen(navController, viewModelCausal)
         }
         composable(route = Causal.ChatsScreen.name) {
-            ChatsScreen(navController, causal, viewModelCausal)
+            ChatsScreen(navController, causal, viewModelCausal, vmApi)
         }
         composable(route = Causal.GroupsScreen.name) {
-            GroupsScreen(navController, causal)
+            GroupsScreen(navController, causal, vmApi)
         }
         composable(route = Causal.SomeScreen.name) {
-            SomeScreen(navController, causal)
+            SomeScreen(navController, causal, vmApi)
         }
         composable(route = Causal.MessagerScreen.name) {
             MessagerScreen(navController, viewModelCausal)

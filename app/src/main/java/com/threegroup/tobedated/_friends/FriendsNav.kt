@@ -4,16 +4,19 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 @Composable
 fun FriendNav(friend: FriendsActivity, viewModelFriend:FriendViewModel) {
     val navController = rememberNavController()
-
+    val vmApi = viewModel { ApiViewModel(MyApp.x) }
 
     LaunchedEffect(Unit) {
 
@@ -26,15 +29,15 @@ fun FriendNav(friend: FriendsActivity, viewModelFriend:FriendViewModel) {
         popExitTransition = { ExitTransition.None }) {
         composable(route = Friend.SearchingScreen.name) {
             if(true){//potentialUserDataLoaded.value
-                SearchingScreen(navController, friend)
+                SearchingScreen(navController, friend, vmApi)
             }else{
-                ComeBackScreen(navController, friend)
+                ComeBackScreen(navController, friend, vmApi)
                 //do nothing yet
             }
 
         }
         composable(route = Friend.ProfileScreen.name) {
-            ProfileScreen(navController, friend)
+            ProfileScreen(navController, friend, vmApi)
         }
         composable(route = Friend.EditProfileScreen.name) {
             EditProfileScreen(navController, friend, viewModelFriend)
@@ -43,13 +46,13 @@ fun FriendNav(friend: FriendsActivity, viewModelFriend:FriendViewModel) {
             SearchPreferenceScreen(navController, viewModelFriend)
         }
         composable(route = Friend.ChatsScreen.name) {
-            ChatsScreen(navController, friend)
+            ChatsScreen(navController, friend, vmApi)
         }
         composable(route = Friend.GroupsScreen.name) {
-            GroupsScreen(navController, friend)
+            GroupsScreen(navController, friend, vmApi)
         }
         composable(route = Friend.SomeScreen.name) {
-            SomeScreen(navController, friend)
+            SomeScreen(navController, friend, vmApi)
         }
         composable(route = Friend.MessagerScreen.name) {
             MessagerScreen(navController, viewModelFriend)

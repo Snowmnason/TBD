@@ -2,13 +2,16 @@ package com.threegroup.tobedated._dating.composes
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated.composeables.messages.MessageStart
 import com.threegroup.tobedated._dating.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
+import com.threegroup.tobedated.composeables.messages.MessageStart
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 /*
 Start of Message Screens
@@ -17,9 +20,10 @@ Start of Message Screens
 fun ChatsScreen(
     navController: NavHostController,
     vmDating: DatingViewModel,
-    dating: DatingActivity
+    dating: DatingActivity,
+    vmApi: ApiViewModel
 ) {
-    val matchedUsers = vmDating.getMatches() //TODO this has to be changed to be matches user
+    val matchedUsers by vmDating.matchList.collectAsState() //TODO this has to be changed to be matches user
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState()
@@ -33,7 +37,7 @@ fun ChatsScreen(
         selectedItemIndex = 1,
         settingsButton = { },
         state = state,
-        star = vmDating.getUser().star,
+        vmApi = vmApi,
         currentScreen = {
             matchedUsers.forEach { matchUser ->
 //                println(matchedUsers)

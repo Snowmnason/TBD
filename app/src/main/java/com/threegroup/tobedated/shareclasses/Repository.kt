@@ -89,7 +89,7 @@ class Repository(
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
         firebaseDataSource.getLikedAndPassedby(userId, onComplete)
     }
-    suspend fun getPoem(): JSONArray?{
+    fun getPoem():  Flow<JSONArray>{
         return firebaseDataSource.getPoem()
     }
     fun suggest(currentPotential:String, suggestion:String){

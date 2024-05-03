@@ -21,6 +21,7 @@ import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 
 class CausalActivity : ComponentActivity() {
@@ -80,7 +81,7 @@ class CausalActivity : ComponentActivity() {
     }
 }
 @Composable
-fun SearchingScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel){
+fun SearchingScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsCausal(
         causal = causal,
@@ -92,13 +93,14 @@ fun SearchingScreen(navController: NavHostController, causal: CausalActivity, vm
         selectedItemIndex = 2,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
     )
 }
 @Composable
-fun ProfileScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel){
+fun ProfileScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel, vmApi: ApiViewModel){
     val currentUser = vmCausal.getUser()
     val isLoading = remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
@@ -116,6 +118,7 @@ fun ProfileScreen(navController: NavHostController, causal: CausalActivity, vmCa
         selectedItemIndex = 4,
         settingsButton = { navController.navigate("EditProfileScreen") },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             UserInfoC(
                 currentUser,
@@ -138,7 +141,7 @@ fun SearchPreferenceScreen(nav: NavHostController, vmCausal: CausalViewModel){
     PolkaDotCanvas()
 }
 @Composable
-fun ChatsScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel){
+fun ChatsScreen(navController: NavHostController, causal: CausalActivity, vmCausal: CausalViewModel, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsCausal(
         causal = causal,
@@ -149,13 +152,14 @@ fun ChatsScreen(navController: NavHostController, causal: CausalActivity, vmCaus
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
     )
 }
 @Composable
-fun GroupsScreen(navController: NavHostController, causal: CausalActivity){
+fun GroupsScreen(navController: NavHostController, causal: CausalActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsCausal(
         causal = causal,
@@ -166,13 +170,14 @@ fun GroupsScreen(navController: NavHostController, causal: CausalActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
     )
 }
 @Composable
-fun SomeScreen(navController: NavHostController, causal: CausalActivity){
+fun SomeScreen(navController: NavHostController, causal: CausalActivity, vmApi: ApiViewModel){
     val state = rememberScrollState()
     TopAndBotBarsCausal(
         causal = causal,
@@ -183,6 +188,7 @@ fun SomeScreen(navController: NavHostController, causal: CausalActivity){
         selectedItemIndex = 0,
         settingsButton = { },
         state = state,
+        vmApi = vmApi,
         currentScreen = {
             PolkaDotCanvas()
         }
@@ -201,7 +207,7 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
     PolkaDotCanvas()
 }
 @Composable
-fun ComeBackScreen(navController: NavHostController, causal: CausalActivity){
+fun ComeBackScreen(navController: NavHostController, causal: CausalActivity, vmApi: ApiViewModel){
     TopAndBotBarsCausal(
         causal = causal,
         notifiChat = notifiChat,
@@ -210,6 +216,7 @@ fun ComeBackScreen(navController: NavHostController, causal: CausalActivity){
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
+        vmApi = vmApi,
         currentScreen = {
             Comeback(text = "currently loading your future connection", todo = "wait")
         }

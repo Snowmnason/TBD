@@ -34,6 +34,7 @@ import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.baseAppTextTheme
 import com.threegroup.tobedated.composeables.searching.SearchingButtons
 import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.calcDistance
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.theme.AppTheme
@@ -45,7 +46,8 @@ Start of Seeking Screen
 fun SearchingScreen(
     vmDating: DatingViewModel,
     dating: DatingActivity,
-    navController: NavHostController
+    navController: NavHostController,
+    vmApi: ApiViewModel
 ) {
     val currentUser = vmDating.getUser()
     var isNext by rememberSaveable { mutableStateOf(true) }
@@ -93,9 +95,9 @@ fun SearchingScreen(
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         state = state,
-        star = currentUser.star,
+        vmApi = vmApi,
         currentScreen = {
-            if (isNext && (vmDating.getMatchSize() <= 3)) {
+            if (isNext && vmDating.getMatchSize() < 3) {
                 currentPotential.value?.let { currentPotential ->
                     var location = "x miles"
                     if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
@@ -133,10 +135,12 @@ fun SearchingScreen(
                     )
                 }
             } else {
-                if(vmDating.getMatchSize() <= 3){
+                if(vmDating.getMatchSize() >= 3){
+                    currentUser.hasThree
+                    vmDating.updateUser(currentUser)
                     Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!")
                 }else{
-                    Comeback(text = "There is no users that fit your filters", todo = "Open your filters to allow more possible connections")
+                    Comeback(text = "There are no users that fit your current filters", todo = "Open your filters to allow more possible connections")
                 }
 
             }

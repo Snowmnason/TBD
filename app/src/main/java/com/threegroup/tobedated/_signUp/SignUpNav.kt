@@ -24,7 +24,7 @@ import com.threegroup.tobedated._signUp.composes.heightScreen
 import com.threegroup.tobedated._signUp.composes.mbtiScreen
 import com.threegroup.tobedated._signUp.composes.nameScreen
 import com.threegroup.tobedated._signUp.composes.ourTestScreen
-import com.threegroup.tobedated._dating.composes.pronounScreen
+import com.threegroup.tobedated._signUp.composes.pronounScreen
 import com.threegroup.tobedated._signUp.composes.searchScreen
 import com.threegroup.tobedated._signUp.composes.sexOriScreen
 import com.threegroup.tobedated._signUp.composes.sexScreen

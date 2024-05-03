@@ -16,8 +16,10 @@ import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.composes.ChangePreference
 import com.threegroup.tobedated._dating.composes.ChangeProfileScreen
 import com.threegroup.tobedated._dating.composes.ChatsScreen
+import com.threegroup.tobedated._dating.composes.ComeBackScreen
 import com.threegroup.tobedated._dating.composes.EditProfileScreen
 import com.threegroup.tobedated._dating.composes.FeedBackMessagerScreen
+import com.threegroup.tobedated._dating.composes.MatchedUserProfile
 import com.threegroup.tobedated._dating.composes.MessagerScreen
 import com.threegroup.tobedated._dating.composes.ProfileScreen
 import com.threegroup.tobedated._dating.composes.SearchPreferenceScreen
@@ -26,6 +28,7 @@ import com.threegroup.tobedated._dating.composes.SomeScreen
 import com.threegroup.tobedated.composeables.profiles.BioEdit
 import com.threegroup.tobedated.composeables.profiles.ChangePhoto
 import com.threegroup.tobedated.composeables.profiles.PromptEdit
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 @Composable
 fun DatingNav(dating: DatingActivity){
@@ -34,6 +37,10 @@ fun DatingNav(dating: DatingActivity){
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser() //TODO make sure location works....
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
+    val vmApi = viewModel { ApiViewModel(MyApp.x) }
+    vmApi.fetchWordOfTheDay()
+    vmApi.fetchHoroscope(viewModelDating.getUser().star)
+    vmApi.fetchPoem()
 
     //TODO THIS is where the list of potenatial matches gets initialed def changing this
     val potentialUserDataState = viewModelDating.potentialUserData.collectAsState(initial = Pair(emptyList(), 0))
@@ -44,6 +51,7 @@ fun DatingNav(dating: DatingActivity){
     }
 
 
+
     NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
@@ -51,13 +59,13 @@ fun DatingNav(dating: DatingActivity){
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
             if(potentialUserDataLoaded.value){
-                SearchingScreen(viewModelDating, dating, navController)
+                SearchingScreen(viewModelDating, dating, navController, vmApi)
             }else{
-                ComeBackScreen(navController, dating)
+                ComeBackScreen(navController, dating, vmApi, viewModelDating)
             }
         }
         composable(route = Dating.ProfileScreen.name) {
-            ProfileScreen(navController, viewModelDating, dating)
+            ProfileScreen(navController, viewModelDating, dating, vmApi)
         }
         composable(route = Dating.EditProfileScreen.name) {
             EditProfileScreen(navController, dating, viewModelDating)
@@ -66,13 +74,13 @@ fun DatingNav(dating: DatingActivity){
             SearchPreferenceScreen(navController, viewModelDating)
         }
         composable(route = Dating.ChatsScreen.name) {
-            ChatsScreen(navController, viewModelDating, dating)
+            ChatsScreen(navController, viewModelDating, dating, vmApi)
         }
         composable(route = Dating.GroupsScreen.name) {
-            GroupsScreen(navController, dating)
+            GroupsScreen(navController, dating, vmApi)
         }
         composable(route = Dating.SomeScreen.name) {
-            SomeScreen(navController, dating, viewModelDating)
+            SomeScreen(navController, dating, viewModelDating, vmApi)
         }
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController, viewModelDating)

@@ -38,6 +38,7 @@ import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
 import com.threegroup.tobedated.composeables.composables.getTopColors
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
 
@@ -62,7 +63,7 @@ fun TopAndBotBarsDating(
     settingsButton: () -> Unit,
     state: ScrollState = rememberScrollState(),
     dating: DatingActivity,
-    star:String
+    vmApi: ApiViewModel
 ) {
     val items = listOf(
         BotNavItem(
@@ -110,7 +111,7 @@ fun TopAndBotBarsDating(
                     drawerContainerColor = AppTheme.colorScheme.background
                 ) {
                     NavDraw(
-                        star = star,
+                        vmApi = vmApi,
                         colorDating = AppTheme.colorScheme.primary,
                         datingClickable = {},
                         causalClickable = {

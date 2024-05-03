@@ -5,25 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
-import com.threegroup.tobedated.composeables.composables.OutLinedButton
-import com.threegroup.tobedated.composeables.profiles.InsideMatchedProfile
-import com.threegroup.tobedated.composeables.searching.SeekingUserInfo
-import com.threegroup.tobedated.shareclasses.calcDistance
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -94,54 +82,13 @@ class DatingActivity : ComponentActivity() {
         finish()
     }
 }
-@Composable
-fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
-    val talkedUser = vmDating.getTalkedUser()
-    InsideMatchedProfile(
-        nav = nav,
-        title = talkedUser.name,
-        editProfile = {
-            val location = calcDistance(talkedUser.location, vmDating.getUser().location) + " miles"
-            SeekingUserInfo(
-                user = talkedUser,//usersArray[currentProfileIndex]
-                location = location,
-                bottomButtons = {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(25.dp, 0.dp)
-                    ) {
-                        OutLinedButton(
-                            onClick = {
-                                vmDating.reportUser(talkedUser.number, vmDating.getUser().number)
-                                nav.navigate("ChatsScreen")
-                            },
-                            text = "Report",
-                            outLineColor = Color.Red,
-                            textColor = Color.Red
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutLinedButton(
-                            onClick = { vmDating.deleteMatch(talkedUser.number, vmDating.getUser().number)
-                                nav.navigate("ChatsScreen")
-                            },
-                            text = "Unmatch",
-                            outLineColor = Color.Red
-                        )
-                    }
-                },
-            )
-        }
-    )
-}
 
 /*
 End of Message Screens
 Start of Groups Screens
  */
 @Composable
-fun GroupsScreen(navController: NavHostController, dating: DatingActivity) {
+fun GroupsScreen(navController: NavHostController, dating: DatingActivity, vmApi: ApiViewModel) {
     TopAndBotBarsDating(
         dating = dating,
         notifiChat = notifiChat,
@@ -151,7 +98,7 @@ fun GroupsScreen(navController: NavHostController, dating: DatingActivity) {
         nav = navController,
         selectedItemIndex = 3,
         settingsButton = { },
-        star = "Ask me",
+        vmApi = vmApi,
         currentScreen = {
         }
     )

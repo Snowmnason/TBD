@@ -30,13 +30,15 @@ import com.threegroup.tobedated._dating.TopAndBotBarsDating
 import com.threegroup.tobedated._dating.notifiChat
 import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun SomeScreen(
     navController: NavHostController,
     dating: DatingActivity,
-    vmDating: DatingViewModel
+    vmDating: DatingViewModel,
+    vmApi: ApiViewModel
 ) {
     val userId = vmDating.getUser().number
     var passed by remember { mutableIntStateOf(0) }
@@ -78,7 +80,7 @@ fun SomeScreen(
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { },
-        star = vmDating.getUser().star,
+        vmApi = vmApi,
         currentScreen = {
             Column(
                 modifier = Modifier

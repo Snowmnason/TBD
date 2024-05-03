@@ -17,6 +17,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -78,8 +79,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         repository.getSuggestion(currentUser, onComplete)
     }
 
-    private var _matchList = mutableStateOf(listOf<Match>())
-    private val matchList: State<List<Match>> = _matchList
+    private var _matchList = MutableStateFlow(listOf<Match>())
+    val matchList = _matchList.asStateFlow()
     // call this in the composable as val matchlist by viewModel.matchList.observeAsState()
 
     fun getMatchesFlow(userId: String) {
@@ -123,10 +124,6 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     private var _selectedUser = MutableStateFlow<MatchedUserModel?>(null)
     var selectedUser: StateFlow<MatchedUserModel?> = _selectedUser
     //Stuff for setting and getting matches
-    fun getMatches(): List<Match> {
-        //getMatchesFlow(signedInUser.value!!.number)
-        return matchList.value
-    }
     fun setTalkedUser(number: String) {
         viewModelScope.launch(IO) {
             repository.setMatchInfo(number).collect { userInfo ->

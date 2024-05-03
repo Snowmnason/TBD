@@ -14,7 +14,6 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,9 +28,17 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      */
     private var _likedProfile = mutableStateOf(NewMatch())
     private val likedProfile: State<NewMatch> = _likedProfile
-    val potentialUserData: Flow<List<MatchedUserModel>> = repository.getPotentialUserData()
 
-    // TODO not 100% sure on this one--wrote it kinda fast
+    private var _potentialUserData = MutableStateFlow(listOf<MatchedUserModel>())
+    val potentialUserData = _potentialUserData.asStateFlow()
+
+    fun fetchPotentialUserData() {
+        viewModelScope.launch {
+            repository.getPotentialUserData().collect { userData ->
+                _potentialUserData.value = userData
+            }
+        }
+    }
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
         viewModelScope.launch(IO) {
             val deferredResult = async {

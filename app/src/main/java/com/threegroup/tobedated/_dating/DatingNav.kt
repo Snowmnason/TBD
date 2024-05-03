@@ -3,7 +3,8 @@ package com.threegroup.tobedated._dating
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,18 +38,16 @@ fun DatingNav(dating: DatingActivity){
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser() //TODO make sure location works....
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
+    viewModelDating.fetchPotentialUserData()
     val vmApi = viewModel { ApiViewModel(MyApp.x) }
     vmApi.fetchWordOfTheDay()
     vmApi.fetchHoroscope(viewModelDating.getUser().star)
     vmApi.fetchPoem()
-    var update = 0
 
-    LaunchedEffect(update) {
-        viewModelDating.potentialUserData.collect { userList ->
-            if (userList.isNotEmpty()) {
-                potentialUserDataLoaded.value = true
-            }
-        }
+    val userList by viewModelDating.potentialUserData.collectAsState()
+
+    if (userList.isNotEmpty()) {
+        potentialUserDataLoaded.value = true
     }
 
 
@@ -62,7 +61,6 @@ fun DatingNav(dating: DatingActivity){
             if(potentialUserDataLoaded.value){
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
             }else{
-                update++
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
             }
         }
@@ -85,7 +83,7 @@ fun DatingNav(dating: DatingActivity){
             SomeScreen(navController, dating, viewModelDating, vmApi)
         }
         composable(route = Dating.MessagerScreen.name) {
-            MessagerScreen(navController, viewModelDating)
+            MessagerScreen(navController, viewModelDating, vmApi)
         }
         composable(route = Dating.FeedBackMessagerScreen.name) {
             FeedBackMessagerScreen(navController, viewModelDating)

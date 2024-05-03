@@ -15,6 +15,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,9 +54,11 @@ fun SearchingScreen(
     var isNext by rememberSaveable { mutableStateOf(true) }
     var showReport by rememberSaveable { mutableStateOf(false) }
     var showSuggest by rememberSaveable { mutableStateOf(false) }
-    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) } ///MIGHT CHANGE THIS
-    val currentPotential = remember { mutableStateOf<MatchedUserModel?>(null) }
+    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
+    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0)}
     val state = rememberScrollState()
+    val currentPotentialList = currentPotentialPairList
+    var currPotential = currentPotentialList[currentProfileIndex]
 
     // Reset scroll state when currentProfileIndex or isNext changes
     LaunchedEffect(currentProfileIndex, isNext) {
@@ -64,20 +67,23 @@ fun SearchingScreen(
 
     LaunchedEffect(Unit) {
         //TODO This checks to see if the list is empty or not, This NEEDs to be available some hows
-        if (currentPotential.value != null) {
-            //do nothing
+        if (currPotential.name != "") {
+
         } else {
-            isNext = false//This is important, if there are no users this shows a blank screen and not crash
+            isNext =
+                false//This is important, if there are no users this shows a blank screen and not crash
         }
     }
 
 
     ///TODO THIS DOES THE SAME CHECK AS ABOVE to see if there is an available user to prevent crashes
     fun nextProfile() {
-        if (currentPotential.value != null) {
-            //do nothing
+        val newPotential: MatchedUserModel = currPotential
+        if (newPotential.name != "") {
+            currPotential = newPotential///MIGHT change this
         } else {
-            isNext = false//This is important, if there are no users this shows a blank screen and not crash
+            isNext =
+                false//This is important, if there are no users this shows a blank screen and not crash
         }
     }
 
@@ -94,7 +100,7 @@ fun SearchingScreen(
         vmApi = vmApi,
         currentScreen = {
             if (isNext && vmDating.getMatchSize() < 3) {
-                currentPotential.value?.let { currentPotential ->
+                currPotential.let { currentPotential ->
                     var location = "x miles"
                     if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
                         location = calcDistance(currentPotential.location, currentUser.location) + " miles"
@@ -149,8 +155,8 @@ fun SearchingScreen(
             onConfirmation = {
                 showReport = false
                 currentProfileIndex++
-                vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
-                vmDating.reportUser(currentPotential.value!!.number, currentUser.number)
+                vmDating.passCurrentProfile(currentUser.number, currPotential)
+                vmDating.reportUser(currPotential.number, currentUser.number)
                 nextProfile()
             }
         )
@@ -164,8 +170,8 @@ fun SearchingScreen(
             onConfirmation = {
                 showSuggest = false
                 currentProfileIndex++
-                vmDating.passCurrentProfile(currentUser.number, currentPotential.value!!)
-                vmDating.suggestCurrentProfile(currentPotential.value!!.number, selectedSuggest)
+                vmDating.passCurrentProfile(currentUser.number, currPotential)
+                vmDating.suggestCurrentProfile(currPotential.number, selectedSuggest)
                 nextProfile()
             }
         )

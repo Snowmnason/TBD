@@ -39,6 +39,7 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
                         OutLinedButton(
                             onClick = {
                                 vmDating.reportUser(talkedUser.number, currUser.number)
+                                vmDating.getMatchesFlow(currUser.number)
                                 nav.navigate("ChatsScreen")
                             },
                             text = "Report",
@@ -49,8 +50,8 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
                         OutLinedButton(
                             onClick = {
                                 vmDating.deleteMatch(talkedUser.number, currUser.number)
-                                nav.navigate("ChatsScreen")
                                 vmDating.getMatchesFlow(currUser.number)
+                                nav.navigate("ChatsScreen")
                             },
                             text = "Unmatch",
                             outLineColor = Color.Red

@@ -81,21 +81,22 @@ class FirebaseDataSource {
                                     try {
                                         val potential = userSnapshot.getValue(MatchedUserModel::class.java)
                                         potential?.let {
-                                            if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber &&
-                                                passBlocked(dbRef, user.number, it.number) &&
-                                                passSeeMe(it, likePassSnapshot) &&
-                                                isProfileInteractedByUser(it.number, likePassSnapshot) &&
-                                                passBasicPreferences(user, it) &&
-                                                !passMatch(it) &&
-                                                passPremiumPref(user, it)) {
+                                            if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
+                                                &&passBlocked(dbRef, user.number, it.number)
+                                                &&passSeeMe(it, likePassSnapshot)
+                                                &&isProfileInteractedByUser(it.number, likePassSnapshot)
+                                                &&passBasicPreferences(user, it)
+                                                &&!passMatch(it)
+                                                &&passPremiumPref(user, it)
+                                                ) {
                                                 list.add(it)
                                             }
                                         }
-                                        Log.d("USER_TAG", "Succeeded parsing UserModel")
                                     } catch (e: Exception) {
                                         Log.d("USER_TAG", "Error parsing UserModel", e)
                                     }
                                 }
+                                Log.d("USER_TAG", "Succeeded parsing UserModel")
                                 val sortedList = list.sortedByDescending { it.status }
                                 trySend(sortedList).isSuccess
                             }
@@ -151,15 +152,22 @@ class FirebaseDataSource {
         /**
          * This function checks basic preferences, sex, age, distance
          */
-    private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
-        val userPref = user.userPref
-        val userAge = calcAge(potentialUser.birthday)
-
-        val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
-        val isLocationWithinDistance = calcDistance(potentialUser.location, user.location).toInt() <= userPref.maxDistance
-        val isSexMatch = user.seeking == "Everyone" || potentialUser.sex == user.seeking
-        return isAgeInRange && isLocationWithinDistance && isSexMatch
-    }
+        private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
+            //TODO this is a temporary fix for the location error issue
+//            if (user.location == "error/") {
+//                user.location = "37.4220936/-122.083922"
+//            }
+            val userPref = user.userPref
+            val userAge = calcAge(potentialUser.birthday)
+            val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
+            val isSexMatch = (user.seeking == "Everyone") || (potentialUser.sex == user.seeking)
+            val potentialLocation = potentialUser.location
+            val userLocation = user.location
+            val maxDistance = userPref.maxDistance
+            val distance = calcDistance(potentialLocation, userLocation).toInt()
+            val isLocationWithinDistance = distance <= maxDistance
+            return isAgeInRange && isLocationWithinDistance && isSexMatch
+        }
 
         /**
          * This checks the "premium" features
@@ -419,7 +427,7 @@ class FirebaseDataSource {
                 userName = userName,
                 userPicture = userImage1,
                 //formattedDate = it, // Consider formatting the timestamp properly
-                lastMessage = getLastMessage(match.id)
+                lastMessage = ""
             )
         }
     }
@@ -478,11 +486,11 @@ class FirebaseDataSource {
                     try {
                         val messageModel = data.getValue(MessageModel::class.java)
                         messageModel?.let { list.add(it) }
-                        Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
                     } catch (e: Exception) {
                         Log.d("CHAT_TAG", "Error parsing MessageModel", e)
                     }
                 }
+                Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
                 trySend(list).isSuccess // this should emit the list to the flow
             }
 

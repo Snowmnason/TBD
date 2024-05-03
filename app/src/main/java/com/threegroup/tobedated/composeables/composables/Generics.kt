@@ -776,10 +776,20 @@ fun NavDraw(
         var luckyTime by remember { mutableStateOf("") }
         var luckyNumber by remember { mutableStateOf("") }
         var mood by remember { mutableStateOf("") }
+        var date by remember { mutableStateOf("") }
+        var word by remember { mutableStateOf("") }
+        var source by remember { mutableStateOf("") }
+        var partOf by remember { mutableStateOf("") }
+        var def by remember { mutableStateOf("") }
+        word = vmApi.getWord()
+        partOf = vmApi.getPartOfSpeech()
+        source = vmApi.getSource()
+        def = vmApi.getDef()
         description = vmApi.getDescription()
         luckyTime = vmApi.getTime()
         luckyNumber = vmApi.getLuckyNumber()
         mood = vmApi.getMood()
+        date = vmApi.getDate()
 
         Spacer(modifier = Modifier.height(24.dp))
         Column {
@@ -789,21 +799,21 @@ fun NavDraw(
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    GenericTitleText(text = vmApi.getWord(), style = AppTheme.typography.titleLarge)
+                    GenericTitleText(text = word, style = AppTheme.typography.titleLarge)
                 }
                 Spacer(modifier = Modifier.height(3.dp))
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
-                        GenericBodyText(text = vmApi.getPartOfSpeech())
+                        GenericBodyText(text = partOf)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        GenericBodyText(text = vmApi.getSource())
+                        GenericBodyText(text = source)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                GenericBodyText(text = vmApi.getDef())
+                GenericBodyText(text = def)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -826,7 +836,7 @@ fun NavDraw(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         GenericLabelText(text = "Date: ")
-                        GenericBodyText(text = vmApi.getDate())
+                        GenericBodyText(text = date)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         GenericLabelText(text = "Lucky Time: ")

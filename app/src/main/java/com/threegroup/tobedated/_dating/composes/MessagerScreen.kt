@@ -15,15 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MessageViewModel
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.messages.InsideMessages
 import com.threegroup.tobedated.composeables.messages.KeyBoard
+import com.threegroup.tobedated.composeables.messages.MessagerDraw
 import com.threegroup.tobedated.composeables.messages.TextSection
-import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.getChatId
 
 @Composable
-fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel) {
+fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, vmApi: ApiViewModel) {
     val talkedUser by vmDating.selectedUser.collectAsState()
     val avail by remember { mutableStateOf(talkedUser == null) }
     if (avail && talkedUser == null) {
@@ -45,13 +47,28 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel) 
         var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
         val lazyListState = rememberLazyListState()
         LaunchedEffect(messageList) {
-            lazyListState.scrollToItem(scrollValue) //NEED this to update when keybaord opens
+            lazyListState.scrollToItem(scrollValue) //NEED this to update when keyboard opens
         }
         InsideMessages(
             nav = navController,
             titleText = talkedUser!!.name,
             goToProfile = { navController.navigate("MatchedUserProfile") },
-            chatSettings = {},
+            chatSettings = {
+                MessagerDraw(
+                    vmApi = vmApi,
+                    reportButton = {
+                        vmDating.reportUser(talkedUser!!.number, vmDating.getUser().number)
+                        navController.navigate("ChatsScreen")
+                        vmDating.getMatchesFlow(vmDating.getUser().number)
+                    },
+                    unmatchButton = {
+                        vmDating.deleteMatch(talkedUser!!.number, vmDating.getUser().number)
+                        navController.navigate("ChatsScreen")
+                        vmDating.getMatchesFlow(vmDating.getUser().number)
+                    },
+                    currentMatch = talkedUser!!,
+                )
+            },
             startCall = {/* TODO Start normal Call (Need to make a screen for it)*/ },
             startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/ },
             messageBar = {
@@ -94,13 +111,15 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
     var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
     val lazyListState = rememberLazyListState()
     LaunchedEffect(messageList) {
-        lazyListState.scrollToItem(scrollValue) //NEED this to update when keybaord opens
+        lazyListState.scrollToItem(scrollValue) //NEED this to update when keyboard opens
     }
     InsideMessages(
         nav = navController,
         hideCallButtons = false,
         titleText = "Feedback",
-        chatSettings = {},
+        chatSettings = {
+
+        },
         messageBar = {
             KeyBoard(
                 modifier = Modifier.imePadding(),
@@ -126,3 +145,4 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
         },
     )
 }
+

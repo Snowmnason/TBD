@@ -80,8 +80,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
@@ -647,14 +645,14 @@ fun PagerIndicator(
 @Composable
 fun Comeback(
     text: String,
-    todo:String
+    todo:String,
+    vmApi:ApiViewModel
 ){
     Column(
         Modifier
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ){
-        val vmApi = viewModel { ApiViewModel(MyApp.x) }
         SimpleBox(
             whatsInsideTheBox = {
                 Column(
@@ -699,25 +697,17 @@ fun Comeback(
                 }
             })
 
-        var poem by remember { mutableStateOf("poem") }
-        var title by remember { mutableStateOf("Title") }
-        var author by remember { mutableStateOf("Author") }
 
-        LaunchedEffect(vmApi._poem) {
-            poem = vmApi.getPoem()
-            title = vmApi.getPoemTitle()
-            author = vmApi.getPoemAuthor()
-        }
 
         Spacer(modifier = Modifier.height(12.dp))
         SimpleBox(
             whatsInsideTheBox = {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Text(text = "$title \t\t $author", style = AppTheme.typography.labelMedium)
+                    Text(text = "${vmApi.poemTitle.value} \t\t ${vmApi.poemAuthor.value}", style = AppTheme.typography.labelMedium)
                     Spacer(modifier = Modifier.height(4.dp))
                     HorizontalDivider(modifier = Modifier.fillMaxWidth(),color = Color(0xFFB39DB7), thickness = 2.dp)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = poem, style = AppTheme.typography.bodySmall)
+                    Text(text = vmApi.poem.value, style = AppTheme.typography.bodySmall)
                 }
             }
         )

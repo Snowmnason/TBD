@@ -218,7 +218,7 @@ fun ComeBackScreen(navController: NavHostController, causal: CausalActivity, vmA
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         vmApi = vmApi,
         currentScreen = {
-            Comeback(text = "currently loading your future connection", todo = "wait")
+            Comeback(text = "currently loading your future connection", todo = "wait", vmApi = vmApi)
         }
     )
 }

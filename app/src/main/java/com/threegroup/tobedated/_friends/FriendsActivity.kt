@@ -80,7 +80,7 @@ fun SearchingScreen(navController: NavHostController, friend:FriendsActivity, vm
         state = state,
         vmApi = vmApi,
         currentScreen = {
-            Comeback(text = "Simple text", todo = "wait")
+            Comeback(text = "Simple text", todo = "wait", vmApi = vmApi)
         }
     )
 }
@@ -193,7 +193,7 @@ fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity, vm
         settingsButton = { navController.navigate("SearchPreferenceScreen") },
         vmApi = vmApi,
         currentScreen = {
-            Comeback(text = "currently loading your future connection", todo = "wait")
+            Comeback(text = "currently loading your future connection", todo = "wait", vmApi = vmApi)
         }
     )
 }

@@ -228,7 +228,13 @@ fun AgeSlider(
                 RangeSlider(
                     value = sliderPosition,
                     steps = 82,
-                    onValueChange = { range -> sliderPosition = range },
+                    onValueChange = { range ->
+                        if (range.start <= range.endInclusive) {
+                            if (range.endInclusive - range.start >= 5) {
+                                sliderPosition = range
+                            }
+                        }
+                    },
                     valueRange = 18f..80f,
                     onValueChangeFinished = {
                         currentUser.userPref.ageRange = AgeRange(min, max)

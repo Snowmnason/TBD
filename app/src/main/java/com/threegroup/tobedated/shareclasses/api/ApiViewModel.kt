@@ -134,10 +134,10 @@ private val moods = listOf("Joyful", "Melancholic", "Anxious", "Relaxed", "Excit
 )
 
     private var _poemTitle = mutableStateOf("Title")
-    private val poemTitle:State<String> = _poemTitle
+     val poemTitle:State<String> = _poemTitle
     private var _poemAuthor = mutableStateOf("Author")
-    private val poemAuthor:State<String> = _poemAuthor
-    var _poem = mutableStateOf("poem")
+     val poemAuthor:State<String> = _poemAuthor
+    private var _poem = mutableStateOf("poem")
     val poem:State<String> = _poem
 
     fun fetchPoem() {
@@ -164,6 +164,7 @@ private val moods = listOf("Joyful", "Melancholic", "Anxious", "Relaxed", "Excit
                                 }
                             }
                         }
+                        //println(_poem)
                     } else {
                         _poemTitle.value = "Title"
                         _poemAuthor.value = "Author"
@@ -175,15 +176,4 @@ private val moods = listOf("Joyful", "Melancholic", "Anxious", "Relaxed", "Excit
             }
         }
     }
-    fun getPoemTitle(): String {
-        return poemTitle.value
-    }
-    fun getPoemAuthor(): String {
-        return poemAuthor.value
-    }
-    fun getPoem(): String {
-        return poem.value
-    }
-
-
 }

@@ -36,7 +36,7 @@ fun DatingNav(dating: DatingActivity){
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
-    viewModelDating.setLoggedInUser() //TODO make sure location works....
+    viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
     viewModelDating.fetchPotentialUserData()
     val vmApi = viewModel { ApiViewModel(MyApp.x) }
@@ -45,10 +45,9 @@ fun DatingNav(dating: DatingActivity){
     vmApi.fetchPoem()
 
     val userList by viewModelDating.potentialUserData.collectAsState()
+    val isPotentialUserDataLoaded = userList.isNotEmpty()
 
-    if (userList.isNotEmpty()) {
-        potentialUserDataLoaded.value = true
-    }
+
 
 
 
@@ -58,7 +57,7 @@ fun DatingNav(dating: DatingActivity){
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
-            if(potentialUserDataLoaded.value){
+            if (isPotentialUserDataLoaded) {
                 SearchingScreen(viewModelDating, dating, navController, vmApi)
             }else{
                 ComeBackScreen(navController, dating, vmApi, viewModelDating)
@@ -104,27 +103,27 @@ fun DatingNav(dating: DatingActivity){
             arguments = listOf(
                 navArgument("my_param") { type = NavType.StringType },
                 navArgument("index") { type = NavType.IntType },
-                )
+            )
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangeProfileScreen(navController, myParam, myIndex, viewModelDating)
         }
         composable(route = "BioEdit") {
-            BioEdit(nav = navController, vmDating= viewModelDating)
+            BioEdit(nav = navController, vmDating = viewModelDating)
         }
         composable(
             route = "PromptEdit/{index}",
-            arguments = listOf(navArgument("index") { type = NavType.IntType },)
+            arguments = listOf(navArgument("index") { type = NavType.IntType })
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             PromptEdit(navController, viewModelDating, myIndex)
         }
         composable(route = "ChangePhoto") {
-            ChangePhoto(nav = navController, vmDating= viewModelDating, dating = dating)
+            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = dating)
         }
         composable(route = "MatchedUserProfile") {
-            MatchedUserProfile(nav = navController, vmDating= viewModelDating)
+            MatchedUserProfile(nav = navController, vmDating = viewModelDating)
         }
     }
 

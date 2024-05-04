@@ -16,6 +16,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,14 +52,19 @@ fun SearchingScreen(
     vmApi: ApiViewModel
 ) {
     val currentUser = vmDating.getUser()
-    var isNext by rememberSaveable { mutableStateOf(true) }
+    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
+    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
+    val state = rememberScrollState()
+
+    val currentPotentialList = currentPotentialPairList
+
     var showReport by rememberSaveable { mutableStateOf(false) }
     var showSuggest by rememberSaveable { mutableStateOf(false) }
-    val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
-    var currentProfileIndex by rememberSaveable { mutableIntStateOf(0)}
-    val state = rememberScrollState()
-    val currentPotentialList = currentPotentialPairList
-    var currPotential = currentPotentialList[currentProfileIndex]
+
+    var isNext = currentPotentialList.isNotEmpty() && currentProfileIndex < currentPotentialList.size
+
+    var currPotential = if (isNext) currentPotentialList[currentProfileIndex] else MatchedUserModel()
+
 
     // Reset scroll state when currentProfileIndex or isNext changes
     LaunchedEffect(currentProfileIndex, isNext) {
@@ -154,7 +160,7 @@ fun SearchingScreen(
             dialogText = "This account will be looked into and they will not be able to view your profile",
             onConfirmation = {
                 showReport = false
-                currentProfileIndex++
+               currentProfileIndex++
                 vmDating.passCurrentProfile(currentUser.number, currPotential)
                 vmDating.reportUser(currPotential.number, currentUser.number)
                 nextProfile()

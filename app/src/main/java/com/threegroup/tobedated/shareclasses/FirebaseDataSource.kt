@@ -3,6 +3,7 @@ package com.threegroup.tobedated.shareclasses
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -65,50 +66,53 @@ class FirebaseDataSource {
     fun getPotentialUserData(): Flow<List<MatchedUserModel>> = callbackFlow {
         val user = MyApp.signedInUser.value!!
         val db = FirebaseDatabase.getInstance()
-        val matchRef = db.getReference("matches")
         val dbRef: DatabaseReference = db.getReference("users")
         val likePassNodeRef = db.getReference("likeorpass").child(user.number)
 
-        val valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val list = mutableListOf<MatchedUserModel>()
-                likePassNodeRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(likePassSnapshot: DataSnapshot) {
-                        val query = dbRef.orderByChild("status").limitToLast(10) // Adjust the limit as needed
-                        query.addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(usersSnapshot: DataSnapshot) {
-                                usersSnapshot.children.forEach { userSnapshot ->
-                                    try {
-                                        val potential = userSnapshot.getValue(MatchedUserModel::class.java)
-                                        potential?.let {
-                                            if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
-                                                &&passBlocked(dbRef, user.number, it.number)
-                                                &&passSeeMe(it, likePassSnapshot)
-                                                &&isProfileInteractedByUser(it.number, likePassSnapshot)
-                                                &&passBasicPreferences(user, it)
-                                                &&!passMatch(it)
-                                                &&passPremiumPref(user, it)
-                                                ) {
-                                                list.add(it)
-                                            }
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.d("USER_TAG", "Error parsing UserModel", e)
+        val likePassListener = object : ValueEventListener {
+            override fun onDataChange(likePassSnapshot: DataSnapshot) {
+                val query = dbRef.orderByChild("status").limitToLast(10)
+                val usersListener = object : ValueEventListener {
+                    override fun onDataChange(usersSnapshot: DataSnapshot) {
+                        val list = mutableListOf<MatchedUserModel>()
+                        usersSnapshot.children.forEach { userSnapshot ->
+                            try {
+                                val potential = userSnapshot.getValue(MatchedUserModel::class.java)
+                                potential?.let {
+                                    if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
+                                        && passBlocked(dbRef, user.number, it.number)
+                                        && passSeeMe(it, likePassSnapshot)
+                                        && isProfileInteractedByUser(it.number, likePassSnapshot)
+                                        && passBasicPreferences(user, it)
+                                        && !passMatch(it)
+                                        && passPremiumPref(user, it)
+                                    ) {
+                                        list.add(it)
                                     }
                                 }
-                                Log.d("USER_TAG", "Succeeded parsing UserModel")
-                                val sortedList = list.sortedByDescending { it.status }
-                                trySend(sortedList).isSuccess
+                            } catch (e: Exception) {
+                                println("Error parsing UserModel: $e")
                             }
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.d("USER_TAG", "Database error: ${error.message}")
-                            }
-                        })
+                        }
+                        val sortedList = list.sortedByDescending { it.status }
+                        trySend(sortedList).isSuccess
                     }
+
                     override fun onCancelled(error: DatabaseError) {
-                        Log.d("USER_TAG", "Database error: ${error.message}")
+                        println("Database error: ${error.message}")
                     }
-                })
+                }
+                query.addValueEventListener(usersListener)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Database error: ${error.message}")
+            }
+        }
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                likePassNodeRef.addValueEventListener(likePassListener)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -118,11 +122,15 @@ class FirebaseDataSource {
         dbRef.addValueEventListener(valueEventListener)
         awaitClose {
             dbRef.removeEventListener(valueEventListener)
+            likePassNodeRef.removeEventListener(likePassListener)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
-
-    private fun passBlocked(dbReference: DatabaseReference, userId: String, potentialUser: String): Boolean {
+    private fun passBlocked(
+        dbReference: DatabaseReference,
+        userId: String,
+        potentialUser: String
+    ): Boolean {
         //val block = dbReference.child(userId).child("blocked").child(potentialUser)
 
         //val exists = true
@@ -140,34 +148,37 @@ class FirebaseDataSource {
     }
 
     private fun passMatch(potentialUser: MatchedUserModel): Boolean {
+
         return potentialUser.hasThree
     }
 
     private fun isProfileInteractedByUser(potentialUser: String, snapshot: DataSnapshot): Boolean {
         val likedSnapshot = snapshot.child("liked").child(potentialUser)
         val passedSnapshot = snapshot.child("passed").child(potentialUser)
+
         return !(likedSnapshot.exists() || passedSnapshot.exists())
     }
 
-        /**
-         * This function checks basic preferences, sex, age, distance
-         */
-        private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
-            //TODO this is a temporary fix for the location error issue
-//            if (user.location == "error/") {
-//                user.location = "37.4220936/-122.083922"
-//            }
-            val userPref = user.userPref
-            val userAge = calcAge(potentialUser.birthday)
-            val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
-            val isSexMatch = (user.seeking == "Everyone") || (potentialUser.sex == user.seeking)
-            val potentialLocation = potentialUser.location
-            val userLocation = user.location
-            val maxDistance = userPref.maxDistance
-            val distance = calcDistance(potentialLocation, userLocation).toInt()
-            val isLocationWithinDistance = distance <= maxDistance
-            return isAgeInRange && isLocationWithinDistance && isSexMatch
+    /**
+     * This function checks basic preferences, sex, age, distance
+     */
+    private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
+        //TODO this is a temporary fix for the location error issue
+        if (user.location == "error/") {
+            user.location = "37.4220936/-122.083922"
         }
+        val userPref = user.userPref
+        val userAge = calcAge(potentialUser.birthday)
+        val isAgeInRange = userAge in userPref.ageRange.min..userPref.ageRange.max
+        val isSexMatch = (user.seeking == "Everyone") || (potentialUser.sex == user.seeking)
+        val potentialLocation = potentialUser.location
+        val userLocation = user.location
+        val maxDistance = userPref.maxDistance
+        val distance = calcDistance(potentialLocation, userLocation).toInt()
+        val isLocationWithinDistance = distance <= maxDistance
+
+        return isAgeInRange && isLocationWithinDistance && isSexMatch
+    }
 
         /**
          * This checks the "premium" features
@@ -191,6 +202,7 @@ class FirebaseDataSource {
             userPref.smoke to potentialUser.smoke,
             userPref.weed to potentialUser.weed
         )
+
         return preferences.all { (userPrefList, userValue) ->
             userPrefList[0] == "Doesn't Matter" || userPrefList.contains(userValue)
         }
@@ -277,7 +289,7 @@ class FirebaseDataSource {
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
 
-        return Match(
+        val newMatch =  Match(
             id = userId,
             userId = userId,
             userName = userName,
@@ -285,6 +297,8 @@ class FirebaseDataSource {
             //formattedDate = "", // Consider formatting the timestamp properly
             lastMessage = ""
         )
+        //println("New Match is $newMatch")
+        return newMatch
     }
 
 
@@ -378,12 +392,16 @@ class FirebaseDataSource {
         // Remove blocked user from matches and chats
         deleteMatch(blockedUserId, blockingUserId)
     }
-    fun suggest(currentPotential:String, suggestion:String){
-        val database = FirebaseDatabase.getInstance().getReference("users").child(currentPotential).child("suggestion")
+
+    fun suggest(currentPotential: String, suggestion: String) {
+        val database = FirebaseDatabase.getInstance().getReference("users").child(currentPotential)
+            .child("suggestion")
         database.setValue(suggestion)
     }
+
     fun getSuggestions(currentUser: String, onComplete: (List<String>) -> Unit) {
-        val database = FirebaseDatabase.getInstance().getReference("users").child(currentUser).child("suggestion")
+        val database = FirebaseDatabase.getInstance().getReference("users").child(currentUser)
+            .child("suggestion")
 
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -411,6 +429,8 @@ class FirebaseDataSource {
      * Function to get a single instance of a match
      */
     suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
+        //println("Inside getMatch function")
+        //println("Match's ID: ${getMatchId(match.usersMatched[0], match.usersMatched[1])}")
         val userId = if (match.usersMatched[0] == currUser) match.usersMatched[1] else {
             match.usersMatched[0]
         }
@@ -419,17 +439,19 @@ class FirebaseDataSource {
         }
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
-
-        return match.timestamp.toString().let {
+        //println("Fetching match")
+        val retrievedMatch = match.timestamp.toString().let {
             Match(
                 id = match.id,
                 userId = userId,
                 userName = userName,
                 userPicture = userImage1,
                 //formattedDate = it, // Consider formatting the timestamp properly
-                lastMessage = ""
+                lastMessage = getLastMessage(getMatchId(match.usersMatched[0], match.usersMatched[1]))
             )
         }
+        //println(retrievedMatch)
+        return retrievedMatch
     }
 
     /**
@@ -442,7 +464,9 @@ class FirebaseDataSource {
             matchId2.removeValue().await()
 
             deleteChat(getChatId(matchedUser, currUser))
-            val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(currUser).child("hasThree")
+            val databaseReference =
+                FirebaseDatabase.getInstance().getReference("users").child(currUser)
+                    .child("hasThree")
             databaseReference.setValue(false)
             Log.d("DeleteMatches", "Matches deleted successfully for user $matchedUser")
         } catch (e: Exception) {
@@ -470,6 +494,7 @@ class FirebaseDataSource {
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
                 continuation.resume(lastMessage)
+                //println(lastMessage)
             }.addOnFailureListener { exception ->
                 continuation.resumeWithException(exception)
             }
@@ -486,11 +511,11 @@ class FirebaseDataSource {
                     try {
                         val messageModel = data.getValue(MessageModel::class.java)
                         messageModel?.let { list.add(it) }
+                        Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
                     } catch (e: Exception) {
                         Log.d("CHAT_TAG", "Error parsing MessageModel", e)
                     }
                 }
-                Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
                 trySend(list).isSuccess // this should emit the list to the flow
             }
 
@@ -656,10 +681,11 @@ class FirebaseDataSource {
             emit(user)
         }
     }
+
     /**
      * API calls
      */
-    suspend fun getWord(): JSONObject?{
+    suspend fun getWord(): JSONObject? {
         val apiKey = "rd8wadogjxvq8mtpbsngll4mv6eokvk29vlx6rnlzkgof0475"
         return withContext(Dispatchers.IO) {
             val url = "https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=$apiKey"
@@ -670,10 +696,12 @@ class FirebaseDataSource {
             responseBody?.let { JSONObject(it) }
         }
     }
+
     suspend fun getHoroscope(sign: String): JSONObject? {
         return try {
             withContext(Dispatchers.IO) {
-                val url = "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=$sign&day=TODAY"
+                val url =
+                    "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=$sign&day=TODAY"
 
                 // Increase timeout values to handle potential timeouts
                 val client = OkHttpClient.Builder()
@@ -692,6 +720,7 @@ class FirebaseDataSource {
             null // Return null in case of failure
         }
     }
+
     fun getPoem(): Flow<JSONArray> {
         return flow {
             val url = "https://poetrydb.org/random"
@@ -705,6 +734,7 @@ class FirebaseDataSource {
             }
         }.flowOn(Dispatchers.IO) // Perform API call on IO dispatcher
     }
+
     /**
      * SomeScreen Calls
      */
@@ -726,6 +756,7 @@ class FirebaseDataSource {
 
         likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
     }
+
     fun getPasses(userId: String, onComplete: (Int) -> Unit) {
         val db = FirebaseDatabase.getInstance()
         val likePassNodeRef = db.getReference("likeorpass").child(userId).child("passed")
@@ -744,6 +775,7 @@ class FirebaseDataSource {
 
         likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
     }
+
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         val db = FirebaseDatabase.getInstance()
         val likeNodeRef = db.getReference("likeorpass").child(userId).child("likedby")
@@ -760,7 +792,7 @@ class FirebaseDataSource {
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
-                calculateTotal(0,0, onComplete)
+                calculateTotal(0, 0, onComplete)
             }
         }
 
@@ -772,14 +804,15 @@ class FirebaseDataSource {
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
-                calculateTotal(0,0, onComplete)
+                calculateTotal(0, 0, onComplete)
             }
         }
 
         likeNodeRef.addListenerForSingleValueEvent(likedListener)
         passNodeRef.addListenerForSingleValueEvent(passedListener)
     }
-    fun calculateTotal(likedCount:Int, passedCount:Int, onComplete: (Int) -> Unit) {
+
+    fun calculateTotal(likedCount: Int, passedCount: Int, onComplete: (Int) -> Unit) {
         val total = likedCount + passedCount
         onComplete(total)
     }

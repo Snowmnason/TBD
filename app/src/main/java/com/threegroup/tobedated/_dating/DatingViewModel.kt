@@ -1,12 +1,18 @@
 package com.threegroup.tobedated._dating
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.Repository
+import com.threegroup.tobedated.shareclasses.getChatId
 import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.NewMatch
@@ -14,9 +20,11 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -71,10 +79,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             repository.likeOrPass(currentUserId, currentProfile.number, false)
         }
     }
-    fun suggestCurrentProfile(currentPotential:String, suggestion:String){
+
+    fun suggestCurrentProfile(currentPotential: String, suggestion: String) {
         repository.suggest(currentPotential, suggestion)
     }
-    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
+
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit) {
         repository.getSuggestion(currentUser, onComplete)
     }
 
@@ -85,21 +95,45 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
             repository.getMatchesFlow(userId).collect { matches ->
-                val convertedMatches = matches.map {
-                        match ->
-                    repository.getMatch(match, userId)
+                val convertedMatches = matches.map { match ->
+                    val updatedMatch = repository.getMatch(match, userId)
+                    observeLastMessage(match, updatedMatch)
                 }
-                _matchList.value = convertedMatches
+                _matchList.value = convertedMatches.filterIsInstance<Match>() // Filter out Unit
+                println("Match list: ${matchList.value}")
             }
         }
     }
-    fun getMatchSize():Int{
-        return if(matchList.value.isEmpty()){
+
+
+    private fun observeLastMessage(match: RealtimeDBMatch, updatedMatch: Match): Match {
+        val chatId = getChatId( match.usersMatched[0],match.usersMatched[1])
+        val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val lastChild = dataSnapshot.children.lastOrNull()
+                val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
+                updatedMatch.lastMessage = lastMessage
+                // Update match list
+                _matchList.value = _matchList.value.map { if (it.id == updatedMatch.id) updatedMatch else it }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        }
+        chatsRef.addValueEventListener(listener)
+        return updatedMatch // Return the updated match
+    }
+
+
+    fun getMatchSize(): Int {
+        return if (matchList.value.isEmpty()) {
             0
-        }else{
+        } else {
             matchList.value.size
         }
     }
+
     /**
      * This is for blocking
      */
@@ -122,6 +156,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      */
     private var _selectedUser = MutableStateFlow<MatchedUserModel?>(null)
     var selectedUser: StateFlow<MatchedUserModel?> = _selectedUser
+
     //Stuff for setting and getting matches
     fun setTalkedUser(number: String) {
         viewModelScope.launch(IO) {
@@ -130,17 +165,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
+
     fun getTalkedUser(): MatchedUserModel {
         return selectedUser.value!!
     }
-    fun deleteMatch(matchedUser:String, userId: String){
+
+    fun deleteMatch(matchedUser: String, userId: String) {
         viewModelScope.launch(IO) {
             repository.deleteMatch(matchedUser, userId)
         }
     }
-        /**
-         *  generates a unique chatId made from the UIDs of the sender and receiver
-         */
+    /**
+     *  generates a unique chatId made from the UIDs of the sender and receiver
+     */
 
 
     /**
@@ -162,7 +199,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun setLoggedInUser() {
         signedInUser = MyApp.signedInUser
     }
-    fun deleteProfile(number:String, datingActivity: DatingActivity) {
+
+    fun deleteProfile(number: String, datingActivity: DatingActivity) {
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {
@@ -174,16 +212,19 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             )
         }
     }
+
     /**
      * This is for someScreen
      */
-    fun getLikes(userId: String, onComplete: (Int) -> Unit){
+    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikes(userId, onComplete)
     }
-    fun getPasses(userId: String, onComplete: (Int) -> Unit){
+
+    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
         repository.getPasses(userId, onComplete)
     }
-    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
+
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikedAndPassedby(userId, onComplete)
     }
 }

@@ -44,7 +44,6 @@ import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
 import com.threegroup.tobedated.composeables.composables.getTopColors
-import com.threegroup.tobedated.shareclasses.NotificationCountCallback
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -53,7 +52,6 @@ data class BotNavItem(
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val hasNew: Boolean = false,
     val badgeCount: Int? = null,
 )
 
@@ -77,16 +75,15 @@ fun TopAndBotBarsDating(
     var notificationCount by remember { mutableStateOf(0) }
     // Initialize the notification count when the composable is first composed
     LaunchedEffect(Unit) {
-vmDating.updateNotificationCounts { count ->
-            notificationCount = count
-        }
+        vmDating.updateNotificationCounts { count ->
+                notificationCount = count
+            }
     }
     val items = listOf(
         BotNavItem(
             title = "SomeScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.some_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.some_outlined),
-            badgeCount = 0
         ),
         BotNavItem(
             title = "ChatsScreen",
@@ -98,21 +95,16 @@ vmDating.updateNotificationCounts { count ->
             title = "SearchingScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.logo_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.logo_outlined),
-            hasNew = notifiSearching,
-            badgeCount = 0
         ),
         BotNavItem(
             title = "GroupsScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
-            hasNew = notifiGroup,
-            badgeCount = 0
         ),
         BotNavItem(
             title = "ProfileScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.profile_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.profile_outlined),
-            badgeCount = 0
         ),
     )
     //var selectedItemIndex by rememberSaveable { mutableIntStateOf(2) }
@@ -162,12 +154,10 @@ vmDating.updateNotificationCounts { count ->
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if (item.badgeCount != 0) {
+                                            if (item.badgeCount != 0 && item.badgeCount != null) {
                                                 Badge {
-                                                    Text(text = item.badgeCount.toString())
+                                                    Text(text = notificationCount.toString())
                                                 }
-                                            } else if (item.hasNew) {
-                                                Badge()
                                             }
                                         }) {
                                         Icon(

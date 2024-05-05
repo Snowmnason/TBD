@@ -20,6 +20,9 @@ class Repository(
     suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         return firebaseDataSource.likeOrPass(userId, likedUserId, isLike)
     }
+    suspend fun markMatchAsViewed(matchId: String, userId: String) {
+        firebaseDataSource.markMatchAsViewed(matchId, userId)
+    }
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> {
         return firebaseDataSource.getMatchesFlow(userId)
     }
@@ -46,6 +49,9 @@ class Repository(
 
     fun storeChatData(chatId: String, message: String) {
         return firebaseDataSource.storeChatData(chatId, message)
+    }
+    suspend fun openChat(chatId: String) {
+        firebaseDataSource.openChat(chatId)
     }
 
     fun displayChats() {
@@ -97,5 +103,11 @@ class Repository(
     }
     fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
         firebaseDataSource.getSuggestions(currentUser, onComplete)
+    }
+    fun updateNotificationCount(callback: NotificationCountCallback) {
+        firebaseDataSource.updateNotificationCount { totalNotificationCount ->
+            // Call the callback function with the total notification count
+            callback(totalNotificationCount)
+        }
     }
 }

@@ -213,3 +213,11 @@ fun getChatId(senderId: String, receiverId: String): String {
         senderId + receiverId
     } else receiverId + senderId
 }
+
+fun getMatchId(userId1: String, userId2: String): String {
+    return if (userId1 > userId2) {
+        userId1 + userId2
+    } else {
+        userId2 + userId1
+    }
+}

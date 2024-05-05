@@ -3,7 +3,6 @@ package com.threegroup.tobedated.shareclasses
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-
 class FirebaseDataSource {
 
     fun getCurrentUserId(): String {
@@ -164,8 +162,8 @@ class FirebaseDataSource {
      */
     private fun passBasicPreferences(user: UserModel, potentialUser: MatchedUserModel): Boolean {
         //TODO this is a temporary fix for the location error issue
-        if (user.location == "error/") {
-            user.location = "37.4220936/-122.083922"
+        if (user.location == "error/" || user.location == "null") {
+            user.location = "40.709278/-73.348686"
         }
         val userPref = user.userPref
         val userAge = calcAge(potentialUser.birthday)
@@ -180,9 +178,9 @@ class FirebaseDataSource {
         return isAgeInRange && isLocationWithinDistance && isSexMatch
     }
 
-        /**
-         * This checks the "premium" features
-         */
+    /**
+     * This checks the "premium" features
+     */
     private fun passPremiumPref(user: UserModel, potentialUser: MatchedUserModel): Boolean {
         val userPref: UserSearchPreferenceModel = user.userPref
         val preferences = listOf(
@@ -227,13 +225,13 @@ class FirebaseDataSource {
         return likedSnapshot.exists()
     }
 
-    private fun getMatchId(userId1: String, userId2: String): String {
-        return if (userId1 > userId2) {
-            userId1 + userId2
-        } else {
-            userId2 + userId1
-        }
-    }
+//    fun getMatchId(userId1: String, userId2: String): String {
+//        return if (userId1 > userId2) {
+//            userId1 + userId2
+//        } else {
+//            userId2 + userId1
+//        }
+//    }
 
 
     // TODO (new function that creates a new path in database called "likeorpass" and stores like, pass, likedby, and passed by information)
@@ -273,6 +271,10 @@ class FirebaseDataSource {
             matchRef.child(likedUserId).setValue(setMatch(likedUserId))
             matchRef.child(userId).setValue(setMatch(userId))
 
+            // Set isNewMatch status for both users
+            matchRef.child(likedUserId).child("isNewMatch").setValue(true)
+            matchRef.child(userId).child("isNewMatch").setValue(true)
+
             // Retrieve the match data and return
             val matchSnapshot = matchRef.get().await()
             return matchSnapshot.getValue(RealtimeDBMatch::class.java)
@@ -289,7 +291,7 @@ class FirebaseDataSource {
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
 
-        val newMatch =  Match(
+        val newMatch = Match(
             id = userId,
             userId = userId,
             userName = userName,
@@ -301,6 +303,10 @@ class FirebaseDataSource {
         return newMatch
     }
 
+    suspend fun markMatchAsViewed(matchId: String, userId: String) {
+        val matchRef = FirebaseDatabase.getInstance().getReference("matches/$matchId")
+        matchRef.child(userId).child("isNewMatch").setValue(false)
+    }
 
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> = callbackFlow {
         val ref = FirebaseDatabase.getInstance().getReference("matches")
@@ -429,8 +435,6 @@ class FirebaseDataSource {
      * Function to get a single instance of a match
      */
     suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
-        //println("Inside getMatch function")
-        //println("Match's ID: ${getMatchId(match.usersMatched[0], match.usersMatched[1])}")
         val userId = if (match.usersMatched[0] == currUser) match.usersMatched[1] else {
             match.usersMatched[0]
         }
@@ -439,7 +443,6 @@ class FirebaseDataSource {
         }
         val userName = userSnapshot.child("name").getValue(String::class.java) ?: ""
         val userImage1 = userSnapshot.child("image1").getValue(String::class.java) ?: ""
-        //println("Fetching match")
         val retrievedMatch = match.timestamp.toString().let {
             Match(
                 id = match.id,
@@ -447,7 +450,12 @@ class FirebaseDataSource {
                 userName = userName,
                 userPicture = userImage1,
                 //formattedDate = it, // Consider formatting the timestamp properly
-                lastMessage = getLastMessage(getMatchId(match.usersMatched[0], match.usersMatched[1]))
+                lastMessage = getLastMessage(
+                    getMatchId(
+                        match.usersMatched[0],
+                        match.usersMatched[1]
+                    )
+                )
             )
         }
         //println(retrievedMatch)
@@ -494,8 +502,9 @@ class FirebaseDataSource {
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
                 continuation.resume(lastMessage)
-                //println(lastMessage)
+                println(lastMessage)
             }.addOnFailureListener { exception ->
+                println("oops failure")
                 continuation.resumeWithException(exception)
             }
         }
@@ -540,26 +549,144 @@ class FirebaseDataSource {
         val currentTime: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
         val currentDate: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
-        val map = hashMapOf<String, String>()
+        val map = hashMapOf<String, Any>()
         map["message"] = message
         map["senderId"] = senderId
         map["currentTime"] = currentTime
         map["currentDate"] = currentDate
+        map["read"] = false // If read by receiving user change to true
 
         val reference = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
 
-        reference.child(reference.push().key!!).setValue(map)
-        /*
-        .addOnCompleteListener {
-        if (it.isSuccessful) {
-            binding.yourMessage.text = null
-            Toast.makeText(this, "Message sent", Toast.LENGTH_SHORT).show()
+        reference.child(reference.push().key!!).setValue(map).addOnSuccessListener {
+            incrementNotificationCount(chatId, senderId)
+        }
+            .addOnFailureListener { exception ->
+                Log.e("Chat", "Error sending message: ${exception.message}", exception)
+            }
+    }
+
+    private fun incrementNotificationCount(chatId: String?, senderId: String?) {
+        // Determine the receiverId and senderId based on the chatId
+        val senderIdFromChatId: String
+        val receiverIdFromChatId: String
+        if (senderId == chatId?.substring(0, senderId!!.length)) {
+            senderIdFromChatId = chatId!!.substring(0, senderId!!.length)
+            receiverIdFromChatId = chatId.substring(senderId.length)
         } else {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
+            senderIdFromChatId = chatId!!.substring(chatId.length - senderId!!.length)
+            receiverIdFromChatId = chatId.substring(0, chatId.length - senderId.length)
+        }
+
+        // Determine the receiverId
+        val receiverId =
+            if (senderId == senderIdFromChatId) receiverIdFromChatId else senderIdFromChatId
+
+        // Check if the senderId matches the receiverId
+        if (senderId != receiverId) {
+            // Increment the count in the database for the receiver
+            val notificationRef =
+                FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+                    .child("notifications").child(receiverId ?: "")
+
+            notificationRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val currentCount = snapshot.getValue(Int::class.java) ?: 0
+                    // Increment the count
+                    notificationRef.setValue(currentCount + 1)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                    Log.e(
+                        "Chat",
+                        "Error incrementing notification count: ${error.message}",
+                        error.toException()
+                    )
+                }
+            })
         }
     }
 
-         */
+
+    private suspend fun decrementNotificationCount(chatId: String?) {
+        // Decrement the count in the database
+        val userId = getCurrentUserId()
+        val notificationRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+            .child("notifications").child(userId)
+
+        try {
+            val currentCountSnapshot = notificationRef.get().await()
+            val currentCount = currentCountSnapshot.getValue(Int::class.java) ?: 0
+            if (currentCount > 0) {
+                // Get the current unread messages count using a Flow
+                val unreadMessagesCount = getUnreadMessagesCount(chatId, userId)
+                unreadMessagesCount.collect { count ->
+                    // Decrement the count by the number of unread messages
+                    notificationRef.setValue(currentCount - count)
+                }
+            }
+        } catch (e: Exception) {
+            // Handle error
+            Log.e("Chat", "Error decrementing notification count: ${e.message}", e)
+        }
+    }
+
+    private fun getUnreadMessagesCount(chatId: String?, userId: String): Flow<Int> = flow {
+        val chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+        var unreadMessagesCount = 0
+
+        try {
+            val snapshot = chatRef.get().await()
+            snapshot.children.forEach { messageSnapshot ->
+                val senderId = messageSnapshot.child("senderId").getValue(String::class.java)
+                val read = messageSnapshot.child("read").getValue(Boolean::class.java) ?: false
+                if (senderId != null && senderId != userId && !read) {
+                    unreadMessagesCount++
+                }
+            }
+            println("Unread message count success: $unreadMessagesCount")
+            emit(unreadMessagesCount)
+        } catch (e: Exception) {
+            println("Unread message count error: $e")
+            emit(0) // Return 0 in case of error
+        }
+    }
+
+    suspend fun openChat(chatId: String) {
+        // Mark the chat as read or seen
+        markChatAsRead(chatId)
+
+        // Decrement the notification count
+        decrementNotificationCount(chatId)
+    }
+
+    private fun markChatAsRead(chatId: String) {
+        val currentUser = getCurrentUserId()
+        val chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+
+        // Marking the chat as read for the current user
+        chatRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach { messageSnapshot ->
+                    if (messageSnapshot.key != "notifications") {
+                        val senderId =
+                            messageSnapshot.child("senderId").getValue(String::class.java)
+                        val read =
+                            messageSnapshot.child("read").getValue(Boolean::class.java) ?: false
+
+                        // Mark the message as read for the current user if it was sent by another user and is unread
+                        if (senderId != currentUser && !read) {
+                            messageSnapshot.child("read").ref.setValue(true)
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                Log.e("Chat", "Error marking chat as read: ${error.message}", error.toException())
+            }
+        })
     }
 
     /**
@@ -816,4 +943,64 @@ class FirebaseDataSource {
         val total = likedCount + passedCount
         onComplete(total)
     }
+
+    /**
+     * Functions for notifications
+     */
+    fun updateNotificationCount(callback: NotificationCountCallback) {
+        val userId = getCurrentUserId()
+        val database = FirebaseDatabase.getInstance()
+        val userMatchesRef = database.getReference("matches")
+        val userChatsRef = database.getReference("chats")
+
+        // Listener for counting number of new matches
+        val matchesListener = object : ValueEventListener {
+            override fun onDataChange(matchesSnapshot: DataSnapshot) {
+                var newMatchesCount = 0
+                matchesSnapshot.children.forEach { matchSnapshot ->
+                    val matchId = matchSnapshot.key
+                    if (matchId != null && matchId.contains(userId)) {
+                        val isNewMatch =
+                            matchSnapshot.child("isNewMatch").getValue(Boolean::class.java)
+                        if (isNewMatch == true) {
+                            newMatchesCount++
+                        }
+                    }
+                }
+                callback(newMatchesCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error in getting new matches count: ${error.message}")
+            }
+        }
+
+        // Listener for counting number of unread chats
+        val chatsListener = object : ValueEventListener {
+            override fun onDataChange(chatsSnapshot: DataSnapshot) {
+                var newChatsCount = 0
+                chatsSnapshot.children.forEach { chatSnapshot ->
+                    val chatId = chatSnapshot.key
+                    if (chatId != null && chatId.contains(userId)) {
+                        chatSnapshot.child("notifications").children.forEach { notificationSnapshot ->
+                            val notificationsCountLong =
+                                notificationSnapshot.getValue(Long::class.java)
+                            val notificationsCount = notificationsCountLong?.toInt() ?: 0
+                            newChatsCount += notificationsCount
+
+                        }
+                    }
+                }
+                callback(newChatsCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error in getting unread chats count: ${error.message}")
+            }
+        }
+        // Add listeners
+        userMatchesRef.addValueEventListener(matchesListener)
+        userChatsRef.addValueEventListener(chatsListener)
+    }
 }
+typealias NotificationCountCallback = (totalNotificationCount: Int) -> Unit

@@ -33,7 +33,6 @@ fun ProfileScreen(
         dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        isPhoto = false,
         titleText = "Profile",
         nav = navController,
         selectedItemIndex = 4,

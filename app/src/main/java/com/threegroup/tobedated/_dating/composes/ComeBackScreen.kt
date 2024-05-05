@@ -27,7 +27,6 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity, vmA
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "To Be Dated",
-        isPhoto = true,
         nav = navController,
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },

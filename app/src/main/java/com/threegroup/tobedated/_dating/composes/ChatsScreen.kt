@@ -2,14 +2,9 @@ package com.threegroup.tobedated._dating.composes
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated._dating.TopAndBotBarsDating
@@ -40,7 +35,6 @@ fun ChatsScreen(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "Messages", //Change based on name
-        isPhoto = false,
         nav = navController,
         selectedItemIndex = 1,
         settingsButton = { },

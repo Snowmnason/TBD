@@ -16,7 +16,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -98,7 +97,6 @@ fun SearchingScreen(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "",
-        isPhoto = true,
         nav = navController,
         selectedItemIndex = 2,
         settingsButton = { navController.navigate("SearchPreferenceScreen") },

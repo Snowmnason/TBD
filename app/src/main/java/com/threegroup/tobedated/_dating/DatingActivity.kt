@@ -93,7 +93,6 @@ fun GroupsScreen(navController: NavHostController, dating: DatingActivity, vmApi
         dating = dating,
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
-        isPhoto = false,
         titleText = "Groups",
         nav = navController,
         selectedItemIndex = 3,

@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +28,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -44,9 +45,9 @@ import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
 import com.threegroup.tobedated.composeables.composables.getTopColors
-import com.threegroup.tobedated.shareclasses.NotificationCountCallback
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 data class BotNavItem(
@@ -64,8 +65,7 @@ fun TopAndBotBarsDating(
     notifiGroup: Boolean = false,
     notifiSearching: Boolean = false,
     currentScreen: @Composable () -> Unit = {},
-    titleText: String = "To Be Dated",
-    isPhoto: Boolean,
+    titleText: String = "",
     nav: NavHostController,
     selectedItemIndex: Int,
     settingsButton: () -> Unit,
@@ -74,47 +74,14 @@ fun TopAndBotBarsDating(
     vmApi: ApiViewModel,
 ) {
     val vmDating = viewModel { DatingViewModel(MyApp.x) } // Could pass as a parameter
-    var notificationCount by remember { mutableStateOf(0) }
+    var notificationCount by remember { mutableIntStateOf(0) }
     // Initialize the notification count when the composable is first composed
     LaunchedEffect(Unit) {
-vmDating.updateNotificationCounts { count ->
+        vmDating.updateNotificationCounts { count ->
             notificationCount = count
         }
     }
-    val items = listOf(
-        BotNavItem(
-            title = "SomeScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.some_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.some_outlined),
-            badgeCount = 0
-        ),
-        BotNavItem(
-            title = "ChatsScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.chats_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.chats_outlined),
-            badgeCount = notificationCount
-        ),
-        BotNavItem(
-            title = "SearchingScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.logo_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.logo_outlined),
-            hasNew = notifiSearching,
-            badgeCount = 0
-        ),
-        BotNavItem(
-            title = "GroupsScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
-            hasNew = notifiGroup,
-            badgeCount = 0
-        ),
-        BotNavItem(
-            title = "ProfileScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.profile_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.profile_outlined),
-            badgeCount = 0
-        ),
-    )
+
     //var selectedItemIndex by rememberSaveable { mutableIntStateOf(2) }
     Surface(
         modifier = Modifier
@@ -146,77 +113,10 @@ vmDating.updateNotificationCounts { count ->
             Scaffold(
                 containerColor = if (isSystemInDarkTheme()) Color(0xFF181618) else Color(0xFFCDC2D0),
                 bottomBar = {
-                    NavigationBar(
-                        containerColor = AppTheme.colorScheme.onTertiary,
-                        modifier = Modifier.height(46.dp)
-                    ) {
-                        items.forEachIndexed { index, item ->
-                            NavigationBarItem(
-                                colors = getBottomColors(),
-                                selected = selectedItemIndex == index,
-                                onClick = { //selectedItemIndex = index
-                                    nav.navigate(item.title)
-                                },//HANDLE NAVIGATION
-                                label = { },
-                                alwaysShowLabel = false,
-                                icon = {
-                                    BadgedBox(
-                                        badge = {
-                                            if (item.badgeCount != 0) {
-                                                Badge {
-                                                    Text(text = item.badgeCount.toString())
-                                                }
-                                            } else if (item.hasNew) {
-                                                Badge()
-                                            }
-                                        }) {
-                                        Icon(
-                                            imageVector = if (index == selectedItemIndex) {
-                                                item.selectedIcon
-                                            } else {
-                                                item.unselectedIcon
-                                            },
-                                            contentDescription = item.title
-                                        )
-                                    }
-                                })
-                        }
-                    }
+                    BottomBar(notificationCount, selectedItemIndex, nav)
                 },
                 topBar = {
-                    CenterAlignedTopAppBar(
-                        modifier = Modifier.height(46.dp),
-                        colors = getTopColors(),
-                        title = {
-                            TopBarText(
-                                title = titleText,
-                                isPhoto = isPhoto,
-                                activity = "dating"
-                            )
-                        },//TitleTextGen(title= titleText)},
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
-                            }) {//Show my default
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(id = R.drawable.hamburger),
-                                    contentDescription = "Change Looking tab"
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = settingsButton) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(id = R.drawable.settings),
-                                    contentDescription = "Settings"
-                                )
-                            }
-                        }
-                    )
+                    TopBar(titleText = titleText, scope = scope, drawerState = drawerState, settingsButton)
                 },
             ) { paddingValues ->
                 LaunchedEffect(Unit) { state.animateScrollTo(0) }
@@ -232,4 +132,114 @@ vmDating.updateNotificationCounts { count ->
             }
         }
     }
+}
+@Composable
+fun BottomBar(notificationCount:Int, selectedItemIndex: Int, nav: NavHostController){
+    val items = listOf(
+        BotNavItem(
+            title = "SomeScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.some_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.some_outlined),
+            badgeCount = 0
+        ),
+        BotNavItem(
+            title = "ChatsScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.chats_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.chats_outlined),
+            badgeCount = notificationCount
+        ),
+        BotNavItem(
+            title = "SearchingScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.logo_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.logo_outlined),
+            hasNew = false,
+            badgeCount = 0
+        ),
+        BotNavItem(
+            title = "GroupsScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
+            hasNew = notifiGroup,
+            badgeCount = 0
+        ),
+        BotNavItem(
+            title = "ProfileScreen",
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.profile_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.profile_outlined),
+            badgeCount = 0
+        ),
+    )
+    NavigationBar(
+        containerColor = AppTheme.colorScheme.onTertiary,
+        modifier = Modifier.height(46.dp)
+    ) {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                colors = getBottomColors(),
+                selected = selectedItemIndex == index,
+                onClick = { //selectedItemIndex = index
+                    nav.navigate(item.title)
+                },//HANDLE NAVIGATION
+                label = { },
+                alwaysShowLabel = false,
+                icon = {
+                    BadgedBox(
+                        badge = {
+                            if (item.badgeCount != 0) {
+                                Badge {
+                                    Text(text = item.badgeCount.toString())
+                                }
+                            } else if (item.hasNew) {
+                                Badge()
+                            }
+                        }) {
+                        Icon(
+                            imageVector = if (index == selectedItemIndex) {
+                                item.selectedIcon
+                            } else {
+                                item.unselectedIcon
+                            },
+                            contentDescription = item.title
+                        )
+                    }
+                })
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(titleText:String, scope: CoroutineScope, drawerState: DrawerState, settingsButton: () -> Unit){
+    CenterAlignedTopAppBar(
+        modifier = Modifier.height(46.dp),
+        colors = getTopColors(),
+        title = {
+            TopBarText(
+                title = titleText,
+                isPhoto = titleText == "",
+                activity = "dating"
+            )
+        },//TitleTextGen(title= titleText)},
+        navigationIcon = {
+            IconButton(onClick = {
+                scope.launch {
+                    drawerState.apply {
+                        if (isClosed) open() else close()
+                    }
+                }
+            }) {//Show my default
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.hamburger),
+                    contentDescription = "Change Looking tab"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = settingsButton) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.settings),
+                    contentDescription = "Settings"
+                )
+            }
+        }
+    )
 }

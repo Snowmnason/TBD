@@ -76,7 +76,6 @@ fun SomeScreen(
         notifiChat = notifiChat,
         notifiGroup = notifiGroup,
         titleText = "Stats",
-        isPhoto = false,
         nav = navController,
         selectedItemIndex = 0,
         settingsButton = { },

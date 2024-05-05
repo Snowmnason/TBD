@@ -4,9 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated._dating.TopAndBotBarsDating
-import com.threegroup.tobedated._dating.notifiChat
-import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.models.AgeRange
@@ -22,16 +19,8 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity, vmA
             religion, sexualOri, smoke, weed
         ).any { it[0] != "Doesn't Matter" && it.size > 1 }
     }
-    TopAndBotBarsDating(
-        dating = dating,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        nav = navController,
-        selectedItemIndex = 2,
-        settingsButton = { navController.navigate("SearchPreferenceScreen") },
-        vmApi = vmApi,
-        currentScreen = {
+
+
             if(vmDating.getMatchSize() >= 3){
                 Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!", vmApi = vmApi)
             }else if(hasPreferencesOtherThanDoesntMatter || userPref.ageRange != AgeRange(18, 80) || userPref.maxDistance != 100){
@@ -43,6 +32,5 @@ fun ComeBackScreen(navController: NavHostController, dating: DatingActivity, vmA
             else{
                 Comeback(text = "trouble getting possible connections", todo = "Check your internet connection, move screen to update", vmApi = vmApi)
             }
-        }
-    )
+
 }

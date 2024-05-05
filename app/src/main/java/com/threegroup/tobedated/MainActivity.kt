@@ -9,26 +9,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated._dating.Dating
 import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composeables.composables.SplashScreen
-import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,6 +41,7 @@ class MainActivity : ComponentActivity() {
             AppTheme(
                 activity = activityToken
             ) {
+                //AppNav(this)
                 PolkaDotCanvas()
                 when (activityToken) {
                     "dating" -> {
@@ -190,22 +182,52 @@ class MainActivity : ComponentActivity() {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 100
     }
 }
-@Composable
-fun AppNav(){
-    val navController = rememberNavController()
-
-    val vmApi = viewModel { ApiViewModel(MyApp.x) }
-
-    NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None }) {
-        composable(route = Dating.SearchingScreen.name) {
-
-
-        }
-
-    }
-}
+//@Composable
+//fun AppNav(mainActivity: MainActivity) {
+//    val navController = rememberNavController()
+//    val vmApi = viewModel { ApiViewModel(MyApp.x) }
+//
+//    NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
+//        enterTransition = { EnterTransition.None },
+//        exitTransition = { ExitTransition.None },
+//        popEnterTransition = { EnterTransition.None },
+//        popExitTransition = { ExitTransition.None }) {
+//        composable(route = "DatingNav") {
+//            AppTheme(
+//                activity = "dating"
+//            ) {
+//                //DatingNav(mainActivity)
+//            }
+//        }
+//        composable(route = "CasualNav") {
+//            AppTheme(
+//                activity = "dating"
+//            ) {
+//                //DatingNav(mainActivity)
+//            }
+//        }
+//        composable(route = "FriendsNav") {
+//            AppTheme(
+//                activity = "dating"
+//            ) {
+//                //DatingNav(mainActivity)
+//            }
+//        }
+//        composable(route = "SignUp") {
+//            AppTheme(
+//                activity = "dating"
+//            ) {
+//                //DatingNav(mainActivity)
+//            }
+//        }
+//        composable(route = "Login") {
+//            AppTheme(
+//                activity = "dating"
+//            ) {
+//                //DatingNav(mainActivity)
+//            }
+//        }
+//
+//    }
+//}
 

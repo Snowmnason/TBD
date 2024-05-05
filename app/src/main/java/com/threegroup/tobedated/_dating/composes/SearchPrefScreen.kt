@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,14 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.searching.AgeSlider
 import com.threegroup.tobedated.composeables.searching.ChangePreferenceScreen
 import com.threegroup.tobedated.composeables.searching.ChangeSeekingScreen
 import com.threegroup.tobedated.composeables.searching.DistanceSlider
-import com.threegroup.tobedated.composeables.searching.InsideSearchSettings
 import com.threegroup.tobedated.composeables.searching.OtherPreferences
 import com.threegroup.tobedated.composeables.searching.SeekingBox
-import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
@@ -38,57 +39,56 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
     val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Meeting Up",
         "Education", "Religion", "Political Views", "Relationship Type", "Intentions", "Drink", "Smokes", "Weed"
     )
-    InsideSearchSettings(
-        nav = navController,
-        searchSettings = {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(15.dp, 0.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AgeSlider(
-                    preferredMin = currentUser.userPref.ageRange.min,
-                    preferredMax = currentUser.userPref.ageRange.max,
-                    vmDating = vmDating,
-                    currentUser = currentUser
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                DistanceSlider(
-                    preferredMax = currentUser.userPref.maxDistance,
-                    vmDating = vmDating,
-                    currentUser = currentUser
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                SeekingBox(desiredSex = currentUser.seeking, navController)
-                Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(
-                    Modifier.fillMaxWidth(),
-                    color = AppTheme.colorScheme.onBackground,
-                    thickness = 2.dp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                GenericTitleText(text = "Premium Settings")
-                Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(
-                    Modifier.fillMaxWidth(),
-                    color = AppTheme.colorScheme.onBackground,
-                    thickness = 2.dp
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                for (i in pref.indices) {
-                    OtherPreferences(
-                        title = pref[i],
-                        navController = navController,
-                        searchPref = userPref[i],
-                        clickable = true,
-                        index = i
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-                }
-            }
+    val state = rememberScrollState(0)
+    Column(
+        Modifier
+            .verticalScroll(state)
+            .fillMaxSize()
+            .padding(15.dp, 0.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AgeSlider(
+            preferredMin = currentUser.userPref.ageRange.min,
+            preferredMax = currentUser.userPref.ageRange.max,
+            vmDating = vmDating,
+            currentUser = currentUser
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        DistanceSlider(
+            preferredMax = currentUser.userPref.maxDistance,
+            vmDating = vmDating,
+            currentUser = currentUser
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        SeekingBox(desiredSex = currentUser.seeking, navController)
+        Spacer(modifier = Modifier.height(14.dp))
+        HorizontalDivider(
+            Modifier.fillMaxWidth(),
+            color = AppTheme.colorScheme.onBackground,
+            thickness = 2.dp
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        GenericTitleText(text = "Premium Settings")
+        Spacer(modifier = Modifier.height(4.dp))
+        HorizontalDivider(
+            Modifier.fillMaxWidth(),
+            color = AppTheme.colorScheme.onBackground,
+            thickness = 2.dp
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        for (i in pref.indices) {
+            OtherPreferences(
+                title = pref[i],
+                navController = navController,
+                searchPref = userPref[i],
+                clickable = true,
+                index = i
+            )
+            Spacer(modifier = Modifier.height(14.dp))
         }
-    )
+    }
+
+
 }
 
 @Composable

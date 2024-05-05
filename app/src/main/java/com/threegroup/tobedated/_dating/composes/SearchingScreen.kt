@@ -3,8 +3,10 @@ package com.threegroup.tobedated._dating.composes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,12 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated._dating.TopAndBotBarsDating
-import com.threegroup.tobedated._dating.notifiChat
-import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.baseAppTextTheme
@@ -46,14 +43,12 @@ Start of Seeking Screen
 @Composable
 fun SearchingScreen(
     vmDating: DatingViewModel,
-    dating: DatingActivity,
-    navController: NavHostController,
     vmApi: ApiViewModel
 ) {
     val currentUser = vmDating.getUser()
     val currentPotentialPairList by vmDating.potentialUserData.collectAsState()
     var currentProfileIndex by rememberSaveable { mutableIntStateOf(0) }
-    val state = rememberScrollState()
+    val state = rememberScrollState(0)
 
     val currentPotentialList = currentPotentialPairList
 
@@ -73,11 +68,12 @@ fun SearchingScreen(
     LaunchedEffect(Unit) {
         //TODO This checks to see if the list is empty or not, This NEEDs to be available some hows
         if (currPotential.name != "") {
-
+            //do nothing
         } else {
             isNext =
                 false//This is important, if there are no users this shows a blank screen and not crash
         }
+        state.animateScrollTo(0)
     }
 
 
@@ -92,24 +88,18 @@ fun SearchingScreen(
         }
     }
 
-    TopAndBotBarsDating(
-        dating = dating,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "",
-        nav = navController,
-        selectedItemIndex = 2,
-        settingsButton = { navController.navigate("SearchPreferenceScreen") },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            if (isNext && vmDating.getMatchSize() < 3) {
-                currPotential.let { currentPotential ->
-                    var location = "x miles"
-                    if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
-                        location = calcDistance(currentPotential.location, currentUser.location) + " miles"
-                    }
-                    SeekingUserInfo(
+   if (isNext && vmDating.getMatchSize() < 3) {
+            currPotential.let { currentPotential ->
+                var location = "x miles"
+                if (currentPotential.location != "error/" && vmDating.getUser().location != "error/") {
+                    location = calcDistance(currentPotential.location, currentUser.location) + " miles"
+                }
+                Column(
+                    Modifier
+                        .verticalScroll(state)
+                        .fillMaxSize()
+                ) {
+                SeekingUserInfo(
                         user = currentPotential,//usersArray[currentProfileIndex]
                         location = location,
                         bottomButtons = {
@@ -140,17 +130,19 @@ fun SearchingScreen(
                         },
                     )
                 }
-            } else {
-                if(vmDating.getMatchSize() >= 3){
-                    currentUser.hasThree
-                    vmDating.updateUser(currentUser)
-                    Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!", vmApi = vmApi)
-                }else{
-                    Comeback(text = "There are no users that fit your current filters", todo = "Open your filters to allow more possible connections", vmApi = vmApi)
-                }
-
             }
-        })
+        } else {
+            if(vmDating.getMatchSize() >= 3){
+                currentUser.hasThree
+                vmDating.updateUser(currentUser)
+                Comeback(text = "You exceeded your match limit", todo = "Chat with the connections you already have!", vmApi = vmApi)
+            }else{
+                Comeback(text = "There are no users that fit your current filters", todo = "Open your filters to allow more possible connections", vmApi = vmApi)
+            }
+
+        }
+
+
     if (showReport) {
         AlertDialogBox(
             dialogTitle = "Report!",

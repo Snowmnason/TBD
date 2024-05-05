@@ -5,13 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
 import com.threegroup.tobedated._causal.CausalActivity
 import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated._login.LoginActivity
-import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -32,8 +29,10 @@ class DatingActivity : ComponentActivity() {
             AppTheme(
                 activity = "dating"
             ) {
-                DatingNav(this@DatingActivity)
+                TopAndBotBarsDating(this@DatingActivity)
+                //DatingNav(this@DatingActivity)
             }
+
         }
     }
 
@@ -83,33 +82,13 @@ class DatingActivity : ComponentActivity() {
     }
 }
 
-/*
-End of Message Screens
-Start of Groups Screens
- */
-@Composable
-fun GroupsScreen(navController: NavHostController, dating: DatingActivity, vmApi: ApiViewModel) {
-    TopAndBotBarsDating(
-        dating = dating,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "Groups",
-        nav = navController,
-        selectedItemIndex = 3,
-        settingsButton = { },
-        vmApi = vmApi,
-        currentScreen = {
-        }
-    )
-}
-
 enum class Dating {
     SearchingScreen,
     SearchPreferenceScreen,
     ProfileScreen,
     EditProfileScreen,
     ChatsScreen,
-    GroupsScreen,
+    BlindScreen,
     SomeScreen,
     MessagerScreen,
     FeedBackMessagerScreen

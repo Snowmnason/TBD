@@ -1,5 +1,6 @@
 package com.threegroup.tobedated.shareclasses
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.threegroup.tobedated.RealtimeDBMatch
 import com.threegroup.tobedated.shareclasses.models.Match
@@ -19,6 +20,9 @@ class Repository(
     }
     suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
         return firebaseDataSource.likeOrPass(userId, likedUserId, isLike)
+    }
+    suspend fun markMatchAsViewed(matchId: String, userId: String) {
+        firebaseDataSource.markMatchAsViewed(matchId, userId)
     }
     suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> {
         return firebaseDataSource.getMatchesFlow(userId)
@@ -46,6 +50,9 @@ class Repository(
 
     fun storeChatData(chatId: String, message: String) {
         return firebaseDataSource.storeChatData(chatId, message)
+    }
+    suspend fun openChat(chatId: String) {
+        firebaseDataSource.openChat(chatId)
     }
 
     fun displayChats() {
@@ -97,5 +104,40 @@ class Repository(
     }
     fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
         firebaseDataSource.getSuggestions(currentUser, onComplete)
+    }
+    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
+        var totalNotificationCount = 0
+        var countUpdated = 0
+
+        updateNewMatchesCount { newMatchesCount ->
+            totalNotificationCount += newMatchesCount
+            countUpdated++
+            checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
+        }
+
+        updateNewChatsCount { newChatsCount ->
+            totalNotificationCount += newChatsCount
+            countUpdated++
+            checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
+        }
+    }
+    private fun updateNewMatchesCount(callback: NotificationCountCallback) {
+        firebaseDataSource.updateNewMatchesCount(callback)
+    }
+    private fun updateNewChatsCount(callback: NotificationCountCallback) {
+        firebaseDataSource.updateNewChatsCount(callback)
+    }
+
+    // Function to check if all counts have been updated and then call the callback
+    private fun checkCountsAndUpdate(
+        totalNotificationCount: Int,
+        countUpdated: Int,
+        callback: (totalNotificationCount: Int) -> Unit
+    ) {
+        // If both counts have been updated, call the callback
+        if (countUpdated == 2) {
+            callback(totalNotificationCount)
+            Log.d("UPDATE_TAG", "Total notification count = $totalNotificationCount")
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.threegroup.tobedated._dating
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.RealtimeDBMatch
+import com.threegroup.tobedated.shareclasses.NotificationCountCallback
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.getChatId
 import com.threegroup.tobedated.shareclasses.models.Match
@@ -30,6 +32,7 @@ import kotlinx.coroutines.withContext
 
 class DatingViewModel(private var repository: Repository) : ViewModel() {
     private lateinit var signedInUser: StateFlow<UserModel?>
+
     /**
      *
      * This is for matches
@@ -47,6 +50,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
+
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
         viewModelScope.launch(IO) {
             val deferredResult = async {
@@ -88,6 +92,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         repository.getSuggestion(currentUser, onComplete)
     }
 
+    fun markMatchAsViewed(matchId: String, userId: String) {
+        viewModelScope.launch(IO) {
+            repository.markMatchAsViewed(matchId, userId)
+        }
+    }
+
     private var _matchList = MutableStateFlow(listOf<Match>())
     val matchList = _matchList.asStateFlow()
     // call this in the composable as val matchlist by viewModel.matchList.observeAsState()
@@ -100,23 +110,25 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                     observeLastMessage(match, updatedMatch)
                 }
                 _matchList.value = convertedMatches.filterIsInstance<Match>() // Filter out Unit
-                println("Match list: ${matchList.value}")
             }
         }
     }
 
 
     private fun observeLastMessage(match: RealtimeDBMatch, updatedMatch: Match): Match {
-        val chatId = getChatId( match.usersMatched[0],match.usersMatched[1])
+        val chatId = getChatId(match.usersMatched[0], match.usersMatched[1])
         val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
         val listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val lastChild = dataSnapshot.children.lastOrNull()
-                val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
+                val messageNodes = dataSnapshot.children.filter { it.key != "notifications" }
+                val lastMessageNode = messageNodes.lastOrNull()
+                val lastMessage = lastMessageNode?.child("message")?.getValue(String::class.java) ?: ""
                 updatedMatch.lastMessage = lastMessage
                 // Update match list
-                _matchList.value = _matchList.value.map { if (it.id == updatedMatch.id) updatedMatch else it }
+                _matchList.value =
+                    _matchList.value.map { if (it.id == updatedMatch.id) updatedMatch else it }
             }
+
             override fun onCancelled(databaseError: DatabaseError) {
                 // Handle error
             }
@@ -175,6 +187,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             repository.deleteMatch(matchedUser, userId)
         }
     }
+
+    fun openChat(chatId: String) {
+        viewModelScope.launch(IO) {
+            repository.openChat(chatId)
+        }
+    }
     /**
      *  generates a unique chatId made from the UIDs of the sender and receiver
      */
@@ -227,7 +245,11 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikedAndPassedby(userId, onComplete)
     }
+
+    /**
+     * Notifications
+     */
+    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
+        repository.updateNotificationCounts(callback)
+    }
 }
-//fun getCurrentUserId(): String {
-//    return repository.getCurrentUserId()
-//}

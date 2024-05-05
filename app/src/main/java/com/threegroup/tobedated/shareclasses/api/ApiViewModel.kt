@@ -27,32 +27,34 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
     private var _def = mutableStateOf("definition")
     private val def:State<String> = _def
     fun fetchWordOfTheDay() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val jsonObject = repository.getWord()
-                // Parse the JSONObject and extract required values
-                _wordOfDay.value = jsonObject?.optString("word", "Word") ?: "Word"
-                val definitionsArray = jsonObject?.getJSONArray("definitions")
-                if (definitionsArray != null && definitionsArray.length() > 0) {
-                    _partOfSpeech.value = definitionsArray.getJSONObject(0).optString("partOfSpeech", "part of speech")
-                    _source.value = definitionsArray.getJSONObject(0).optString("source", "source")
-                    _def.value = definitionsArray.getJSONObject(0).optString("text", "definition")
-                } else {
+        if(wordOfDay.value == "Word"){
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val jsonObject = repository.getWord()
+                    // Parse the JSONObject and extract required values
+                    _wordOfDay.value = jsonObject?.optString("word", "Word") ?: "Word"
+                    val definitionsArray = jsonObject?.getJSONArray("definitions")
+                    if (definitionsArray != null && definitionsArray.length() > 0) {
+                        _partOfSpeech.value = definitionsArray.getJSONObject(0).optString("partOfSpeech", "part of speech")
+                        _source.value = definitionsArray.getJSONObject(0).optString("source", "source")
+                        _def.value = definitionsArray.getJSONObject(0).optString("text", "definition")
+                    } else {
+                        _partOfSpeech.value = "part of speech"
+                        _source.value = "source"
+                        _def.value = "definition"
+                    }
+                } catch (e: JSONException) {
+                    // Handle JSONException
+                    Log.e("fetchWordOfTheDay", "JSONException: ${e.message}")
+                    // Set default values or handle the error accordingly
+                    _wordOfDay.value = "Word"
                     _partOfSpeech.value = "part of speech"
                     _source.value = "source"
                     _def.value = "definition"
+                } catch (e: Exception) {
+                    // Handle other exceptions
+                    Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
                 }
-            } catch (e: JSONException) {
-                // Handle JSONException
-                Log.e("fetchWordOfTheDay", "JSONException: ${e.message}")
-                // Set default values or handle the error accordingly
-                _wordOfDay.value = "Word"
-                _partOfSpeech.value = "part of speech"
-                _source.value = "source"
-                _def.value = "definition"
-            } catch (e: Exception) {
-                // Handle other exceptions
-                Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
             }
         }
     }
@@ -76,21 +78,23 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
 
 
     fun fetchHoroscope(sign: String) {
-        star = sign
-        try {
-            viewModelScope.launch(Dispatchers.IO) {
-                val starSign = if (sign == "Ask me") { starOptions.random() } else { sign.lowercase() }
-                val jsonObject = repository.getHoroscope(starSign)
-                try {
-                    val horoscopeObject = jsonObject?.optJSONObject("data")
-                    val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
-                    _description.value = horoscopeData ?: "Description"
-                } catch (e: JSONException) {
-                    Log.e("fetchHoroscope", "JSONException: ${e.message}")
+        if(description.value == "Description"){
+            star = sign
+            try {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val starSign = if (sign == "Ask me") { starOptions.random() } else { sign.lowercase() }
+                    val jsonObject = repository.getHoroscope(starSign)
+                    try {
+                        val horoscopeObject = jsonObject?.optJSONObject("data")
+                        val horoscopeData = horoscopeObject?.optString("horoscope_data", "")
+                        _description.value = horoscopeData ?: "Description"
+                    } catch (e: JSONException) {
+                        Log.e("fetchHoroscope", "JSONException: ${e.message}")
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("fetchHoroscope", "Exception: ${e.message}")
             }
-        } catch (e: Exception) {
-            Log.e("fetchHoroscope", "Exception: ${e.message}")
         }
     }
 
@@ -141,38 +145,40 @@ private val moods = listOf("Joyful", "Melancholic", "Anxious", "Relaxed", "Excit
     val poem:State<String> = _poem
 
     fun fetchPoem() {
-        viewModelScope.launch {
-            try {
-                // Collect the flow
-                repository.getPoem().collect { jsonArray ->
-                    // Check if the JSONArray is not null and has at least one element
-                    if (jsonArray.length() > 0) {
-                        // Get the first element of the array
-                        val jsonObject = jsonArray.getJSONObject(0)
-                        // Parse the JSONObject and extract required values
-                        _poemTitle.value = jsonObject.optString("title", "Title")
-                        _poemAuthor.value = jsonObject.optString("author", "Author")
-                        val linesArray = jsonObject.optJSONArray("lines")
-                        // Join the lines array into a single string
-                        _poem.value = buildString {
-                            linesArray?.let { array ->
-                                for (i in 0 until array.length()) {
-                                    append(array.getString(i))
-                                    if (i < array.length() - 1) {
-                                        append("\n") // Add line break except for the last line
+        if(poem.value == "poem"){
+            viewModelScope.launch {
+                try {
+                    // Collect the flow
+                    repository.getPoem().collect { jsonArray ->
+                        // Check if the JSONArray is not null and has at least one element
+                        if (jsonArray.length() > 0) {
+                            // Get the first element of the array
+                            val jsonObject = jsonArray.getJSONObject(0)
+                            // Parse the JSONObject and extract required values
+                            _poemTitle.value = jsonObject.optString("title", "Title")
+                            _poemAuthor.value = jsonObject.optString("author", "Author")
+                            val linesArray = jsonObject.optJSONArray("lines")
+                            // Join the lines array into a single string
+                            _poem.value = buildString {
+                                linesArray?.let { array ->
+                                    for (i in 0 until array.length()) {
+                                        append(array.getString(i))
+                                        if (i < array.length() - 1) {
+                                            append("\n") // Add line break except for the last line
+                                        }
                                     }
                                 }
                             }
+                            //println(_poem)
+                        } else {
+                            _poemTitle.value = "Title"
+                            _poemAuthor.value = "Author"
+                            _poem.value = "Poem"
                         }
-                        //println(_poem)
-                    } else {
-                        _poemTitle.value = "Title"
-                        _poemAuthor.value = "Author"
-                        _poem.value = "Poem"
                     }
+                } catch (e: Exception) {
+                    Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
                 }
-            } catch (e: Exception) {
-                Log.e("fetchWordOfTheDay", "Exception: ${e.message}")
             }
         }
     }

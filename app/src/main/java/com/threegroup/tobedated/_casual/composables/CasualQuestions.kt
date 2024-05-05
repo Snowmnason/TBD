@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal.composables
+package com.threegroup.tobedated._casual.composables
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.Orientation
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.threegroup.tobedated._causal.CausalViewModel
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated.composeables.composables.PlainTextButton
 import com.threegroup.tobedated.shareclasses.models.expectationsANDCommunication
 import com.threegroup.tobedated.shareclasses.models.limitsANDBoundaries
@@ -32,7 +32,7 @@ import com.threegroup.tobedated.shareclasses.models.tabsCasual
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun PromptQuestionsC(nav: NavController, causalVM: CausalViewModel, questionNumber:Int){
+fun PromptQuestionsC(nav: NavController, casualVM: CasualViewModel, questionNumber:Int){
     var tabIndex by remember { mutableIntStateOf(0) }
     val state = ScrollState(0)
     val stateCol = rememberScrollState()
@@ -66,7 +66,7 @@ fun PromptQuestionsC(nav: NavController, causalVM: CausalViewModel, questionNumb
             //.scrollable(state, orientation = Orientation.Vertical)
         ) {
             questionsToUse.forEach { quest ->
-                if(quest == causalVM.getAdditions().promptQ1 || quest == causalVM.getAdditions().promptQ2 || quest == causalVM.getAdditions().promptQ3){
+                if(quest == casualVM.getAdditions().promptQ1 || quest == casualVM.getAdditions().promptQ2 || quest == casualVM.getAdditions().promptQ3){
                     PlainTextButton(
                         question = quest,
                         onClick  = { },
@@ -78,9 +78,9 @@ fun PromptQuestionsC(nav: NavController, causalVM: CausalViewModel, questionNumb
                         question = quest,
                         onClick  = { nav.popBackStack()
                             when(questionNumber){
-                                1-> causalVM.setAdditions("promptQ1", quest)
-                                2-> causalVM.setAdditions("promptQ2", quest)
-                                3-> causalVM.setAdditions("promptQ3", quest)
+                                1-> casualVM.setAdditions("promptQ1", quest)
+                                2-> casualVM.setAdditions("promptQ2", quest)
+                                3-> casualVM.setAdditions("promptQ3", quest)
                             }
                         }
                     )

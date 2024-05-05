@@ -38,7 +38,7 @@
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
-            android:name="._causal.CausalActivity"
+            android:name="._casual.CasualActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:screenOrientation="portrait"

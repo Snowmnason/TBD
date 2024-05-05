@@ -2,14 +2,13 @@ package com.threegroup.tobedated._dating.composes
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.models.AgeRange
 
 @Composable
-fun ComeBackScreen(navController: NavHostController, dating: DatingActivity, vmApi: ApiViewModel, vmDating: DatingViewModel) {
+fun ComeBackScreen(navController: NavHostController, vmApi: ApiViewModel, vmDating: DatingViewModel) {
     val currUser =vmDating.getUser()
     val userPref = currUser.userPref
     val hasPreferencesOtherThanDoesntMatter = userPref.run {

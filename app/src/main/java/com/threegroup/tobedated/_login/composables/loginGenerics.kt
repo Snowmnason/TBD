@@ -63,14 +63,14 @@ fun LoginSplash(
         id = when(activity){
             "dating" -> R.drawable.tbd_dark
             "friends" -> R.drawable.tbf_dark
-            "causal" -> R.drawable.tbc_dark
+            "casual" -> R.drawable.tbc_dark
             else -> R.drawable.tbd_dark
         }
     ) else painterResource(
         id = when(activity){
             "dating" -> R.drawable.tbd_light
             "friends" -> R.drawable.tbf_light
-            "causal" -> R.drawable.tbc_light
+            "casual" -> R.drawable.tbc_light
             else -> R.drawable.tbd_light
         }
     )

@@ -7,11 +7,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.composes.BlindScreen
 import com.threegroup.tobedated._dating.composes.ChangePreference
 import com.threegroup.tobedated._dating.composes.ChangeProfileScreen
@@ -31,21 +34,18 @@ import com.threegroup.tobedated.composeables.profiles.PromptEdit
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 @Composable
-fun DatingNav(dating: DatingActivity,
-              navController:NavHostController,
-              vmApi: ApiViewModel,
-              viewModelDating: DatingViewModel,
-              insideWhat: (String) -> Unit ){
+fun DatingNav(
+    main: MainActivity,
+    navController:NavHostController,
+    vmApi: ApiViewModel,
+    insideWhat: (String) -> Unit ){
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
-
-
+    val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
     viewModelDating.fetchPotentialUserData()
 
-    vmApi.fetchWordOfTheDay()
-    vmApi.fetchHoroscope(viewModelDating.getUser().star)
-    vmApi.fetchPoem()
+
 
     val userList by viewModelDating.potentialUserData.collectAsState()
     val isPotentialUserDataLoaded = userList.isNotEmpty()
@@ -63,7 +63,7 @@ fun DatingNav(dating: DatingActivity,
             if (isPotentialUserDataLoaded) {
                 SearchingScreen(viewModelDating, vmApi)
             }else{
-                ComeBackScreen(navController, dating, vmApi, viewModelDating)
+                ComeBackScreen(navController, vmApi, viewModelDating)
             }
             insideWhat("Main")
         }
@@ -72,7 +72,7 @@ fun DatingNav(dating: DatingActivity,
             insideWhat("Main")
         }
         composable(route = Dating.EditProfileScreen.name) {
-            EditProfileScreen(navController, dating, viewModelDating)
+            EditProfileScreen(navController, main, viewModelDating)
             insideWhat("Settings")
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
@@ -136,7 +136,7 @@ fun DatingNav(dating: DatingActivity,
             insideWhat("")
         }
         composable(route = "ChangePhoto") {
-            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = dating)
+            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = main)
             insideWhat("")
         }
         composable(route = "MatchedUserProfile") {

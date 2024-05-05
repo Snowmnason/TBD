@@ -9,17 +9,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated._dating.DatingActivity
-import com.threegroup.tobedated._friends.FriendsActivity
+import com.threegroup.tobedated._dating.DatingNav
 import com.threegroup.tobedated._login.LoginActivity
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.composeables.composables.SplashScreen
+import com.threegroup.tobedated.shareclasses.api.ApiViewModel
+import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,8 +38,6 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -38,29 +47,10 @@ class MainActivity : ComponentActivity() {
             activityToken = "main"
         }
         setContent {
-            AppTheme(
-                activity = activityToken
-            ) {
-                //AppNav(this)
-                PolkaDotCanvas()
-                when (activityToken) {
-                    "dating" -> {
-                        SplashScreen(activity = activityToken, text1 = "To Be Dated")
-                    }
+            AppNav(this, activityToken)
 
-                    "causal" -> {
-                        SplashScreen(activity = activityToken, text1 = "To Be Casual")
-                    }
-
-                    "friend" -> {
-                        SplashScreen(activity = activityToken, text1 = "To Be Friended")
-                    }
-                }
-            }
         }
 
-        // Request location permission if not granted
-        requestLocationPermission()
     }
     private val requestLocationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -73,7 +63,7 @@ class MainActivity : ComponentActivity() {
             // Handle the case where location permission is not granted
         }
     }
-    private fun requestLocationPermission() {
+    fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -120,7 +110,8 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    private fun checkUserTokenAndNavigate() {
+    private fun checkUserTokenAndNavigate():String {
+        var whereTo:String = "login"
         lifecycleScope.launch {
             val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
             val userToken = sharedPreferences.getString("user_login", null)
@@ -133,42 +124,20 @@ class MainActivity : ComponentActivity() {
                                 MyApp._signedInUser.value = userInfo
                             }
                         }
-
-                    when (activityToken) {
-                        "dating" -> {
-                            navigateToDatingActivity()
-                        }
-                        "causal" -> {
-                            navigateToCausalActivity()
-                        }
-                        "friend" -> {
-                            navigateToFriendsActivity()
-                        }
-                        else -> {
-                            navigateToDatingActivity()
-                        }
+                        whereTo = when (activityToken) {
+                        "dating" -> "dating"
+                        "casual" -> "casual"
+                        "friend" -> "friend"
+                        else -> "dating"
                     }
                 }
                 } else {
+                    whereTo = "login"
                     navigateToLoginActivity(location)
                 }
             }
         }
-    }
-    private fun navigateToDatingActivity() {
-        val intent = Intent(this, DatingActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-    private fun navigateToCausalActivity() {
-        val intent = Intent(this, CausalActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-    private fun navigateToFriendsActivity() {
-        val intent = Intent(this, FriendsActivity::class.java)
-        startActivity(intent)
-        finish()
+        return whereTo
     }
 
     private fun navigateToLoginActivity(location: String) {
@@ -181,53 +150,130 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 100
     }
-}
-//@Composable
-//fun AppNav(mainActivity: MainActivity) {
-//    val navController = rememberNavController()
-//    val vmApi = viewModel { ApiViewModel(MyApp.x) }
-//
-//    NavHost(navController = navController, startDestination = Dating.SearchingScreen.name,
-//        enterTransition = { EnterTransition.None },
-//        exitTransition = { ExitTransition.None },
-//        popEnterTransition = { EnterTransition.None },
-//        popExitTransition = { ExitTransition.None }) {
-//        composable(route = "DatingNav") {
-//            AppTheme(
-//                activity = "dating"
-//            ) {
-//                //DatingNav(mainActivity)
-//            }
-//        }
-//        composable(route = "CasualNav") {
-//            AppTheme(
-//                activity = "dating"
-//            ) {
-//                //DatingNav(mainActivity)
-//            }
-//        }
-//        composable(route = "FriendsNav") {
-//            AppTheme(
-//                activity = "dating"
-//            ) {
-//                //DatingNav(mainActivity)
-//            }
-//        }
-//        composable(route = "SignUp") {
-//            AppTheme(
-//                activity = "dating"
-//            ) {
-//                //DatingNav(mainActivity)
-//            }
-//        }
-//        composable(route = "Login") {
-//            AppTheme(
-//                activity = "dating"
-//            ) {
-//                //DatingNav(mainActivity)
-//            }
-//        }
-//
-//    }
-//}
+    fun uploadPhotos(
+        newImage: String,
+        imageNumber: Int,
+        imageName: String,
+        callback: (String) -> Unit
+    ) {
+        lifecycleScope.launch {
+            val result = storeImageAttempt(newImage, contentResolver, imageNumber, imageName)
+            callback(result)
+        }
+    }
+    fun clearUserToken() {
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("user_login")
+        editor.apply()
 
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+}
+@Composable
+fun AppNav(mainActivity: MainActivity, activityToken:String) {
+    val navMain = rememberNavController()
+    val navController = rememberNavController()
+    val vmApi = viewModel { ApiViewModel(MyApp.x) }
+    vmApi.fetchWordOfTheDay()
+    //vmApi.fetchHoroscope(MyApp.signedInUser.value!!.star)
+    vmApi.fetchPoem()
+    var inMain by remember { mutableStateOf(true) }
+    var insideWhat by remember { mutableStateOf("") }
+    NavHost(navController = navController, startDestination = "SlashScreen",
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None }) {
+        composable(route = "SlashScreen") {
+            AppTheme(activityToken){
+                SlashScreen(activityToken = activityToken)
+            }
+        }
+        composable(route = "TopAndBotBarsDating") {
+            navMain.popBackStack()
+            AppTheme(activity = "DatingNav") {
+                TopAndBotBars(
+                    vmApi = vmApi,
+                    mainNav = navMain,
+                    datingClick = {},
+                    casualClick = {},
+                    friendClick = {},
+                    screenNav = { nav ->
+                        DatingNav(mainActivity, nav, vmApi,
+                            insideWhat ={ inside ->
+                                insideWhat = inside
+                                inMain = inside == "Main"
+                            })
+                    },
+                    inMainPass = inMain,
+                    insideWhatPass = insideWhat
+                )
+            }
+        }
+        composable(route = "CasualNav") {
+//            navMain.popBackStack()
+//            AppTheme(activity = "casual") {
+//                TopAndBotBars(
+//                    vmApi = vmApi,
+//                    mainNav = navMain,
+//                    datingClick = {},
+//                    casualClick = {},
+//                    friendClick = {},
+//                    screenNav = { nav ->
+//                        CasualNav(dating, nav, vmApi,
+//                            insideWhat ={ inside ->
+//                                insideWhat = inside
+//                                inMain = inside == "Main"
+//                            })
+//                    },
+//                    inMainPass = inMain,
+//                    insideWhatPass = insideWhat
+//                )
+//            }
+        }
+        composable(route = "FriendsNav") {
+            navMain.popBackStack()
+            AppTheme(activity = "friend") {
+                //DatingNav(mainActivity)
+            }
+        }
+        composable(route = "SignUp") {
+            navMain.popBackStack()
+            AppTheme(activity = "dating") {
+                //Signup(mainActivity)
+            }
+        }
+        composable(route = "Login") {
+            AppTheme(activity = "dating") {
+                //login(mainActivity)
+            }
+        }
+
+    }
+}
+enum class MainRoots {
+    Login,
+    SignUp,
+    TopAndBotBarsDating,
+    TopAndBotBarsCasual,
+    TopAndBotBarsFriends,
+}
+@Composable
+fun SlashScreen(activityToken:String){
+    PolkaDotCanvas()
+    when (activityToken) {
+        "dating" -> {
+            SplashScreen(activity = activityToken, text1 = "To Be Dated")
+        }
+        "casual" -> {
+            SplashScreen(activity = activityToken, text1 = "To Be Casual")
+        }
+        "friend" -> {
+            SplashScreen(activity = activityToken, text1 = "To Be Friended")
+        }
+    }
+    //mainActivity.requestLocationPermission()
+}

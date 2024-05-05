@@ -152,14 +152,14 @@ fun TopBarText(
             id = when(activity){
                 "dating" -> R.drawable.tbd_dark
                 "friends" -> R.drawable.tbf_dark
-                "causal" -> R.drawable.tbc_dark
+                "casual" -> R.drawable.tbc_dark
                 else -> R.drawable.tbd_dark
             }
         ) else painterResource(
             id = when(activity){
                 "dating" -> R.drawable.tbd_light
                 "friends" -> R.drawable.tbf_light
-                "causal" -> R.drawable.tbc_light
+                "casual" -> R.drawable.tbc_light
                 else -> R.drawable.tbd_light
             }
         )
@@ -652,7 +652,7 @@ fun Comeback(
 ){
     val state = rememberScrollState(0)
     Column(
-        Modifier
+        modifier = Modifier
             .verticalScroll(state)
             .fillMaxSize()
             .padding(15.dp, 0.dp)
@@ -722,9 +722,9 @@ fun Comeback(
 fun NavDraw(
     colorDating:Color = AppTheme.colorScheme.onBackground,
     colorFriends:Color = AppTheme.colorScheme.onBackground,
-    colorCausal:Color = AppTheme.colorScheme.onBackground,
+    colorCasual:Color = AppTheme.colorScheme.onBackground,
     datingClickable: () -> Unit = {},
-    causalClickable: () -> Unit = {},
+    casualClickable: () -> Unit = {},
     friendsClickable: () -> Unit = {},
     vmApi:ApiViewModel
     
@@ -758,13 +758,13 @@ fun NavDraw(
         Row(modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                causalClickable()
+                casualClickable()
             }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.casualsce), contentDescription = "casual", tint = colorCasual, modifier = Modifier
                 .offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
-            GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
+            GenericTitleText(text = "Casual", style = AppTheme.typography.titleLarge)
         }
         var description by remember { mutableStateOf("") }
         var luckyTime by remember { mutableStateOf("") }

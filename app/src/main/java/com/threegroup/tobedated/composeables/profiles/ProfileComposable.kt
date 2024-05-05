@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.threegroup.tobedated._dating.DatingActivity
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.GenericBodyText
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
@@ -18,7 +18,7 @@ import com.threegroup.tobedated.composeables.composables.SimpleBox
 
 
 @Composable
-fun LogOut(dating: DatingActivity){
+fun LogOut(dating: MainActivity){
     BigButton(
         text = "Log Out",
         onClick = {

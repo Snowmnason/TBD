@@ -40,7 +40,7 @@ val smokeOptions = listOf("Yes", "Sometimes", "No", "Ask me")
 val weedOptions = listOf("Yes", "Sometimes", "No", "Ask me")
 val meetUpOptions = listOf("Right Away", "Talk first", "Take it slow", "Ask me")
 
-//Causal options
+//Casual options
 val leaningOptions = listOf("Dominant", "Submissive", "Switch", "Vanilla", "Ask me")
 val lookingForOptions = listOf("ONS", "FWB", "Casual", "Ask me")
 val experienceOptions = listOf("Novice", "Intermediate", "Experienced", "Ask me")

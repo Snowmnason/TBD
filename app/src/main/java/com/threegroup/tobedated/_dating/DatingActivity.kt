@@ -1,17 +1,10 @@
 package com.threegroup.tobedated._dating
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.lifecycle.lifecycleScope
-import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated._friends.FriendsActivity
-import com.threegroup.tobedated._login.LoginActivity
-import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import com.threegroup.tobedated.theme.AppTheme
-import kotlinx.coroutines.launch
 
 //val notifiSearching = Random.nextBoolean()
 
@@ -29,56 +22,11 @@ class DatingActivity : ComponentActivity() {
             AppTheme(
                 activity = "dating"
             ) {
-                TopAndBotBarsDating(this@DatingActivity)
+                //TopAndBotBarsDating(this@DatingActivity)
                 //DatingNav(this@DatingActivity)
             }
 
         }
-    }
-
-    fun uploadPhotos(
-        newImage: String,
-        imageNumber: Int,
-        imageName: String,
-        callback: (String) -> Unit
-    ) {
-        lifecycleScope.launch {
-            val result = storeImageAttempt(newImage, contentResolver, imageNumber, imageName)
-            callback(result)
-        }
-    }
-
-    fun clearUserToken() {
-        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.remove("user_login")
-        editor.apply()
-
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    fun switchActivities(switchActivity: String) {
-        val intent = when (switchActivity) {
-            "dating" -> {
-                Intent(this, DatingActivity::class.java)
-            }
-
-            "causal" -> {
-                Intent(this, CausalActivity::class.java)
-            }
-
-            "friends" -> {
-                Intent(this, FriendsActivity::class.java)
-            }
-
-            else -> {
-                Intent(this, DatingActivity::class.java)
-            }
-        }
-        startActivity(intent)
-        finish()
     }
 }
 

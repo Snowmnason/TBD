@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal
+package com.threegroup.tobedated._casual
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -21,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.threegroup.tobedated.MyApp
-import com.threegroup.tobedated._causal.composables.PromptQuestionsC
+import com.threegroup.tobedated._casual.composables.PromptQuestionsC
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
@@ -31,7 +31,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 @Composable
-fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
+fun CasualNav(casual: CasualActivity, viewModelCasual: CasualViewModel){
     val navController = rememberNavController()
     navController.popBackStack()
     val vmApi = viewModel { ApiViewModel(MyApp.x) }
@@ -41,40 +41,40 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
 
     }
 
-    NavHost(navController = navController, startDestination = Causal.SearchingScreen.name,
+    NavHost(navController = navController, startDestination = Casual.SearchingScreen.name,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
-        composable(route = Causal.SearchingScreen.name) {
+        composable(route = Casual.SearchingScreen.name) {
             if (true) {//potentialUserDataLoaded.value
-                SearchingScreen(navController, causal, viewModelCausal, vmApi)
+                SearchingScreen(navController, casual, viewModelCasual, vmApi)
             } else {
-                ComeBackScreen(navController, causal, vmApi)
+                ComeBackScreen(navController, casual, vmApi)
                 //do nothing yet
             }
 
         }
-        composable(route = Causal.ProfileScreen.name) {
-            ProfileScreen(navController, causal, viewModelCausal, vmApi)
+        composable(route = Casual.ProfileScreen.name) {
+            ProfileScreen(navController, casual, viewModelCasual, vmApi)
         }
-        composable(route = Causal.EditProfileScreen.name) {
-            EditProfileScreen(navController, causal, viewModelCausal)
+        composable(route = Casual.EditProfileScreen.name) {
+            EditProfileScreen(navController, casual, viewModelCasual)
         }
-        composable(route = Causal.SearchPreferenceScreen.name) {
-            SearchPreferenceScreen(navController, viewModelCausal)
+        composable(route = Casual.SearchPreferenceScreen.name) {
+            SearchPreferenceScreen(navController, viewModelCasual)
         }
-        composable(route = Causal.ChatsScreen.name) {
-            ChatsScreen(navController, causal, viewModelCausal, vmApi)
+        composable(route = Casual.ChatsScreen.name) {
+            ChatsScreen(navController, casual, viewModelCasual, vmApi)
         }
-        composable(route = Causal.GroupsScreen.name) {
-            GroupsScreen(navController, causal, vmApi)
+        composable(route = Casual.GroupsScreen.name) {
+            GroupsScreen(navController, casual, vmApi)
         }
-        composable(route = Causal.SomeScreen.name) {
-            SomeScreen(navController, causal, vmApi)
+        composable(route = Casual.SomeScreen.name) {
+            SomeScreen(navController, casual, vmApi)
         }
-        composable(route = Causal.MessagerScreen.name) {
-            MessagerScreen(navController, viewModelCausal)
+        composable(route = Casual.MessagerScreen.name) {
+            MessagerScreen(navController, viewModelCasual)
         }
         composable(
             route = "ChangePreference/{my_param}/{index}",
@@ -85,7 +85,7 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
-            ChangePreference(navController, myParam, myIndex, viewModelCausal)
+            ChangePreference(navController, myParam, myIndex, viewModelCasual)
         }
         composable(
             route = "ChangeProfileScreen/{my_param}/{index}",
@@ -96,14 +96,14 @@ fun CausalNav(causal: CausalActivity, viewModelCausal: CausalViewModel){
         ) { backStackEntry ->
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
-            ChangeProfileScreen(navController, myParam, myIndex, viewModelCausal)
+            ChangeProfileScreen(navController, myParam, myIndex, viewModelCasual)
         }
 
     }
 
 }
 @Composable
-fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
+fun SignUpCasualNav(casual: CasualActivity, vmCasual: CasualViewModel){
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == CasualSign.WelcomeScreenC.name
@@ -141,7 +141,7 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { causal.switchActivities("dating") },
+            onConfirmation = { casual.switchActivities("dating") },
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )
@@ -162,28 +162,28 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
             isButtonEnabled = welcomeScreenC()
         }
         composable(route = CasualSign.LeaningScreen.name) {
-            isButtonEnabled = leaningScreen(vmCausal)
+            isButtonEnabled = leaningScreen(vmCasual)
         }
         composable(route = CasualSign.LookingForScreen.name) {
-            isButtonEnabled = lookingForScreen(vmCausal)
+            isButtonEnabled = lookingForScreen(vmCasual)
         }
         composable(route = CasualSign.ExperienceScreen.name) {
-            isButtonEnabled = experienceScreen(vmCausal)
+            isButtonEnabled = experienceScreen(vmCasual)
         }
         composable(route = CasualSign.LocationScreen.name) {
-            isButtonEnabled = locationScreen(vmCausal)
+            isButtonEnabled = locationScreen(vmCasual)
         }
         composable(route = CasualSign.CommScreen.name) {
-            isButtonEnabled = commScreen(vmCausal)
+            isButtonEnabled = commScreen(vmCasual)
         }
         composable(route = CasualSign.SexHealthScreen.name) {
-            isButtonEnabled = sexHealthScreen(vmCausal)
+            isButtonEnabled = sexHealthScreen(vmCasual)
         }
         composable(route = CasualSign.AfterCareScreen.name) {
-            isButtonEnabled = afterCareScreen(vmCausal)
+            isButtonEnabled = afterCareScreen(vmCasual)
         }
         composable(route = CasualSign.NewBioScreen.name) {
-            isButtonEnabled = newBioScreen(vmCausal, onNavigate = {
+            isButtonEnabled = newBioScreen(vmCasual, onNavigate = {
                 // Code to navigate to the next screen or perform any other action
                 questionIndex++
                 nextDestinationIndex?.let { nextIndex ->
@@ -195,14 +195,14 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
         }
         composable(route = CasualSign.PromptQuestionsScreenC.name) {
             noShow = true
-            isButtonEnabled = promptQuestionsScreenC(navController, vmCausal)
+            isButtonEnabled = promptQuestionsScreenC(navController, vmCasual)
         }
         composable(route = "PromptQuestions/{index}", arguments = listOf(
             navArgument("index") { type = NavType.IntType })
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             noShow = false
-            PromptQuestionsC(navController, vmCausal, myIndex)
+            PromptQuestionsC(navController, vmCasual, myIndex)
         }
     }
     var buttonText = if (isFirstScreen) "I Agree" else if (isLastScreen) "Finish" else "Enter"
@@ -223,8 +223,8 @@ fun SignUpCausalNav(causal: CausalActivity, vmCausal: CausalViewModel){
                     isButtonEnabled = false
                     buttonText = "Loading..."
                     runBlocking {
-                        vmCausal.storeDataC()
-                        causal.newContent(vmCausal)
+                        vmCasual.storeDataC()
+                        casual.newContent(vmCasual)
 
                     }
                 }

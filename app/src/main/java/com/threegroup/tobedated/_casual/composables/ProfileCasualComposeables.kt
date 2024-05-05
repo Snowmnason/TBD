@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal.composables
+package com.threegroup.tobedated._casual.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -56,8 +58,10 @@ fun UserInfoC(
     if (photos[3] == "") {
         subtract = 1
     }
+    val state = rememberScrollState()
     Column(
-        Modifier
+        modifier = Modifier
+            .verticalScroll(state)
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ) {

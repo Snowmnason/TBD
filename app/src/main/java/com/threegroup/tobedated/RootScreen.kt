@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating
+package com.threegroup.tobedated
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -36,9 +36,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.threegroup.tobedated.MyApp
-import com.threegroup.tobedated.R
+import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._dating.notifiGroup
 import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
@@ -57,17 +58,21 @@ data class BotNavItem(
 )
 
 @Composable
-fun TopAndBotBarsDating(
-    dating: DatingActivity,
-//    vmApi: ApiViewModel,
+fun TopAndBotBars(
+//    dating: DatingActivity,
+    vmApi: ApiViewModel,
+    mainNav: NavHostController,
+    datingClick:()->Unit,
+    casualClick:()->Unit,
+    friendClick:()->Unit,
+    screenNav: @Composable (nav: NavHostController) -> Unit,
+    inMainPass:Boolean,
+    insideWhatPass:String
 ) {
+
     val nav = rememberNavController()
-    val vmApi = viewModel { ApiViewModel(MyApp.x) }
-    val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
-    var inMain by remember { mutableStateOf(true) }
-    var insideWhat by remember { mutableStateOf("") }
-
-
+    var inMain by remember { mutableStateOf(inMainPass) }
+    var insideWhat by remember { mutableStateOf(insideWhatPass) }
 
     val vmDating = viewModel { DatingViewModel(MyApp.x) } // Could pass as a parameter
     var notificationCount by remember { mutableIntStateOf(0) }
@@ -129,13 +134,9 @@ fun TopAndBotBarsDating(
                     NavDraw(
                         vmApi = vmApi,
                         colorDating = AppTheme.colorScheme.primary,
-                        datingClickable = {},
-                        causalClickable = {
-                            dating.switchActivities("causal")
-                        },
-                        friendsClickable = {
-                            dating.switchActivities("friends")
-                        }
+                        datingClickable = datingClick,
+                        casualClickable = casualClick,
+                        friendsClickable = friendClick
                     )
                 }
             },
@@ -212,11 +213,8 @@ fun TopAndBotBarsDating(
                     if(insideWhat == "Main" || insideWhat == "Match" || insideWhat == "Settings"){
                         Spacer(modifier = Modifier.height(24.dp))
                     }
-                    DatingNav(dating, nav, vmApi, viewModelDating,
-                    insideWhat ={ inside ->
-                        insideWhat = inside
-                        inMain = inside == "Main"
-                    }) //All 5 screens go here
+                    screenNav(nav)
+                     //All 5 screens go here
                 }
             }
         }

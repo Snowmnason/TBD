@@ -1,8 +1,6 @@
 package com.threegroup.tobedated._dating
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +8,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.RealtimeDBMatch
-import com.threegroup.tobedated.shareclasses.NotificationCountCallback
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.getChatId
 import com.threegroup.tobedated.shareclasses.models.Match
@@ -22,11 +20,9 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -218,7 +214,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         signedInUser = MyApp.signedInUser
     }
 
-    fun deleteProfile(number: String, datingActivity: DatingActivity) {
+    fun deleteProfile(number: String, datingActivity: MainActivity) {
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {

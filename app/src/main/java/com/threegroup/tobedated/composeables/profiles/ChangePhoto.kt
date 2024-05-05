@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated._dating.DatingActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated._signUp.composables.questions.PhotoQuestion
 import com.threegroup.tobedated.composeables.composables.SimpleBox
@@ -35,7 +35,7 @@ import com.threegroup.tobedated.theme.AppTheme
 fun ChangePhoto(
     nav: NavHostController,
     vmDating: DatingViewModel,
-    dating: DatingActivity
+    dating: MainActivity
 ) {
     val currentUser = vmDating.getUser()
     var photo1 by rememberSaveable { mutableStateOf(currentUser.image1) }

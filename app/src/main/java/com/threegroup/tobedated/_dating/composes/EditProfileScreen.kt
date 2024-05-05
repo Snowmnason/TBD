@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._dating.DatingActivity
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.AlertDialogBoxWTextField
@@ -40,7 +40,7 @@ import com.threegroup.tobedated.composeables.profiles.LogOut
 @Composable
 fun EditProfileScreen(
     navController: NavHostController,
-    dating: DatingActivity,
+    dating: MainActivity,
     vmDating: DatingViewModel
 ) {
     val currentUser = vmDating.getUser()

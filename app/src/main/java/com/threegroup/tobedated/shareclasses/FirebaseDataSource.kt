@@ -502,7 +502,7 @@ class FirebaseDataSource {
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
                 continuation.resume(lastMessage)
-                println(lastMessage)
+                println("Last message is: $lastMessage")
             }.addOnFailureListener { exception ->
                 println("oops failure")
                 continuation.resumeWithException(exception)
@@ -517,6 +517,9 @@ class FirebaseDataSource {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<MessageModel>()
                 for (data in snapshot.children) {
+                    if (data.key == "notifications") {
+                        continue
+                    }
                     try {
                         val messageModel = data.getValue(MessageModel::class.java)
                         messageModel?.let { list.add(it) }

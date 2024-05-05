@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 class FirebaseDataSource {
 
     fun getCurrentUserId(): String {
@@ -502,7 +503,6 @@ class FirebaseDataSource {
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
                 continuation.resume(lastMessage)
-                println("Last message is: $lastMessage")
             }.addOnFailureListener { exception ->
                 println("oops failure")
                 continuation.resumeWithException(exception)
@@ -685,6 +685,7 @@ class FirebaseDataSource {
                     }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
                 Log.e("Chat", "Error marking chat as read: ${error.message}", error.toException())
@@ -950,23 +951,22 @@ class FirebaseDataSource {
     /**
      * Functions for notifications
      */
-    fun updateNotificationCount(callback: NotificationCountCallback) {
+    fun updateNewMatchesCount(callback: NotificationCountCallback) {
         val userId = getCurrentUserId()
         val database = FirebaseDatabase.getInstance()
         val userMatchesRef = database.getReference("matches")
-        val userChatsRef = database.getReference("chats")
 
-        // Listener for counting number of new matches
         val matchesListener = object : ValueEventListener {
             override fun onDataChange(matchesSnapshot: DataSnapshot) {
                 var newMatchesCount = 0
                 matchesSnapshot.children.forEach { matchSnapshot ->
                     val matchId = matchSnapshot.key
                     if (matchId != null && matchId.contains(userId)) {
-                        val isNewMatch =
-                            matchSnapshot.child("isNewMatch").getValue(Boolean::class.java)
+                        val isNewMatch = matchSnapshot.child(userId).child("isNewMatch")
+                            .getValue(Boolean::class.java)
                         if (isNewMatch == true) {
                             newMatchesCount++
+                            Log.d("UPDATE_TAG", "New matches count = $newMatchesCount")
                         }
                     }
                 }
@@ -974,36 +974,39 @@ class FirebaseDataSource {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Error in getting new matches count: ${error.message}")
+                Log.d("UPDATE_TAG", "Error in getting new matches count: ${error.message}")
             }
         }
 
-        // Listener for counting number of unread chats
+        userMatchesRef.addValueEventListener(matchesListener)
+    }
+
+    fun updateNewChatsCount(callback: NotificationCountCallback) {
+        val userId = getCurrentUserId()
+        val database = FirebaseDatabase.getInstance()
+        val userChatsRef = database.getReference("chats")
+
         val chatsListener = object : ValueEventListener {
             override fun onDataChange(chatsSnapshot: DataSnapshot) {
                 var newChatsCount = 0
                 chatsSnapshot.children.forEach { chatSnapshot ->
                     val chatId = chatSnapshot.key
                     if (chatId != null && chatId.contains(userId)) {
-                        chatSnapshot.child("notifications").children.forEach { notificationSnapshot ->
-                            val notificationsCountLong =
-                                notificationSnapshot.getValue(Long::class.java)
-                            val notificationsCount = notificationsCountLong?.toInt() ?: 0
-                            newChatsCount += notificationsCount
-
-                        }
+                        val notificationSnapshot = chatSnapshot.child("notifications").child(userId)
+                        val notificationsCountLong = notificationSnapshot.getValue(Long::class.java)
+                        val notificationsCount = notificationsCountLong?.toInt() ?: 0
+                        newChatsCount += notificationsCount
                     }
                 }
                 callback(newChatsCount)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Error in getting unread chats count: ${error.message}")
+                Log.d("UPDATE_TAG", "Error in getting unread chats count: ${error.message}")
             }
         }
-        // Add listeners
-        userMatchesRef.addValueEventListener(matchesListener)
         userChatsRef.addValueEventListener(chatsListener)
     }
 }
+
 typealias NotificationCountCallback = (totalNotificationCount: Int) -> Unit

@@ -77,7 +77,7 @@ fun TopAndBotBarsDating(
     var notificationCount by remember { mutableStateOf(0) }
     // Initialize the notification count when the composable is first composed
     LaunchedEffect(Unit) {
-        vmDating.updateNotificationCount { count ->
+vmDating.updateNotificationCounts { count ->
             notificationCount = count
         }
     }

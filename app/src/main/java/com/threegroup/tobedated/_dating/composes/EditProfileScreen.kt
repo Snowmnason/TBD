@@ -133,7 +133,7 @@ fun EditProfileScreen(
         BigButton(
             text = "Log Out",
             onClick = {
-                vmDating.goToLogin(dating, navController)
+                vmDating.goToLogin(dating, mainNav)
             }, isUse = true
         )
         Column(
@@ -167,7 +167,7 @@ fun EditProfileScreen(
             onDismissRequest = { showDelete = false },
             dialogText = "if you confirm your account and everything connected will be deleted",
             onConfirmation = {
-                vmDating.deleteProfile(currentUser.number, dating, navController)
+                vmDating.deleteProfile(currentUser.number, dating, mainNav)
 
             }
         )

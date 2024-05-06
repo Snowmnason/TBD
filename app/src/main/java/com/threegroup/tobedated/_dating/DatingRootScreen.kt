@@ -132,11 +132,13 @@ fun TopAndBotBarsDating(
                         colorDating = AppTheme.colorScheme.primary,
                         datingClickable = {
                             if(currentActivity != "dating"){
-                                mainNav.navigate("Dating"){popUpToRoute}
+                                mainNav.navigate("Dating")
+                                //TODO BACKSTACK
                             }},
                         casualClickable = {
                             if(currentActivity != "casual"){
-                                mainNav.navigate("Casual"){popUpToRoute}
+                                mainNav.navigate("Casual")
+                                //TODO BACKSTACK
                             }},
                         friendsClickable = {
                             if(currentActivity != "friend") {

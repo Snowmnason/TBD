@@ -140,11 +140,15 @@ class LoginViewModel(private var repository: Repository) : ViewModel() {
                         MyApp._signedInUser.value = userInfo
                     }
                     mainActivity.saveTokenToSharedPreferences(userPhoneNumber)
-                    nav.navigate("Dating"){popUpToRoute}
+
+                    nav.navigate("Dating")
+                    //TODO BACKSTACK
+
                 }
             }
         } else {
-            nav.navigate("SignUp/$location/$userPhoneNumber"){popUpToRoute}
+            nav.navigate("SignUp/$location/$userPhoneNumber")
+            //TODO BACKSTACK
 
         }
     }

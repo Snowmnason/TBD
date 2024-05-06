@@ -97,7 +97,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     private var _matchList = MutableStateFlow(listOf<Match>())
     val matchList = _matchList.asStateFlow()
-    // call this in the composable as val matchlist by viewModel.matchList.observeAsState()
+    // call this in the composable as val match list by viewModel.matchList.observeAsState()
 
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
@@ -230,8 +230,9 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     }
     fun goToLogin(dating: MainActivity, mainNav:NavHostController){
         dating.clearUserToken()
-        //mainNav.popBackStack()
-        mainNav.navigate("Login/${getUser().location}"){popUpToRoute}
+
+        mainNav.navigate("Login/${getUser().location}")
+        //TODO BACKSTACK
     }
 
     /**

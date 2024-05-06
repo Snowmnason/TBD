@@ -145,7 +145,8 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
                 MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
                     MyApp._signedInUser.value = userInfo
                 }
-                nav.navigate("Dating"){popUpToRoute}
+                nav.navigate("Dating")
+                //TODO BACKSTACK
             }
         }
     }

@@ -37,7 +37,7 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
             vmApi.fetchPoem()
         }
     }
-
+    //TODO BACKSTACK
     NavHost(navController = navMain, startDestination = "SlashScreen",
         enterTransition = { EnterTransition.None }, exitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },popExitTransition = { ExitTransition.None })

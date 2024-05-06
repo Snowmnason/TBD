@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composes
+package com.threegroup.tobedated._casual.composes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,12 +19,8 @@ import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.messages.MessageStart
 import com.threegroup.tobedated.theme.AppTheme
 
-/*
-End of Message Screens
-Start of Groups Screens
- */
 @Composable
-fun BlindScreen(navController: NavHostController) {
+fun BlindScreenC(navController: NavHostController){
     val state = rememberScrollState(0)
     Column(
         Modifier
@@ -40,7 +36,7 @@ fun BlindScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(2.dp))
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = AppTheme.colorScheme.tertiary)
             Spacer(modifier = Modifier.height(12.dp))
-            GenericBodyText(text = "This weeks Blind topic will be Anti-Modesty\nWe will encourage you to brag a little to your blind date\nAnd we hope you find a connection")
+            GenericBodyText(text = "This weeks Blind topic will be Anti-Modesty\nWe will encourage you to brag a little to your blind date\nAnd we hope you find a casual connection")
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = AppTheme.colorScheme.tertiary)
         }
 

@@ -90,7 +90,7 @@ fun DatingNav(
             insideWhat("Main")
         }
         composable(route = Dating.BlindScreen.name) {
-            BlindScreen(navController, vmApi)
+            BlindScreen(navController)
             insideWhat("Main")
         }
         composable(route = Dating.SomeScreen.name) {

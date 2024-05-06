@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._casual.composables
+package com.threegroup.tobedated._casual.signup.composables
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.Orientation
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.threegroup.tobedated._casual.CasualViewModel
+import com.threegroup.tobedated._casual.signup.CasualSignUpViewModel
 import com.threegroup.tobedated.composeables.composables.PlainTextButton
 import com.threegroup.tobedated.shareclasses.models.expectationsANDCommunication
 import com.threegroup.tobedated.shareclasses.models.limitsANDBoundaries
@@ -32,7 +32,7 @@ import com.threegroup.tobedated.shareclasses.models.tabsCasual
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun PromptQuestionsC(nav: NavController, casualVM: CasualViewModel, questionNumber:Int){
+fun PromptQuestionsC(nav: NavController, casualVM: CasualSignUpViewModel, questionNumber:Int){
     var tabIndex by remember { mutableIntStateOf(0) }
     val state = ScrollState(0)
     val stateCol = rememberScrollState()

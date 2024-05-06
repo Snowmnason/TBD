@@ -10,8 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.threegroup.tobedated.MainActivity
-import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.GenericBodyText
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.composables.SimpleBox
@@ -28,6 +26,37 @@ fun EditProfile(
 
     val modifier = if (clickable) {
         Modifier.clickable { navController.navigate("ChangeProfileScreen/$title/$index") }
+    } else {
+        Modifier
+    }
+
+    SimpleBox(
+        whatsInsideTheBox = {
+            Row(
+                modifier = Modifier
+                    .padding(15.dp, 15.dp, 15.dp, 0.dp)
+                    .fillMaxWidth()
+                    .then(modifier),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                GenericTitleText(text = "$title:")
+                //Spacer(modifier = Modifier.height(4.dp))
+                GenericBodyText(text = userSetting, modifier.offset(y=0.dp))
+            }
+        }
+    )
+}
+@Composable
+fun EditProfileC(
+    title: String,
+    navController: NavController,
+    userSetting: String,
+    clickable: Boolean = false,
+    index:Int
+) {
+
+    val modifier = if (clickable) {
+        Modifier.clickable { navController.navigate("ChangeProfileScreenC/$title/$index") }
     } else {
         Modifier
     }

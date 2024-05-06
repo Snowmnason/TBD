@@ -1,19 +1,16 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.composeables.messages
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.Match
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MessageViewModel(private var repository: Repository) : ViewModel() {
 

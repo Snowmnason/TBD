@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating
+package com.threegroup.tobedated
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -38,9 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.threegroup.tobedated.MainActivity
-import com.threegroup.tobedated.MyApp
-import com.threegroup.tobedated.R
+import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
@@ -59,7 +57,7 @@ data class BotNavItem(
 )
 
 @Composable
-fun TopAndBotBarsDating(
+fun TopAndBotBars(
     vmApi: ApiViewModel,
     mainNav: NavHostController,
     mainActivity: MainActivity,
@@ -137,7 +135,11 @@ fun TopAndBotBarsDating(
                             }},
                         casualClickable = {
                             if(currentActivity != "casual"){
-                                mainNav.navigate("Casual")
+                                if(MyApp.signedInUser.value!!.hasCasual){
+                                    mainNav.navigate("Casual")
+                                }else{
+                                    mainNav.navigate("CasualSignup")
+                                }
                                 //TODO BACKSTACK
                             }},
                         friendsClickable = {

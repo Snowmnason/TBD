@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.GenericBodyText
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
@@ -188,11 +189,99 @@ fun AgeSlider(
         }
     )
 }
+@Composable
+fun AgeSliderC(
+    preferredMin: Int,
+    preferredMax: Int,
+    vmDating: CasualViewModel,
+    currentUser: UserModel,
+) {
+    var sliderPosition by remember { mutableStateOf(preferredMin.toFloat()..preferredMax.toFloat()) }
+
+    // Extracting min and max values from the slider position
+    val min = (sliderPosition.start.roundToInt())
+    val max = (sliderPosition.endInclusive.roundToInt())
+
+    SimpleBox(
+        whatsInsideTheBox = {
+            Column(modifier = Modifier.padding(15.dp, 15.dp, 15.dp, 0.dp)) {
+                // Displaying the age range
+                GenericTitleText(text = "Age Range: $min - $max")
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Range slider for selecting age range
+                RangeSlider(
+                    value = sliderPosition,
+                    steps = 82,
+                    onValueChange = { range ->
+                        if (range.start <= range.endInclusive) {
+                            if (range.endInclusive - range.start >= 5) {
+                                sliderPosition = range
+                            }
+                        }
+                    },
+                    valueRange = 18f..80f,
+                    onValueChangeFinished = {
+                        currentUser.userPref.ageRange = AgeRange(min, max)
+                        vmDating.updateUser(currentUser)
+                    },
+                    colors = SliderDefaults.colors(
+                        thumbColor = AppTheme.colorScheme.primary,
+                        activeTrackColor = AppTheme.colorScheme.primary,
+                        activeTickColor = Color.Transparent,
+                        inactiveTickColor = Color.Transparent,
+                        inactiveTrackColor = Color.White,
+                    )
+                )
+            }
+        }
+    )
+}
 
 @Composable
 fun DistanceSlider(
     preferredMax: Int,
     vmDating: DatingViewModel,
+    currentUser: UserModel,
+) {
+    var sliderPosition by remember { mutableFloatStateOf(preferredMax.toFloat()) }
+
+    SimpleBox(
+        whatsInsideTheBox = {
+            Column(modifier = Modifier.padding(15.dp, 15.dp, 15.dp, 0.dp)) {
+                val max = sliderPosition.roundToInt()
+
+                // Displaying the maximum distance
+                GenericTitleText(text = "Maximum Distance: $max")
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Slider for selecting maximum distance
+                Slider(
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    valueRange = 1f..100f,
+                    onValueChangeFinished = {
+                        // Update user preferences with the selected maximum distance
+                        currentUser.userPref.maxDistance = max
+                        // Update user preferences via the view model
+                        vmDating.updateUser(currentUser)
+                    },
+                    colors = SliderDefaults.colors(
+                        thumbColor = AppTheme.colorScheme.primary,
+                        activeTrackColor = AppTheme.colorScheme.primary,
+                        inactiveTrackColor = Color.White,
+                        disabledThumbColor = Color.Gray,
+                        disabledActiveTrackColor = Color.Gray
+                    )
+                )
+            }
+        }
+    )
+}
+@Composable
+fun DistanceSliderC(
+    preferredMax: Int,
+    vmDating: CasualViewModel,
     currentUser: UserModel,
 ) {
     var sliderPosition by remember { mutableFloatStateOf(preferredMax.toFloat()) }

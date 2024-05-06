@@ -16,8 +16,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated._casual.CasualNav
+import com.threegroup.tobedated._casual.signup.SignUpCasualNav
 import com.threegroup.tobedated._dating.DatingNav
-import com.threegroup.tobedated._dating.TopAndBotBarsDating
 import com.threegroup.tobedated._login.LoginNav
 import com.threegroup.tobedated._signUp.SignUpNav
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
@@ -51,7 +52,7 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
         composable(route = "Dating") {
             inMainActivities = true
             AppTheme(activity = "dating") {
-                TopAndBotBarsDating(
+                TopAndBotBars(
                     vmApi = vmApi,
                     mainNav = navMain,
                     mainActivity = mainActivity,
@@ -68,7 +69,7 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
             inMainActivities = true
             mainActivity.setLastActivity("casual")
             AppTheme(activity = "casual") {
-                TopAndBotBarsDating(
+                TopAndBotBars(
                     vmApi = vmApi,
                     mainNav = navMain,
                     mainActivity = mainActivity,
@@ -81,16 +82,20 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
                 )
             }
         }
+        composable(route = "CasualSignup"){
+            PolkaDotCanvas()
+            SignUpCasualNav(mainNav = navMain)
+        }
         composable(route = "Friends") {
             inMainActivities = true
             mainActivity.setLastActivity("friend")
             AppTheme(activity = "friend") {
-                TopAndBotBarsDating(
+                TopAndBotBars(
                     vmApi = vmApi,
                     mainNav = navMain,
                     mainActivity = mainActivity,
                     navScreen = { nav, callback ->
-                        DatingNav(mainActivity, vmApi, navMain, nav) { inside ->
+                        CasualNav(mainActivity, vmApi, navMain, nav) { inside ->
                             callback(inside)
                         }
                     },

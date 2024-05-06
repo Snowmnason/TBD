@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.theme.AppTheme
@@ -27,6 +28,83 @@ import com.threegroup.tobedated.theme.AppTheme
 fun ChangeSeekingScreen(
     nav: NavHostController,
     vmDating: DatingViewModel,
+    title: String = "",
+    index: Int
+) {
+    val opts = listOf("Male", "Female", "Everyone")
+
+    val currentUser = vmDating.getUser()
+    var currPref = currentUser.seeking
+
+    val checkedItems = remember { mutableStateListOf<String>().apply { add(currPref) } }
+    ChangePreferenceTopBar(
+        nav = nav,
+        title = title,
+        changeSettings = {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                opts.forEach { option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 8.dp)
+                            .clickable(onClick = {
+                                if (!checkedItems.contains(option)) {
+                                    checkedItems.clear()
+                                    checkedItems.add(option)
+                                    currPref = option
+                                }
+                            }),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        GenericTitleText(text = option)
+                        Checkbox(
+                            checked = checkedItems.contains(option),
+                            onCheckedChange = {
+                                if (!checkedItems.contains(option)) {
+                                    checkedItems.clear()
+                                    checkedItems.add(option)
+                                    currPref = option
+                                }
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        save = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                ),
+                modifier = Modifier.offset(y = 5.dp),
+                onClick = {
+                    nav.popBackStack()
+                    currentUser.seeking = currPref
+                    vmDating.updateUser(currentUser)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    style = AppTheme.typography.titleSmall,
+                    color = Color(0xFF93C47D)
+                )
+            }
+        }
+    )
+}
+@Composable
+fun ChangeSeekingScreenC(
+    nav: NavHostController,
+    vmDating: CasualViewModel,
     title: String = "",
     index: Int
 ) {

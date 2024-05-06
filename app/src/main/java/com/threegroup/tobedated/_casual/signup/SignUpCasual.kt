@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._casual
+package com.threegroup.tobedated._casual.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,7 +66,7 @@ fun welcomeScreenC():Boolean {
     return true
 }
 @Composable
-fun leaningScreen(casualVM: CasualViewModel): Boolean {
+fun leaningScreen(casualVM: CasualSignUpViewModel): Boolean {
     var leaning by rememberSaveable { mutableStateOf(casualVM.getAdditions().leaning) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().leaning) }
 
@@ -89,7 +89,7 @@ fun leaningScreen(casualVM: CasualViewModel): Boolean {
     return leaning.isNotEmpty()
 }
 @Composable
-fun lookingForScreen(casualVM: CasualViewModel): Boolean {
+fun lookingForScreen(casualVM: CasualSignUpViewModel): Boolean {
     var lookingFor by rememberSaveable { mutableStateOf(casualVM.getAdditions().lookingFor) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().lookingFor) }
 
@@ -112,7 +112,7 @@ fun lookingForScreen(casualVM: CasualViewModel): Boolean {
     return lookingFor.isNotEmpty()
 }
 @Composable
-fun experienceScreen(casualVM: CasualViewModel): Boolean {
+fun experienceScreen(casualVM: CasualSignUpViewModel): Boolean {
     var experience by rememberSaveable { mutableStateOf(casualVM.getAdditions().experience) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().experience) }
 
@@ -135,7 +135,7 @@ fun experienceScreen(casualVM: CasualViewModel): Boolean {
     return experience.isNotEmpty()
 }
 @Composable
-fun locationScreen(casualVM: CasualViewModel): Boolean {
+fun locationScreen(casualVM: CasualSignUpViewModel): Boolean {
     var location by rememberSaveable { mutableStateOf(casualVM.getAdditions().location) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().location) }
 
@@ -158,7 +158,7 @@ fun locationScreen(casualVM: CasualViewModel): Boolean {
     return location.isNotEmpty()
 }
 @Composable
-fun commScreen(casualVM: CasualViewModel): Boolean {
+fun commScreen(casualVM: CasualSignUpViewModel): Boolean {
     var comm by rememberSaveable { mutableStateOf(casualVM.getAdditions().comm) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().comm) }
 
@@ -181,7 +181,7 @@ fun commScreen(casualVM: CasualViewModel): Boolean {
     return comm.isNotEmpty()
 }
 @Composable
-fun sexHealthScreen(casualVM: CasualViewModel): Boolean {
+fun sexHealthScreen(casualVM: CasualSignUpViewModel): Boolean {
     var sexHealth by rememberSaveable { mutableStateOf(casualVM.getAdditions().sexHealth) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().sexHealth) }
 
@@ -204,7 +204,7 @@ fun sexHealthScreen(casualVM: CasualViewModel): Boolean {
     return sexHealth.isNotEmpty()
 }
 @Composable
-fun afterCareScreen(casualVM: CasualViewModel): Boolean {
+fun afterCareScreen(casualVM: CasualSignUpViewModel): Boolean {
     var afterCare by rememberSaveable { mutableStateOf(casualVM.getAdditions().afterCare) }
     var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().afterCare) }
 
@@ -228,7 +228,7 @@ fun afterCareScreen(casualVM: CasualViewModel): Boolean {
 }
 
 @Composable
-fun promptQuestionsScreenC(nav: NavController, casualVM: CasualViewModel):Boolean{
+fun promptQuestionsScreenC(nav: NavController, casualVM: CasualSignUpViewModel):Boolean{
     var promptA1 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA1) }
     var promptA2 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA2) }
     var promptA3 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA3) }
@@ -308,7 +308,7 @@ fun promptQuestionsScreenC(nav: NavController, casualVM: CasualViewModel):Boolea
 }
 
 @Composable
-fun newBioScreen(casualVM: CasualViewModel, onNavigate: () -> Unit): Boolean{
+fun newBioScreen(casualVM: CasualSignUpViewModel, onNavigate: () -> Unit): Boolean{
     var isSkip by rememberSaveable { mutableStateOf(false) }
     var bio by rememberSaveable { mutableStateOf(casualVM.getAdditions().casualBio) }
     Row(

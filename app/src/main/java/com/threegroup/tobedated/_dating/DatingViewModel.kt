@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -214,17 +215,23 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         signedInUser = MyApp.signedInUser
     }
 
-    fun deleteProfile(number: String, datingActivity: MainActivity) {
+    fun deleteProfile(number: String, datingActivity: MainActivity, mainNav:NavHostController) {
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {
-                    datingActivity.clearUserToken()
+                    //datingActivity.clearUserToken()
+                    goToLogin(datingActivity, mainNav)
                 },
                 onFailure = { exception ->
                     println(exception)
                 }
             )
         }
+    }
+    fun goToLogin(dating: MainActivity, mainNav:NavHostController){
+        dating.clearUserToken()
+        //mainNav.popBackStack()
+        mainNav.navigate("Login/${getUser().location}"){popUpToRoute}
     }
 
     /**

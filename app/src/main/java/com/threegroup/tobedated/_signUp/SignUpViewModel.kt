@@ -3,8 +3,11 @@ package com.threegroup.tobedated._signUp
 import android.content.ContentResolver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.PreferenceIndexModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
@@ -122,7 +125,7 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             }
     }
 
-    suspend fun uploadImage(contentResolver: ContentResolver) {
+    private suspend fun uploadImage(contentResolver: ContentResolver) {
         viewModelScope.launch {
             runBlocking {
                 newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
@@ -133,39 +136,18 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             }
         }
     }
+    fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location:String, nav:NavHostController){
+        viewModelScope.launch {
+            runBlocking {
+                signUpVM.uploadImage(mainActivity.contentResolver)
+                //mainActivity.showToast()
+                mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
+                MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
+                    MyApp._signedInUser.value = userInfo
+                }
+                nav.navigate("Dating"){popUpToRoute}
+            }
+        }
+    }
+
 }
-
-/*
-
-    fun getUser():UserModel{
-        return newUser
-    }
-    fun setUserIndex(userIndex:PreferenceIndexModel){
-        newUserIndex = userIndex
-    }
-    fun setUserIndex():PreferenceIndexModel{
-        return newUserIndex
-    }
-
-         private var question1:String = "Question 1"
-    private var question2:String = "Question 2"
-    private var question3:String = "Question 3"
-    fun setQuestion1(question:String){
-        question1 = question
-    }
-    fun setQuestion2(question:String){
-        question2 = question
-    }
-    fun setQuestion3(question:String){
-        question3 = question
-    }
-    fun getQuestion1():String{
-        return question1
-    }
-    fun getQuestion2():String{
-        return question2
-    }
-    fun getQuestion3():String{
-        return question3
-    }
- */

@@ -21,7 +21,8 @@ import androidx.compose.ui.text.input.MoveCursorCommand
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._login.LoginActivity
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated._login.LoginViewModel
 import com.threegroup.tobedated._login.composables.DropDown
 import com.threegroup.tobedated._login.composables.PhoneEnterField
 import com.threegroup.tobedated._signUp.composables.BigButton
@@ -32,7 +33,7 @@ import com.threegroup.tobedated.shareclasses.formatPhone
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun LoginScreen(navController: NavHostController, loginActivity: LoginActivity) {
+fun LoginScreen(navController: NavHostController, viewModelLogin:LoginViewModel, mainActivity:MainActivity) {
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     var selectedCode by rememberSaveable { mutableStateOf("+1") }
     Column(
@@ -87,7 +88,7 @@ fun LoginScreen(navController: NavHostController, loginActivity: LoginActivity) 
         onClick = {
             controller?.hide()
             //println("__ phone __ $phoneNumber ___" + phoneNumber.length + " _____ " +formatPhoneNumber(selectedCode, phoneNumber))
-            loginActivity.sendOtp(selectedCode, phoneNumber)
+            viewModelLogin.sendOtp(selectedCode, phoneNumber, mainActivity, navController)
             navController.navigate("VerificationCodeView/$phoneNumber")
         },
         isUse = ((phoneNumber.length == 11 && selectedCode != "+1") || phoneNumber.length == 14)

@@ -39,4 +39,12 @@ data class MatchedUserModel(
     var hasThree        : Boolean = false,
     var status          : Long = 0,
     var verified        : Boolean = false,
+
+    var hasFriends      : Boolean = false,
+    var casualAdditions: CasualAdditions = CasualAdditions(),
+    var hasCasual       : Boolean = false,
+    var seeking         : String = "",
+    var testResultTbd   : Long = 10,
+    var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel()
+
 )

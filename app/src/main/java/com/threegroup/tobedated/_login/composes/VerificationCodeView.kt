@@ -23,7 +23,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._login.LoginActivity
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated._login.LoginViewModel
 import com.threegroup.tobedated._login.composables.ResendCode
 import com.threegroup.tobedated._login.composables.VerifyField
 import com.threegroup.tobedated._signUp.composables.BackButton
@@ -33,7 +34,7 @@ import com.threegroup.tobedated.composeables.composables.getAddShadow
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun VerificationCodeView(navController: NavHostController, number: String, loginActivity: LoginActivity) {
+fun VerificationCodeView(navController: NavHostController, number: String, mainActivity: MainActivity, vmLogin:LoginViewModel, mainNav:NavHostController) {
 
     val controller = LocalSoftwareKeyboardController.current
     var codeList by remember { mutableStateOf(List(6) { "" }) }
@@ -94,7 +95,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
                     style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
                     color = AppTheme.colorScheme.onBackground
                 )
-                ResendCode(loginActivity)
+                ResendCode(mainActivity, vmLogin, navController)
             }
 
         }
@@ -104,7 +105,7 @@ fun VerificationCodeView(navController: NavHostController, number: String, login
         text = "Enter",
         onClick = {
             controller?.hide()
-            loginActivity.verifyOtp(codeString)
+            vmLogin.verifyOtp(codeString, mainActivity, mainNav)
         },
         isUse = codeString.length == 6
     )

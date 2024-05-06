@@ -1,7 +1,6 @@
 package com.threegroup.tobedated._casual
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +13,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._casual.composables.UserInfoC
-import com.threegroup.tobedated._dating.DatingActivity
-import com.threegroup.tobedated._friends.FriendsActivity
 import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
@@ -56,26 +53,26 @@ class CasualActivity : ComponentActivity() {
     }
     //This is the fuck tab
     //adding it so I can say "fuck tab"
-    fun switchActivities(switchActivity:String){
-        val intent = when (switchActivity) {
-            "dating" -> {
-                Intent(this, DatingActivity::class.java)
-            }
-
-            "casual" -> {
-                Intent(this, CasualActivity::class.java)
-            }
-
-            "friends" -> {
-                Intent(this, FriendsActivity::class.java)
-            }
-            else -> {
-                Intent(this, DatingActivity::class.java)
-            }
-        }
-        startActivity(intent)
-        finish()
-    }
+//    fun switchActivities(switchActivity:String){
+//        val intent = when (switchActivity) {
+//            "dating" -> {
+//                Intent(this, DatingActivity::class.java)
+//            }
+//
+//            "casual" -> {
+//                Intent(this, CasualActivity::class.java)
+//            }
+//
+//            "friends" -> {
+//                Intent(this, FriendsActivity::class.java)
+//            }
+//            else -> {
+//                Intent(this, DatingActivity::class.java)
+//            }
+//        }
+//        startActivity(intent)
+//        finish()
+//    }
 }
 @Composable
 fun SearchingScreen(navController: NavHostController, casual: CasualActivity, vmCasual: CasualViewModel, vmApi: ApiViewModel){

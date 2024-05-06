@@ -1,4 +1,4 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated._dating
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -38,8 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.threegroup.tobedated._dating.DatingViewModel
-import com.threegroup.tobedated._dating.notifiGroup
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.R
 import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
@@ -58,22 +59,18 @@ data class BotNavItem(
 )
 
 @Composable
-fun TopAndBotBars(
-//    dating: DatingActivity,
+fun TopAndBotBarsDating(
     vmApi: ApiViewModel,
     mainNav: NavHostController,
-    datingClick:()->Unit,
-    casualClick:()->Unit,
-    friendClick:()->Unit,
-    screenNav: @Composable (nav: NavHostController) -> Unit,
-    inMainPass:Boolean,
-    insideWhatPass:String
+    mainActivity: MainActivity,
+    navScreen: @Composable (nav:NavHostController, callback: (String) -> Unit) -> Unit,
+    currentActivity:String,
 ) {
-
+    mainActivity.setLastActivity(currentActivity)
     val nav = rememberNavController()
-    var inMain by remember { mutableStateOf(inMainPass) }
-    var insideWhat by remember { mutableStateOf(insideWhatPass) }
 
+    var inMain by remember { mutableStateOf(true) }
+    var insideWhat by remember { mutableStateOf("Main") }
     val vmDating = viewModel { DatingViewModel(MyApp.x) } // Could pass as a parameter
     var notificationCount by remember { mutableIntStateOf(0) }
     // Initialize the notification count when the composable is first composed
@@ -106,7 +103,6 @@ fun TopAndBotBars(
             title = "BlindScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
-            hasNew = notifiGroup,
             badgeCount = 0
         ),
         BotNavItem(
@@ -134,9 +130,18 @@ fun TopAndBotBars(
                     NavDraw(
                         vmApi = vmApi,
                         colorDating = AppTheme.colorScheme.primary,
-                        datingClickable = datingClick,
-                        casualClickable = casualClick,
-                        friendsClickable = friendClick
+                        datingClickable = {
+                            if(currentActivity != "dating"){
+                                mainNav.navigate("Dating"){popUpToRoute}
+                            }},
+                        casualClickable = {
+                            if(currentActivity != "casual"){
+                                mainNav.navigate("Casual"){popUpToRoute}
+                            }},
+                        friendsClickable = {
+                            if(currentActivity != "friend") {
+                                //mainNav.navigate("Friends"){popUpToRoute}
+                            }}
                     )
                 }
             },
@@ -213,7 +218,8 @@ fun TopAndBotBars(
                     if(insideWhat == "Main" || insideWhat == "Match" || insideWhat == "Settings"){
                         Spacer(modifier = Modifier.height(24.dp))
                     }
-                    screenNav(nav)
+                    navScreen(nav){ inside -> insideWhat = inside
+                        inMain = inside == "Main"}
                      //All 5 screens go here
                 }
             }

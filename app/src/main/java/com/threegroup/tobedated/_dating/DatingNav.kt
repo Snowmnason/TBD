@@ -3,6 +3,7 @@ package com.threegroup.tobedated._dating
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,15 +37,20 @@ import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 @Composable
 fun DatingNav(
     main: MainActivity,
-    navController:NavHostController,
     vmApi: ApiViewModel,
-    insideWhat: (String) -> Unit ){
+    mainNav:NavHostController,
+    navController:NavHostController,
+    insideWhat: (String) -> Unit,
+    ){
+    LaunchedEffect(Unit) {
+        //navController.popBackStack()
+    }
+
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
     viewModelDating.fetchPotentialUserData()
-
 
 
     val userList by viewModelDating.potentialUserData.collectAsState()
@@ -72,7 +78,7 @@ fun DatingNav(
             insideWhat("Main")
         }
         composable(route = Dating.EditProfileScreen.name) {
-            EditProfileScreen(navController, main, viewModelDating)
+            EditProfileScreen(navController, main, viewModelDating, mainNav)
             insideWhat("Settings")
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
@@ -144,5 +150,15 @@ fun DatingNav(
             insideWhat("Match")
         }
     }
-
+}
+enum class Dating {
+    SearchingScreen,
+    SearchPreferenceScreen,
+    ProfileScreen,
+    EditProfileScreen,
+    ChatsScreen,
+    BlindScreen,
+    SomeScreen,
+    MessagerScreen,
+    FeedBackMessagerScreen
 }

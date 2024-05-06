@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.AlertDialogBoxWTextField
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
@@ -35,13 +36,13 @@ import com.threegroup.tobedated.composeables.composables.OutLinedButton
 import com.threegroup.tobedated.composeables.composables.SimpleBox
 import com.threegroup.tobedated.composeables.profiles.ChangeProfile
 import com.threegroup.tobedated.composeables.profiles.EditProfile
-import com.threegroup.tobedated.composeables.profiles.LogOut
 
 @Composable
 fun EditProfileScreen(
     navController: NavHostController,
     dating: MainActivity,
-    vmDating: DatingViewModel
+    vmDating: DatingViewModel,
+    mainNav:NavHostController,
 ) {
     val currentUser = vmDating.getUser()
     var showDelete by rememberSaveable { mutableStateOf(false) }
@@ -129,7 +130,12 @@ fun EditProfileScreen(
             )
             Spacer(modifier = Modifier.height(14.dp))
         }
-        LogOut(dating)
+        BigButton(
+            text = "Log Out",
+            onClick = {
+                vmDating.goToLogin(dating, navController)
+            }, isUse = true
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom,
@@ -161,7 +167,7 @@ fun EditProfileScreen(
             onDismissRequest = { showDelete = false },
             dialogText = "if you confirm your account and everything connected will be deleted",
             onConfirmation = {
-                vmDating.deleteProfile(currentUser.number, dating)
+                vmDating.deleteProfile(currentUser.number, dating, navController)
 
             }
         )

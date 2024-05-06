@@ -11,49 +11,50 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.threegroup.tobedated._signUp.composes.birthScreen
-import com.threegroup.tobedated._signUp.composes.ethnicityScreen
-import com.threegroup.tobedated._signUp.composes.genderScreen
-import com.threegroup.tobedated._signUp.composes.heightScreen
-import com.threegroup.tobedated._signUp.composes.mbtiScreen
-import com.threegroup.tobedated._signUp.composes.nameScreen
-import com.threegroup.tobedated._signUp.composes.ourTestScreen
-import com.threegroup.tobedated._signUp.composes.pronounScreen
-import com.threegroup.tobedated._signUp.composes.searchScreen
-import com.threegroup.tobedated._signUp.composes.sexOriScreen
-import com.threegroup.tobedated._signUp.composes.sexScreen
-import com.threegroup.tobedated._signUp.composes.starScreen
-import com.threegroup.tobedated._signUp.composes.welcomeScreen
+import com.threegroup.tobedated.MainActivity
+import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._signUp.composables.BackButton
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated._signUp.composables.questions.PromptQuestions
 import com.threegroup.tobedated._signUp.composes.bioScreen
+import com.threegroup.tobedated._signUp.composes.birthScreen
 import com.threegroup.tobedated._signUp.composes.childrenScreen
 import com.threegroup.tobedated._signUp.composes.drinkScreen
 import com.threegroup.tobedated._signUp.composes.educationScreen
+import com.threegroup.tobedated._signUp.composes.ethnicityScreen
 import com.threegroup.tobedated._signUp.composes.familyScreen
+import com.threegroup.tobedated._signUp.composes.genderScreen
+import com.threegroup.tobedated._signUp.composes.heightScreen
 import com.threegroup.tobedated._signUp.composes.intentionsScreen
+import com.threegroup.tobedated._signUp.composes.mbtiScreen
 import com.threegroup.tobedated._signUp.composes.meetUpScreen
+import com.threegroup.tobedated._signUp.composes.nameScreen
+import com.threegroup.tobedated._signUp.composes.ourTestScreen
 import com.threegroup.tobedated._signUp.composes.photoScreen
 import com.threegroup.tobedated._signUp.composes.politicsScreen
 import com.threegroup.tobedated._signUp.composes.promptQuestionsScreen
+import com.threegroup.tobedated._signUp.composes.pronounScreen
 import com.threegroup.tobedated._signUp.composes.relationshipScreen
 import com.threegroup.tobedated._signUp.composes.religiousScreen
+import com.threegroup.tobedated._signUp.composes.searchScreen
+import com.threegroup.tobedated._signUp.composes.sexOriScreen
+import com.threegroup.tobedated._signUp.composes.sexScreen
 import com.threegroup.tobedated._signUp.composes.smokeScreen
+import com.threegroup.tobedated._signUp.composes.starScreen
 import com.threegroup.tobedated._signUp.composes.weedScreen
-import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated._signUp.composes.welcomeScreen
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.ProgressBar
 
 @Composable
-fun SignUpNav(signUpActivity: SignUpActivity, location: String, number: String) {
-    val navController = rememberNavController()
+fun SignUpNav(mainActivity: MainActivity, location: String, number: String, navController: NavHostController) {
+    //val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
@@ -109,7 +110,7 @@ fun SignUpNav(signUpActivity: SignUpActivity, location: String, number: String) 
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { signUpActivity.switchBack() },
+            onConfirmation = { navController.navigate("Login") },
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )
@@ -245,7 +246,7 @@ fun SignUpNav(signUpActivity: SignUpActivity, location: String, number: String) 
                 if(buttonText == "Finish"){
                     isButtonEnabled = false
                     buttonText = "Loading..."
-                    signUpActivity.finishingUp(signUpVM)
+                    signUpVM.finishingUp(signUpVM, mainActivity, location, navController)
                 }
                 //println(userInfoArray.joinToString(separator = ", "))
                 //println("$newUser in fun")
@@ -254,4 +255,34 @@ fun SignUpNav(signUpActivity: SignUpActivity, location: String, number: String) 
         )
     }
 
+}
+
+enum class SignUp {
+    WelcomeScreen,
+    NameScreen,//
+    BirthScreen,//
+    PronounScreen,//
+    GenderScreen,//
+    SexOriScreen,//
+    HieghtScreen,//
+    EthnicityScreen,//
+    StarScreen,//
+    SearchScreen,////
+    SexScreen,////
+    MbtiScreen,//
+    OurTestScreen,////
+    ChildrenScreen,//
+    FamilyScreen,//
+    EducationScreen,//
+    ReligiousScreen,//
+    PoliticsScreen,//
+    RelationshipScreen,//
+    IntentionsScreen,//
+    MeetUpScreen,
+    DrinkScreen,//
+    SmokeScreen,//
+    WeedScreen,//
+    BioScreen,//
+    PromptQuestionsScreen,
+    PhotoScreen,
 }

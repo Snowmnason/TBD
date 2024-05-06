@@ -141,7 +141,7 @@ fun SignUpCasualNav(casual: CasualActivity, vmCasual: CasualViewModel){
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { casual.switchActivities("dating") },
+            onConfirmation = {  },//casual.switchActivities("dating")
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )

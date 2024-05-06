@@ -18,14 +18,6 @@ import com.threegroup.tobedated.composeables.composables.SimpleBox
 
 
 @Composable
-fun LogOut(dating: MainActivity){
-    BigButton(
-        text = "Log Out",
-        onClick = {
-            dating.clearUserToken()
-    }, isUse = true)
-}
-@Composable
 fun EditProfile(
     title: String,
     navController: NavController,

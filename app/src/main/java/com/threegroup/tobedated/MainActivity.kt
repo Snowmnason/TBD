@@ -36,8 +36,7 @@ class MainActivity : ComponentActivity() {
     }
     val requestLocationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         if (permissions.values.all { it }) {
-                // All permissions granted, proceed
-            1+1
+             // All permissions granted, proceed
             //checkUserTokenAndNavigate()
         }
 //        else {
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
     private fun requestLocationPermission() {
         val permissionsToRequest = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
         )
         if (!isLocationPermissionGranted(this)) {
             requestLocationPermissionLauncher.launch(permissionsToRequest)
@@ -91,7 +90,7 @@ class MainActivity : ComponentActivity() {
         val coarsePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val finePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-        return coarsePermission || finePermission
+        return (coarsePermission || finePermission)
     }
 
     fun checkUserTokenAndNavigate(callback: (String, String) -> Unit) {

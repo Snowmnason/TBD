@@ -101,8 +101,8 @@ fun TopAndBotBarsDating(
         ),
         BotNavItem(
             title = "BlindScreen",
-            selectedIcon = ImageVector.vectorResource(id = R.drawable.groups_filled),
-            unselectedIcon = ImageVector.vectorResource(id = R.drawable.groups_outlined),
+            selectedIcon = ImageVector.vectorResource(id = R.drawable.mask_filled),
+            unselectedIcon = ImageVector.vectorResource(id = R.drawable.mask_outline),
             badgeCount = 0
         ),
         BotNavItem(
@@ -210,7 +210,7 @@ fun TopAndBotBarsDating(
 
                 },
             ) { paddingValues ->
-                //LaunchedEffect(Unit) { state.animateScrollTo(0) }
+                //LaunchedEffect(Unit) { state.animateScrollTo(0) } blind
                 Column(
                     Modifier
                         .padding(paddingValues)
@@ -259,7 +259,7 @@ fun TopBarMain(titleTextNum:Int, scope: CoroutineScope, drawerState: DrawerState
         0 -> "Stats"
         1 -> "Messages"
         2 -> "Searching"
-        3 -> "Blind"
+        3 -> "Blind Dating"
         4 -> "Profile"
         else -> ""
     }

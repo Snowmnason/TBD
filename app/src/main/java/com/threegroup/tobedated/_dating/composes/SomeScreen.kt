@@ -76,10 +76,7 @@ fun SomeScreen(
         GenericTitleText(text = "Your Stats", style = AppTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(2.dp))
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = AppTheme.colorScheme.tertiary
-        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = AppTheme.colorScheme.tertiary)
         Spacer(modifier = Modifier.height(12.dp))
         Column(modifier = Modifier.padding(horizontal = 0.dp).fillMaxSize())
         {

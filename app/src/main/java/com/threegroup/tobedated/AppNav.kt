@@ -44,6 +44,7 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
     {
         composable(route = "SlashScreen") {
             AppTheme(activityToken){
+                PolkaDotCanvas()
                 SlashScreen(activityToken = activityToken, mainActivity, navMain)
             }
         }

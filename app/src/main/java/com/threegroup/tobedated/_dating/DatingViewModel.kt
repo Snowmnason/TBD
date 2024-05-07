@@ -51,19 +51,20 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
         viewModelScope.launch(IO) {
             val deferredResult = async {
-                repository.likeOrPass(currentUserId, currentProfile.number, true, "")?.let { model ->
-                    NewMatch( // can use NewMatch to display the match splash screen
-                        model.id,
-                        currentProfile.number,
-                        currentProfile.name,
-                        listOf(
-                            currentProfile.image1,
-                            currentProfile.image2,
-                            currentProfile.image3,
-                            currentProfile.image4
+                repository.likeOrPass(currentUserId, currentProfile.number, true, "")
+                    ?.let { model ->
+                        NewMatch( // can use NewMatch to display the match splash screen
+                            model.id,
+                            currentProfile.number,
+                            currentProfile.name,
+                            listOf(
+                                currentProfile.image1,
+                                currentProfile.image2,
+                                currentProfile.image3,
+                                currentProfile.image4
+                            )
                         )
-                    )
-                }
+                    }
             }
             val queryResult = deferredResult.await()
             withContext(Dispatchers.Main) { // TODO with context might be an issue
@@ -119,7 +120,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val messageNodes = dataSnapshot.children.filter { it.key != "notifications" }
                 val lastMessageNode = messageNodes.lastOrNull()
-                val lastMessage = lastMessageNode?.child("message")?.getValue(String::class.java) ?: ""
+                val lastMessage =
+                    lastMessageNode?.child("message")?.getValue(String::class.java) ?: ""
                 updatedMatch.lastMessage = lastMessage
                 // Update match list
                 _matchList.value =
@@ -190,6 +192,15 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             repository.openChat(chatId)
         }
     }
+
+
+
+
+    fun checkRead(chatId: String, callBack:(Boolean)->Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.checkRead(chatId, "", callBack)
+        }
+    }
     /**
      *  generates a unique chatId made from the UIDs of the sender and receiver
      */
@@ -215,7 +226,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         signedInUser = MyApp.signedInUser
     }
 
-    fun deleteProfile(number: String, datingActivity: MainActivity, mainNav:NavHostController) {
+    fun deleteProfile(number: String, datingActivity: MainActivity, mainNav: NavHostController) {
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {
@@ -228,7 +239,8 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
             )
         }
     }
-    fun goToLogin(dating: MainActivity, mainNav:NavHostController){
+
+    fun goToLogin(dating: MainActivity, mainNav: NavHostController) {
         dating.clearUserToken()
 
         mainNav.navigate("Login/${getUser().location}")

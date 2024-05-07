@@ -190,6 +190,15 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
             repository.openChat(chatId, "casual")
         }
     }
+    private var _isRead = mutableStateOf<Boolean>(false)
+    val isRead: State<Boolean> = _isRead
+    fun checkRead(chatId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.checkRead(chatId, "casual") { read ->
+                _isRead.value = read
+            }
+        }
+    }
     /**
      *  generates a unique chatId made from the UIDs of the sender and receiver
      */

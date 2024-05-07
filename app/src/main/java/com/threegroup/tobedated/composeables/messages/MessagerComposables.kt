@@ -53,7 +53,8 @@ fun TextSection(
     messageList:List<MessageModel>,
     currentUserSenderId:String,
     match:MatchedUserModel = MatchedUserModel(),
-    feedBack:Boolean = false
+    feedBack:Boolean = false,
+    isRead:Boolean
 ){
     Column(
         Modifier.fillMaxSize()
@@ -73,7 +74,7 @@ fun TextSection(
                 if(feedBack){
                     MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
                 }else{
-                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last, isRead)
                 }
             }
         }
@@ -239,7 +240,7 @@ fun TheirMessage(
     }
 }
 @Composable
-fun MessageItem(match: MatchedUserModel, message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean) {
+fun MessageItem(match: MatchedUserModel, message: MessageModel, isCurrentUser: Boolean, timeStamp: String, last: Boolean, isRead: Boolean) {
     if (!isCurrentUser) {
         if(!last){
             TheirMessage(replyMessage = message.message, time =  timeStamp, last = false, userPhoto = match.image1)
@@ -249,9 +250,9 @@ fun MessageItem(match: MatchedUserModel, message: MessageModel, isCurrentUser: B
     }
     if (isCurrentUser) {
         if(!last){
-            UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = true)
+            UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = isRead)
         }else{
-            UserMessage(myMessage = message.message, time =  timeStamp, last = true, read = true)
+            UserMessage(myMessage = message.message, time =  timeStamp, last = true, read = isRead)
         }
     }
 }
@@ -266,6 +267,6 @@ fun MessageItemFeedBack(message: MessageModel, isCurrentUser: Boolean, timeStamp
     }
 
     if (isCurrentUser) {
-        UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = true)
+        UserMessage(myMessage = message.message, time =  timeStamp, last = false, read = false)
     }
 }

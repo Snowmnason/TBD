@@ -94,6 +94,7 @@ fun MessagerScreenC(navController: NavHostController, vmCasual: CasualViewModel,
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
                     match = talkedUser!!,
+                    isRead = false
                 )
             },
         )
@@ -143,6 +144,7 @@ fun FeedBackMessagerScreenC(navController: NavHostController, vmCasual: CasualVi
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),
                 feedBack = true,
+                isRead = false
             )
         },
     )

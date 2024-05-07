@@ -43,6 +43,10 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, 
         var message by rememberSaveable { mutableStateOf("") }
         val messageModel = viewModel { MessageViewModel(MyApp.x) }
         val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
+        var isRead by rememberSaveable { mutableStateOf(false) }
+//        vmDating.checkRead(chatId){ read ->
+//            isRead = read
+//        }
         //TODO need to make this work
         var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
         val lazyListState = rememberLazyListState()
@@ -92,6 +96,7 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, 
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
                     match = talkedUser!!,
+                    isRead = false
                 )
             },
         )
@@ -141,6 +146,7 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),
                 feedBack = true,
+                isRead = false
             )
         },
     )

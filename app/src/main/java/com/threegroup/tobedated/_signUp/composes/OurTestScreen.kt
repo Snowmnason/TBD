@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.threegroup.tobedated._signUp.SignUpViewModel
-import com.threegroup.tobedated._signUp.composables.questions.PersonalityTest
 import com.threegroup.tobedated._signUp.composables.SignUpFormatLong
+import com.threegroup.tobedated._signUp.composables.questions.PersonalityTest
 import com.threegroup.tobedated.shareclasses.models.ourTestQuestions
 
 @Composable
@@ -62,5 +62,5 @@ fun ourTestScreen(signUpVM: SignUpViewModel):Boolean{
             }
         },
     )
-    return true //results != -1//TODO
+    return results != -1//TODO
 }

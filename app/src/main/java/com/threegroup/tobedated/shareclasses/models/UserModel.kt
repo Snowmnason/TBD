@@ -12,7 +12,7 @@ data class UserModel(
     var seeking         : String = "",
     var sex             : String = "",
     var testResultsMbti : String = "Not Taken",
-    var testResultTbd   : Int = 10,
+    var testResultTbd   : Int = -1,
     var children        : String = "",
     var family          : String = "",
     var education       : String = "",

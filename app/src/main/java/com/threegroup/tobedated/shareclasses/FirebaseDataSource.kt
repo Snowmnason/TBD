@@ -641,7 +641,16 @@ class FirebaseDataSource {
         // Decrement the notification count
         decrementNotificationCount(chatId, inOther)
     }
-
+    fun checkRead(chatId: String, inOther: String, callback: (Boolean)->Unit) {
+            val chatsRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId)
+            chatsRef.orderByKey().limitToLast(1).get().addOnSuccessListener { dataSnapshot ->
+                val lastChild = dataSnapshot.children.firstOrNull()
+                val isRead = lastChild?.child("read")?.getValue(Boolean::class.java) ?: false
+                callback(isRead)
+            }.addOnFailureListener { exception ->
+                Log.e("Read", exception.toString())
+        }
+    }
     private fun markChatAsRead(chatId: String, inOther: String) {
         val currentUser = getCurrentUserId()
         val chatRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId)

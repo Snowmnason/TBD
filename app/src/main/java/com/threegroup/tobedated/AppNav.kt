@@ -103,13 +103,16 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
 //                )
 //            }
         }
-        composable(route = "SignUp/{location}/{userPhone}",
+        composable(route = "SignUp/{location1}/{location2}/{userPhone}",
             arguments = listOf(
-                navArgument("location") { type = NavType.StringType },
+                navArgument("location1") { type = NavType.StringType },
+                navArgument("location2") { type = NavType.StringType },
                 navArgument("userPhone") { type = NavType.StringType },
             )
             ) { backStackEntry ->
-            val location = backStackEntry.arguments?.getString("location") ?: ""
+            val location1 = backStackEntry.arguments?.getString("location1") ?: ""
+            val location2 = backStackEntry.arguments?.getString("location2") ?: ""
+            val location = "$location1/$location2"
             val userPhone = backStackEntry.arguments?.getString("userPhone") ?: ""
             AppTheme(activity = "dating") {
                 //navMain.popBackStack()

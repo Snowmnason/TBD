@@ -45,14 +45,6 @@ suspend fun storeImageAttempt(uriString: String, contentResolver: ContentResolve
         val userImagesRef = databaseRef.child("users").child(userNumber).child("image$imageNumber")
         userImagesRef.setValue(downloadUrl)
 
-        // Delete the local image file after successful upload
-        val localFile = File(filePath)
-        if (localFile.exists()) {
-            val deleted = localFile.delete()
-            if (!deleted) {
-                Log.e("storeImageAttempt", "Failed to delete local image file: $filePath")
-            }
-        }
     } catch (e: Exception) {
         Log.e("storeImageAttempt", "Error uploading image: ${e.message}")
     }

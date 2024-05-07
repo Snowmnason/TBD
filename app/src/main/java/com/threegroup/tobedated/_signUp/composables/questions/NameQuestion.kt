@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import com.threegroup.tobedated._signUp.composables.getCustomTextStyle
@@ -39,6 +40,7 @@ fun NameQuestion( //FOR SIGN UP
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Done
         )
     )
 }

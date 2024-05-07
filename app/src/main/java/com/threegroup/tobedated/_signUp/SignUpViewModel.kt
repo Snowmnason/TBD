@@ -12,8 +12,8 @@ import com.threegroup.tobedated.shareclasses.models.PreferenceIndexModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.ourTestQuestions
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class SignUpViewModel(private var repository: Repository) : ViewModel() {
     private var newUser = UserModel()
@@ -124,22 +124,25 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             }
     }
 
-    fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location:String, nav:NavHostController){
+    fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location: String, nav: NavHostController) {
         viewModelScope.launch {
-            runBlocking {
+            val ioJob = launch(Dispatchers.IO) {
                 newUser.image1 = storeImageAttempt(newUser.image1, mainActivity.contentResolver, 1, newUser.number)
                 newUser.image2 = storeImageAttempt(newUser.image2, mainActivity.contentResolver, 2, newUser.number)
                 newUser.image3 = storeImageAttempt(newUser.image3, mainActivity.contentResolver, 3, newUser.number)
                 newUser.image4 = storeImageAttempt(newUser.image4, mainActivity.contentResolver, 4, newUser.number)
                 storeData()
-                //mainActivity.showToast()
-                mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
-                MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
-                    MyApp._signedInUser.value = userInfo
-                }
-                nav.navigate("Dating")
-                //TODO BACKSTACK
             }
+            // Wait for the IO operations to complete
+            ioJob.join()
+
+            val ioJob2 = launch(Dispatchers.IO) {
+                mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
+                MyApp._signedInUser.value = newUser
+            }
+            ioJob2.join()
+            nav.navigate("Dating")
+            //TODO BACKSTACK
         }
     }
 

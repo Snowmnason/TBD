@@ -41,8 +41,10 @@ fun MessagerScreenC(navController: NavHostController, vmCasual: CasualViewModel,
             talkedUser!!.number
         ) //change to UID later need to account for reverses
         var message by rememberSaveable { mutableStateOf("") }
+
         val messageModel = viewModel { MessageViewModel(MyApp.x) }
-        val messageList by messageModel.getChatData(chatId).collectAsState(listOf())
+        val messageList by messageModel.getChatData(chatId, inOther = "casual").collectAsState(listOf())
+
         //TODO need to make this work
         var scrollValue by remember { mutableIntStateOf(Int.MAX_VALUE) }
         val lazyListState = rememberLazyListState()
@@ -78,7 +80,7 @@ fun MessagerScreenC(navController: NavHostController, vmCasual: CasualViewModel,
                     messageChange = { message = it },
                     sendMessage = {
                         if (message != "") {
-                            messageModel.storeChatData(chatId, message)
+                            messageModel.storeChatData(chatId, message, "casual")
                         }
                         message = ""
                         scrollValue = messageList.size + 2
@@ -127,7 +129,7 @@ fun FeedBackMessagerScreenC(navController: NavHostController, vmCasual: CasualVi
                 messageChange = { message = it },
                 sendMessage = {
                     if (message != "") {
-                        messageModel.storeChatData(chatId, message)
+                        messageModel.storeChatData(chatId, message, "casual")
                     }
                     message = ""
                     scrollValue = messageList.size + 2

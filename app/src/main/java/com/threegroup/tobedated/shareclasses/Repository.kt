@@ -18,15 +18,16 @@ class Repository(
     fun getCurrentUserSenderId(): String {
         return firebaseDataSource.getCurrentUserSenderId()
     }
-    suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
-        return firebaseDataSource.likeOrPass(userId, likedUserId, isLike)
+    suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean, inOther:String=""): RealtimeDBMatch? {
+        return firebaseDataSource.likeOrPass(userId, likedUserId, isLike, inOther)
     }
-    suspend fun markMatchAsViewed(matchId: String, userId: String) {
-        firebaseDataSource.markMatchAsViewed(matchId, userId)
+    suspend fun markMatchAsViewed(matchId: String, userId: String, inOther:String="") {
+        firebaseDataSource.markMatchAsViewed(matchId, userId, inOther)
     }
-    suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> {
-        return firebaseDataSource.getMatchesFlow(userId)
+    suspend fun getMatchesFlow(userId: String, inOther:String=""): Flow<List<RealtimeDBMatch>> {
+        return firebaseDataSource.getMatchesFlow(userId, inOther)
     }
+
     suspend fun getPotentialUserData(): Flow<List<MatchedUserModel>> {
         return firebaseDataSource.getPotentialUserData()
     }
@@ -34,8 +35,8 @@ class Repository(
         return firebaseDataSource.getPotentialUserDataC()
     }
 
-    fun getChatData(chatId: String?): Flow<List<MessageModel>> =
-        firebaseDataSource.getChatData(chatId).map { list ->
+    fun getChatData(chatId: String?, inOther:String=""): Flow<List<MessageModel>> =
+        firebaseDataSource.getChatData(chatId, inOther).map { list ->
             val currUser = FirebaseAuth.getInstance().currentUser?.phoneNumber.orEmpty() // null check
             list.mapNotNull { messageModel ->
                 try {
@@ -51,37 +52,37 @@ class Repository(
             }
         }
 
-    fun storeChatData(chatId: String, message: String) {
-        return firebaseDataSource.storeChatData(chatId, message)
+
+    fun storeChatData(chatId: String, message: String, inOther:String="") {
+        return firebaseDataSource.storeChatData(chatId, message, inOther)
     }
-    suspend fun openChat(chatId: String) {
-        firebaseDataSource.openChat(chatId)
+    suspend fun openChat(chatId: String, inOther:String="") {
+        firebaseDataSource.openChat(chatId, inOther)
     }
 
-    fun displayChats() {
-        return firebaseDataSource.displayChats()
-    }
+
 
     suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> {
         return firebaseDataSource.setUserInfo(number, location)
     }
-    suspend fun getMatch(match: RealtimeDBMatch, userId: String): Match{
-        return firebaseDataSource.getMatch(match, userId)
+    suspend fun getMatch(match: RealtimeDBMatch, userId: String, inOther:String=""): Match{
+        return firebaseDataSource.getMatch(match, userId, inOther)
     }
     suspend fun setMatchInfo(number: String):Flow<MatchedUserModel?>{
         return firebaseDataSource.setMatchedInfo(number)
     }
-    suspend fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        firebaseDataSource.deleteProfile(number, onSuccess, onFailure)
+
+    suspend fun deleteProfile(number: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit, inOther:String="") {
+        firebaseDataSource.deleteProfile(number, onSuccess, onFailure, inOther)
     }
-    suspend fun reportUser(reportedUserId: String, reportingUserId: String) {
-        firebaseDataSource.reportUser(reportedUserId,reportingUserId)
+    suspend fun reportUser(reportedUserId: String, reportingUserId: String, inOther:String="") {
+        firebaseDataSource.reportUser(reportedUserId,reportingUserId, inOther)
     }
-    suspend fun blockUser(blockedUserId: String, blockingUserId: String){
-        firebaseDataSource.blockUser(blockedUserId, blockingUserId)
+    suspend fun blockUser(blockedUserId: String, blockingUserId: String, inOther:String=""){
+        firebaseDataSource.blockUser(blockedUserId, blockingUserId, inOther)
     }
-    suspend fun deleteMatch(matchedUser:String, userId:String){
-        firebaseDataSource.deleteMatch(matchedUser, userId)
+    suspend fun deleteMatch(matchedUser:String, userId:String, inOther:String=""){
+        firebaseDataSource.deleteMatch(matchedUser, userId, inOther)
     }
     suspend fun getWord(): JSONObject?{
         return firebaseDataSource.getWord()
@@ -89,46 +90,46 @@ class Repository(
     suspend fun getHoroscope(sign:String): JSONObject?{
         return firebaseDataSource.getHoroscope(sign)
     }
-    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
-        firebaseDataSource.getLikes(userId, onComplete)
+    fun getLikes(userId: String, onComplete: (Int) -> Unit, inOther:String="") {
+        firebaseDataSource.getLikes(userId, onComplete, inOther)
     }
 
-    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
-        firebaseDataSource.getPasses(userId, onComplete)
+    fun getPasses(userId: String, onComplete: (Int) -> Unit, inOther:String="") {
+        firebaseDataSource.getPasses(userId, onComplete, inOther)
     }
-    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit){
-        firebaseDataSource.getLikedAndPassedby(userId, onComplete)
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit, inOther:String=""){
+        firebaseDataSource.getLikedAndPassedby(userId, onComplete, inOther)
     }
     fun getPoem():  Flow<JSONArray>{
         return firebaseDataSource.getPoem()
     }
-    fun suggest(currentPotential:String, suggestion:String){
-        firebaseDataSource.suggest(currentPotential, suggestion)
+    fun suggest(currentPotential:String, suggestion:String, inOther:String=""){
+        firebaseDataSource.suggest(currentPotential, suggestion, inOther)
     }
-    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit){
-        firebaseDataSource.getSuggestions(currentUser, onComplete)
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit, inOther:String=""){
+        firebaseDataSource.getSuggestions(currentUser, onComplete, inOther)
     }
-    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
+    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit, inOther:String="") {
         var totalNotificationCount = 0
         var countUpdated = 0
 
-        updateNewMatchesCount { newMatchesCount ->
+        updateNewMatchesCount( { newMatchesCount ->
             totalNotificationCount += newMatchesCount
             countUpdated++
             checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
-        }
+        }, inOther)
 
-        updateNewChatsCount { newChatsCount ->
+        updateNewChatsCount( { newChatsCount ->
             totalNotificationCount += newChatsCount
             countUpdated++
             checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
-        }
+        }, inOther)
     }
-    private fun updateNewMatchesCount(callback: NotificationCountCallback) {
-        firebaseDataSource.updateNewMatchesCount(callback)
+    private fun updateNewMatchesCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
+        firebaseDataSource.updateNewMatchesCount(callback, inOther)
     }
-    private fun updateNewChatsCount(callback: NotificationCountCallback) {
-        firebaseDataSource.updateNewChatsCount(callback)
+    private fun updateNewChatsCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
+        firebaseDataSource.updateNewChatsCount(callback, inOther)
     }
 
     // Function to check if all counts have been updated and then call the callback

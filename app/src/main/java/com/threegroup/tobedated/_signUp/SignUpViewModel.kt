@@ -1,6 +1,5 @@
 package com.threegroup.tobedated._signUp
 
-import android.content.ContentResolver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -125,21 +124,14 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             }
     }
 
-    private suspend fun uploadImage(contentResolver: ContentResolver) {
-        viewModelScope.launch {
-            runBlocking {
-                newUser.image1 = storeImageAttempt(newUser.image1, contentResolver, 1, newUser.number)
-                newUser.image2 = storeImageAttempt(newUser.image2, contentResolver, 2, newUser.number)
-                newUser.image3 = storeImageAttempt(newUser.image3, contentResolver, 3, newUser.number)
-                newUser.image4 = storeImageAttempt(newUser.image4, contentResolver, 4, newUser.number)
-                storeData()
-            }
-        }
-    }
     fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location:String, nav:NavHostController){
         viewModelScope.launch {
             runBlocking {
-                signUpVM.uploadImage(mainActivity.contentResolver)
+                newUser.image1 = storeImageAttempt(newUser.image1, mainActivity.contentResolver, 1, newUser.number)
+                newUser.image2 = storeImageAttempt(newUser.image2, mainActivity.contentResolver, 2, newUser.number)
+                newUser.image3 = storeImageAttempt(newUser.image3, mainActivity.contentResolver, 3, newUser.number)
+                newUser.image4 = storeImageAttempt(newUser.image4, mainActivity.contentResolver, 4, newUser.number)
+                storeData()
                 //mainActivity.showToast()
                 mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
                 MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->

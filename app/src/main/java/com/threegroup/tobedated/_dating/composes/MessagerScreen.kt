@@ -14,11 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated.composeables.messages.MessageViewModel
 import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.messages.InsideMessages
 import com.threegroup.tobedated.composeables.messages.KeyBoard
+import com.threegroup.tobedated.composeables.messages.MessageViewModel
 import com.threegroup.tobedated.composeables.messages.MessagerDraw
 import com.threegroup.tobedated.composeables.messages.TextSection
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
@@ -78,7 +78,7 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, 
                     messageChange = { message = it },
                     sendMessage = {
                         if (message != "") {
-                            messageModel.storeChatData(chatId, message)
+                            messageModel.storeChatData(chatId, message, "dating")
                         }
                         message = ""
                         scrollValue = messageList.size + 2
@@ -127,7 +127,7 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
                 messageChange = { message = it },
                 sendMessage = {
                     if (message != "") {
-                        messageModel.storeChatData(chatId, message)
+                        messageModel.storeChatData(chatId, message, "dating")
                     }
                     message = ""
                     scrollValue = messageList.size + 2

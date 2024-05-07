@@ -51,7 +51,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
         viewModelScope.launch(IO) {
             val deferredResult = async {
-                repository.likeOrPass(currentUserId, currentProfile.number, true)?.let { model ->
+                repository.likeOrPass(currentUserId, currentProfile.number, true, "")?.let { model ->
                     NewMatch( // can use NewMatch to display the match splash screen
                         model.id,
                         currentProfile.number,
@@ -77,7 +77,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     fun passCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel) {
         viewModelScope.launch(IO) {
-            repository.likeOrPass(currentUserId, currentProfile.number, false)
+            repository.likeOrPass(currentUserId, currentProfile.number, false, "")
         }
     }
 

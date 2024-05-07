@@ -51,7 +51,7 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
     fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {//TODO more work than expected
         viewModelScope.launch(IO) {
             val deferredResult = async {
-                repository.likeOrPass(currentUserId, currentProfile.number, true)?.let { model ->
+                repository.likeOrPass(currentUserId, currentProfile.number, true, "casual")?.let { model ->
                     NewMatch( // can use NewMatch to display the match splash screen
                         model.id,
                         currentProfile.number,
@@ -77,21 +77,21 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
 
     fun passCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel) {//TODO more work than expected
         viewModelScope.launch(IO) {
-            repository.likeOrPass(currentUserId, currentProfile.number, false)
+            repository.likeOrPass(currentUserId, currentProfile.number, false, "casual")
         }
     }
 
     fun suggestCurrentProfile(currentPotential: String, suggestion: String) {//TODO more work than expected
-        repository.suggest(currentPotential, suggestion)
+        repository.suggest(currentPotential, suggestion, "casual")
     }
 
     fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit) {//TODO more work than expected
-        repository.getSuggestion(currentUser, onComplete)
+        repository.getSuggestion(currentUser, onComplete, "casual")
     }
 
     fun markMatchAsViewed(matchId: String, userId: String) {
         viewModelScope.launch(IO) {
-            repository.markMatchAsViewed(matchId, userId)
+            repository.markMatchAsViewed(matchId, userId, "casual")
         }
     }
 
@@ -101,9 +101,9 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
 
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
-            repository.getMatchesFlow(userId).collect { matches ->
+            repository.getMatchesFlow(userId, "casual").collect { matches ->
                 val convertedMatches = matches.map { match ->
-                    val updatedMatch = repository.getMatch(match, userId)
+                    val updatedMatch = repository.getMatch(match, userId, "casual")
                     observeLastMessage(match, updatedMatch)
                 }
                 _matchList.value = convertedMatches.filterIsInstance<Match>() // Filter out Unit
@@ -148,13 +148,13 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
      */
     fun reportUser(reportedUserId: String, reportingUserId: String) {
         viewModelScope.launch(IO) {
-            repository.reportUser(reportedUserId, reportingUserId)
+            repository.reportUser(reportedUserId, reportingUserId, "casual")
         }
     }
 
     fun blockUser(blockedUserId: String, blockingUserId: String) {
         viewModelScope.launch(IO) {
-            repository.blockUser(blockedUserId, blockingUserId)
+            repository.blockUser(blockedUserId, blockingUserId, "casual")
         }
     }
 
@@ -181,13 +181,13 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
 
     fun deleteMatch(matchedUser: String, userId: String) {
         viewModelScope.launch(IO) {
-            repository.deleteMatch(matchedUser, userId)
+            repository.deleteMatch(matchedUser, userId, "casual")
         }
     }
 
     fun openChat(chatId: String) {
         viewModelScope.launch(IO) {
-            repository.openChat(chatId)
+            repository.openChat(chatId, "casual")
         }
     }
     /**
@@ -224,7 +224,7 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
                 },
                 onFailure = { exception ->
                     println(exception)
-                }
+                }, "casual"
             )
         }
     }
@@ -239,21 +239,21 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
      * This is for someScreen
      */
     fun getLikes(userId: String, onComplete: (Int) -> Unit) {
-        repository.getLikes(userId, onComplete)//TODO more work than expected
+        repository.getLikes(userId, onComplete, "casual")//TODO more work than expected
     }
 
     fun getPasses(userId: String, onComplete: (Int) -> Unit) {
-        repository.getPasses(userId, onComplete)//TODO more work than expected
+        repository.getPasses(userId, onComplete, "casual")//TODO more work than expected
     }
 
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
-        repository.getLikedAndPassedby(userId, onComplete)//TODO more work than expected
+        repository.getLikedAndPassedby(userId, onComplete, "casual")//TODO more work than expected
     }
 
     /**
      * Notifications
      */
     fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
-        repository.updateNotificationCounts(callback)
+        repository.updateNotificationCounts(callback, "casual")
     }
 }

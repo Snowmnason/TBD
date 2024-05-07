@@ -73,12 +73,10 @@ fun MatchedUserProfile(nav: NavHostController, vmDating: DatingViewModel) {
 fun MatchedUserProfileC(nav: NavHostController, vmCasual: CasualViewModel) {
     val talkedUser = vmCasual.getTalkedUser()
     val currUser = vmCasual.getUser()
-    val state = rememberScrollState(0)
 
     Column(
         Modifier
             //.padding(paddingValues)
-            .verticalScroll(state)
             .fillMaxSize()
     ) {
         val location = calcDistance(talkedUser.location, currUser.location) + " miles"

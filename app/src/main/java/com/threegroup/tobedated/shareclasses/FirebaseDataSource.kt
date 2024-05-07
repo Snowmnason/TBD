@@ -46,7 +46,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-typealias NotificationCountCallback = (totalNotificationCount: Int) -> Unit
 class FirebaseDataSource {
 
     private fun getCurrentUserId(): String {
@@ -125,11 +124,7 @@ class FirebaseDataSource {
         }
     }.flowOn(Dispatchers.IO)
 
-    private fun passBlocked(
-        dbReference: DatabaseReference,
-        userId: String,
-        potentialUser: String
-    ): Boolean {
+    private fun passBlocked(dbReference: DatabaseReference, userId: String, potentialUser: String): Boolean {
         //val block = dbReference.child(userId).child("blocked").child(potentialUser)
 
         //val exists = true
@@ -210,37 +205,20 @@ class FirebaseDataSource {
     /**
     Likes and match related functions
      */
-
-//    private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
-//        val likedRef =
-//            FirebaseDatabase.getInstance().getReference("users/$likedUserId/liked/$userId")
-//        val likedSnapshot = likedRef.get().await()
-//        return likedSnapshot.exists()
-//    }
-
-    private suspend fun hasUserLikedBack(userId: String, likedUserId: String): Boolean {
-        val likeOrPassRef = FirebaseDatabase.getInstance().getReference("likeorpass")
+    private suspend fun hasUserLikedBack(userId: String, likedUserId: String, inOther:String= ""): Boolean { //= ""
+        val likeOrPassRef = FirebaseDatabase.getInstance().getReference("likeorpass$inOther")
         val likedNodeRef = likeOrPassRef.child(likedUserId).child("liked")
 
         val likedSnapshot = likedNodeRef.child(userId).get().await()
         return likedSnapshot.exists()
     }
 
-//    fun getMatchId(userId1: String, userId2: String): String {
-//        return if (userId1 > userId2) {
-//            userId1 + userId2
-//        } else {
-//            userId2 + userId1
-//        }
-//    }
-
-
     // TODO (new function that creates a new path in database called "likeorpass" and stores like, pass, likedby, and passed by information)
-    suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean): RealtimeDBMatch? {
+    suspend fun likeOrPass(userId: String, likedUserId: String, isLike: Boolean, inOther:String): RealtimeDBMatch? {
         val database = FirebaseDatabase.getInstance()
 
         // Ensure "likeorpass" node exists
-        val likeOrPassRef = database.getReference("likeorpass")
+        val likeOrPassRef = database.getReference("likeorpass$inOther")
         // likeOrPassRef.keepSynced(true) // Keep the node synchronized for offline capabilities //TODO might need to comment out
 
         // Update user's liked or passed list
@@ -259,12 +237,12 @@ class FirebaseDataSource {
         }
 
         // Check if there's a match
-        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId)
+        val hasUserLikedBack = hasUserLikedBack(userId, likedUserId, inOther)
         if (hasUserLikedBack) {
             val matchId = getMatchId(userId, likedUserId)
 
             // Create a new match in the database
-            val matchRef = database.getReference("matches/$matchId")
+            val matchRef = database.getReference("matches$inOther/$matchId")
             val matchData = RealtimeDBMatchProperties.toData(likedUserId, userId)
             matchRef.setValue(matchData)
 
@@ -304,13 +282,13 @@ class FirebaseDataSource {
         return newMatch
     }
 
-    suspend fun markMatchAsViewed(matchId: String, userId: String) {
-        val matchRef = FirebaseDatabase.getInstance().getReference("matches/$matchId")
+    suspend fun markMatchAsViewed(matchId: String, userId: String, inOther: String) {
+        val matchRef = FirebaseDatabase.getInstance().getReference("matches$inOther/$matchId")
         matchRef.child(userId).child("isNewMatch").setValue(false)
     }
 
-    suspend fun getMatchesFlow(userId: String): Flow<List<RealtimeDBMatch>> = callbackFlow {
-        val ref = FirebaseDatabase.getInstance().getReference("matches")
+    suspend fun getMatchesFlow(userId: String, inOther: String): Flow<List<RealtimeDBMatch>> = callbackFlow {
+        val ref = FirebaseDatabase.getInstance().getReference("matches$inOther")
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val matches = mutableListOf<RealtimeDBMatch>()
@@ -347,7 +325,7 @@ class FirebaseDataSource {
     /**
      * Functions related to blocking and reporting and suggesting
      */
-    suspend fun reportUser(reportedUserId: String, reportingUserId: String) {
+    suspend fun reportUser(reportedUserId: String, reportingUserId: String, inOther: String) {
         val database = FirebaseDatabase.getInstance()
         val reportsRef = database.getReference("reports")
 
@@ -380,14 +358,14 @@ class FirebaseDataSource {
                     println("Transaction successful.")
                     // Remove reported user from matches and chats
                     CoroutineScope(Dispatchers.IO).launch {
-                        blockUser(reportedUserId, reportingUserId)
+                        blockUser(reportedUserId, reportingUserId, inOther)
                     }
                 }
             }
         })
     }
 
-    suspend fun blockUser(blockedUserId: String, blockingUserId: String) {
+    suspend fun blockUser(blockedUserId: String, blockingUserId: String, inOther: String) {
         // Get database reference to "users" path
         val database = FirebaseDatabase.getInstance()
         val databaseRef = database.getReference("users")
@@ -397,18 +375,18 @@ class FirebaseDataSource {
         userBlockedRef.setValue(true)
 
         // Remove blocked user from matches and chats
-        deleteMatch(blockedUserId, blockingUserId)
+        deleteMatch(blockedUserId, blockingUserId, inOther)
     }
 
-    fun suggest(currentPotential: String, suggestion: String) {
+    fun suggest(currentPotential: String, suggestion: String, inOther: String) {
         val database = FirebaseDatabase.getInstance().getReference("users").child(currentPotential)
-            .child("suggestion")
+            .child("suggestion$inOther")
         database.setValue(suggestion)
     }
 
-    fun getSuggestions(currentUser: String, onComplete: (List<String>) -> Unit) {
+    fun getSuggestions(currentUser: String, onComplete: (List<String>) -> Unit, inOther: String) {
         val database = FirebaseDatabase.getInstance().getReference("users").child(currentUser)
-            .child("suggestion")
+            .child("suggestion$inOther")
 
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -435,7 +413,7 @@ class FirebaseDataSource {
     /**
      * Function to get a single instance of a match
      */
-    suspend fun getMatch(match: RealtimeDBMatch, currUser: String): Match {
+    suspend fun getMatch(match: RealtimeDBMatch, currUser: String, inOther: String): Match {
         val userId = if (match.usersMatched[0] == currUser) match.usersMatched[1] else {
             match.usersMatched[0]
         }
@@ -455,7 +433,7 @@ class FirebaseDataSource {
                     getMatchId(
                         match.usersMatched[0],
                         match.usersMatched[1]
-                    )
+                    ), inOther
                 )
             )
         }
@@ -466,13 +444,13 @@ class FirebaseDataSource {
     /**
      * for unmatching
      */
-    suspend fun deleteMatch(matchedUser: String, currUser: String) {
+    suspend fun deleteMatch(matchedUser: String, currUser: String, inOther: String) {
         try {
-            val matchesRef = FirebaseDatabase.getInstance().getReference("matches")
+            val matchesRef = FirebaseDatabase.getInstance().getReference("matches$inOther")
             val matchId2 = matchesRef.child(getMatchId(matchedUser, currUser))
             matchId2.removeValue().await()
 
-            deleteChat(getChatId(matchedUser, currUser))
+            deleteChat(getChatId(matchedUser, currUser), inOther)
             val databaseReference =
                 FirebaseDatabase.getInstance().getReference("users").child(currUser)
                     .child("hasThree")
@@ -483,9 +461,9 @@ class FirebaseDataSource {
         }
     }
 
-    private suspend fun deleteChat(chatId: String) {
+    private suspend fun deleteChat(chatId: String, inOther: String) {
         val chatsRef = FirebaseDatabase.getInstance()
-            .getReference("chats").child(chatId)
+            .getReference("chats$inOther").child(chatId)
         chatsRef.removeValue().await()
     }
 
@@ -496,9 +474,9 @@ class FirebaseDataSource {
      * takes the chat id
      * message related stuff
      */
-    private suspend fun getLastMessage(chatId: String): String {
+    private suspend fun getLastMessage(chatId: String, inOther: String): String {
         return suspendCoroutine { continuation ->
-            val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+            val chatsRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId)
             chatsRef.orderByKey().limitToLast(1).get().addOnSuccessListener { dataSnapshot ->
                 val lastChild = dataSnapshot.children.firstOrNull()
                 val lastMessage = lastChild?.child("message")?.getValue(String::class.java) ?: ""
@@ -510,9 +488,9 @@ class FirebaseDataSource {
         }
     }
 
-    fun getChatData(chatId: String?): Flow<List<MessageModel>> = callbackFlow {
+    fun getChatData(chatId: String?, inOther:String): Flow<List<MessageModel>> = callbackFlow {
         val dbRef: DatabaseReference =
-            FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+            FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId!!)
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<MessageModel>()
@@ -546,7 +524,7 @@ class FirebaseDataSource {
      * takes the message as a parameter
      */
 
-    fun storeChatData(chatId: String?, message: String) {
+    fun storeChatData(chatId: String?, message: String, inOther: String) {
         val senderId = FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
         val currentTime: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
@@ -559,17 +537,17 @@ class FirebaseDataSource {
         map["currentDate"] = currentDate
         map["read"] = false // If read by receiving user change to true
 
-        val reference = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+        val reference = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId!!)
 
         reference.child(reference.push().key!!).setValue(map).addOnSuccessListener {
-            incrementNotificationCount(chatId, senderId)
+            incrementNotificationCount(chatId, senderId, inOther)
         }
             .addOnFailureListener { exception ->
                 Log.e("Chat", "Error sending message: ${exception.message}", exception)
             }
     }
 
-    private fun incrementNotificationCount(chatId: String?, senderId: String?) {
+    private fun incrementNotificationCount(chatId: String?, senderId: String?, inOther: String) {
         // Determine the receiverId and senderId based on the chatId
         val senderIdFromChatId: String
         val receiverIdFromChatId: String
@@ -589,7 +567,7 @@ class FirebaseDataSource {
         if (senderId != receiverId) {
             // Increment the count in the database for the receiver
             val notificationRef =
-                FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+                FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId)
                     .child("notifications").child(receiverId ?: "")
 
             notificationRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -612,10 +590,10 @@ class FirebaseDataSource {
     }
 
 
-    private suspend fun decrementNotificationCount(chatId: String?) {
+    private suspend fun decrementNotificationCount(chatId: String?, inOther: String) {
         // Decrement the count in the database
         val userId = getCurrentUserId()
-        val notificationRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+        val notificationRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId!!)
             .child("notifications").child(userId)
 
         try {
@@ -623,7 +601,7 @@ class FirebaseDataSource {
             val currentCount = currentCountSnapshot.getValue(Int::class.java) ?: 0
             if (currentCount > 0) {
                 // Get the current unread messages count using a Flow
-                val unreadMessagesCount = getUnreadMessagesCount(chatId, userId)
+                val unreadMessagesCount = getUnreadMessagesCount(chatId, userId, inOther)
                 unreadMessagesCount.collect { count ->
                     // Decrement the count by the number of unread messages
                     notificationRef.setValue(currentCount - count)
@@ -635,8 +613,8 @@ class FirebaseDataSource {
         }
     }
 
-    private fun getUnreadMessagesCount(chatId: String?, userId: String): Flow<Int> = flow {
-        val chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId!!)
+    private fun getUnreadMessagesCount(chatId: String?, userId: String, inOther: String): Flow<Int> = flow {
+        val chatRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId!!)
         var unreadMessagesCount = 0
 
         try {
@@ -656,17 +634,17 @@ class FirebaseDataSource {
         }
     }
 
-    suspend fun openChat(chatId: String) {
+    suspend fun openChat(chatId: String, inOther: String) {
         // Mark the chat as read or seen
-        markChatAsRead(chatId)
+        markChatAsRead(chatId, inOther)
 
         // Decrement the notification count
-        decrementNotificationCount(chatId)
+        decrementNotificationCount(chatId, inOther)
     }
 
-    private fun markChatAsRead(chatId: String) {
+    private fun markChatAsRead(chatId: String, inOther: String) {
         val currentUser = getCurrentUserId()
-        val chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+        val chatRef = FirebaseDatabase.getInstance().getReference("chats$inOther").child(chatId)
 
         // Marking the chat as read for the current user
         chatRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -693,63 +671,41 @@ class FirebaseDataSource {
         })
     }
 
-    /**
-     * Function to display the chats in the messages screen
-     */
-    fun displayChats() {
-        val currentId = FirebaseAuth.getInstance().currentUser!!.phoneNumber
-        FirebaseDatabase.getInstance().getReference("chats")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val list = arrayListOf<String>()
-                    val newList = arrayListOf<String>()
-
-                    for (data in snapshot.children) {
-                        if (data.key!!.contains(currentId!!)) {
-                            list.add(data.key!!.replace(currentId, ""))
-                            newList.add(data.key!!)
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-    }
 
     /**
      * Deletes the user profile and all things connected to that profile
      */
-    suspend fun deleteProfile(
-        userId: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
+    suspend fun deleteProfile(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit, inOther: String) {
         try {
             val database = FirebaseDatabase.getInstance()
             //val storage = FirebaseStorage.getInstance()
             val userRef = database.getReference("/users/$userId")
-            removeLikeOrPassData(database, userId)
+
+            removeLikeOrPassData(database, userId, inOther)
 
             // Delete user's matches
-            deleteMatches(database, userId)
+            deleteMatches(database, userId, inOther)
 
             // Delete user's chats
-            deleteChats(database, userId)
+            deleteChats(database, userId, inOther)
+            when(inOther){
+                "casual" -> userRef.child("hasCasual").setValue(false)
+                else ->{
+                    // Delete user's data from Firebase Storage
+                    deleteUserDataFromStorage(userId)
 
-            // Delete user's data from Firebase Storage
-            deleteUserDataFromStorage(userId)
-
-            // Delete user from authentication list
-            deleteUserFromAuthentication()
-            userRef.removeValue()
-                .addOnSuccessListener {
-                    onSuccess()
+                    // Delete user from authentication list
+                    deleteUserFromAuthentication()
+                    userRef.removeValue()
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { e ->
+                            onFailure(e)
+                        }
+                    Log.d("DeleteUserAndData", "User $userId and associated data deleted successfully")
                 }
-                .addOnFailureListener { e ->
-                    onFailure(e)
-                }
-            Log.d("DeleteUserAndData", "User $userId and associated data deleted successfully")
+            }
         } catch (e: Exception) {
             Log.e("DeleteUserAndData", "Error deleting user data: ${e.message}", e)
         }
@@ -869,9 +825,9 @@ class FirebaseDataSource {
     /**
      * SomeScreen Calls
      */
-    fun getLikes(userId: String, onComplete: (Int) -> Unit) {
+    fun getLikes(userId: String, onComplete: (Int) -> Unit, inOther: String) {
         val db = FirebaseDatabase.getInstance()
-        val likePassNodeRef = db.getReference("likeorpass").child(userId).child("liked")
+        val likePassNodeRef = db.getReference("likeorpass$inOther").child(userId).child("liked")
 
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -888,9 +844,9 @@ class FirebaseDataSource {
         likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun getPasses(userId: String, onComplete: (Int) -> Unit) {
+    fun getPasses(userId: String, onComplete: (Int) -> Unit, inOther: String) {
         val db = FirebaseDatabase.getInstance()
-        val likePassNodeRef = db.getReference("likeorpass").child(userId).child("passed")
+        val likePassNodeRef = db.getReference("likeorpass$inOther").child(userId).child("passed")
 
         val valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -907,10 +863,10 @@ class FirebaseDataSource {
         likePassNodeRef.addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
-        val db = FirebaseDatabase.getInstance()
-        val likeNodeRef = db.getReference("likeorpass").child(userId).child("likedby")
-        val passNodeRef = db.getReference("likeorpass").child(userId).child("passedby")
+    fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit, inOther: String) {
+        val db = FirebaseDatabase.getInstance().getReference("likeorpass$inOther")
+        val likeNodeRef = db.child(userId).child("likedby")
+        val passNodeRef = db.child(userId).child("passedby")
 
         var likedCount = 0
         var passedCount = 0
@@ -951,10 +907,10 @@ class FirebaseDataSource {
     /**
      * Functions for notifications
      */
-    fun updateNewMatchesCount(callback: NotificationCountCallback) {
+    fun updateNewMatchesCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
         val userId = getCurrentUserId()
         val database = FirebaseDatabase.getInstance()
-        val userMatchesRef = database.getReference("matches")
+        val userMatchesRef = database.getReference("matches$inOther")
 
         val matchesListener = object : ValueEventListener {
             override fun onDataChange(matchesSnapshot: DataSnapshot) {
@@ -981,10 +937,10 @@ class FirebaseDataSource {
         userMatchesRef.addValueEventListener(matchesListener)
     }
 
-    fun updateNewChatsCount(callback: NotificationCountCallback) {
+    fun updateNewChatsCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
         val userId = getCurrentUserId()
         val database = FirebaseDatabase.getInstance()
-        val userChatsRef = database.getReference("chats")
+        val userChatsRef = database.getReference("chats$inOther")
 
         val chatsListener = object : ValueEventListener {
             override fun onDataChange(chatsSnapshot: DataSnapshot) {
@@ -1075,7 +1031,6 @@ class FirebaseDataSource {
             likePassNodeRef.removeEventListener(likePassListener)
         }
     }.flowOn(Dispatchers.IO)
-
     private fun isProfileInteractedByUserC(potentialUser: String, snapshot: DataSnapshot): Boolean {
         val likedSnapshot = snapshot.child("liked").child(potentialUser)
         val passedSnapshot = snapshot.child("passed").child(potentialUser)
@@ -1086,7 +1041,6 @@ class FirebaseDataSource {
 
         return potentialUser.hasThreeCasual
     }
-
     private fun passPremiumPrefC(user: UserModel, potentialUser: MatchedUserModel): Boolean {
         val userPref: UserSearchPreferenceModel = user.userPref
         val preferences = listOf(

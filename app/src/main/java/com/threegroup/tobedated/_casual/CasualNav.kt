@@ -99,7 +99,7 @@ fun CasualNav(
             insideWhat("Messages")
         }
         composable(
-            route = "ChangePreferenceC/{my_param}/{index}",
+            route = "ChangePreference/{my_param}/{index}",
             arguments = listOf(
                 navArgument("my_param") { type = NavType.StringType },
                 navArgument("index") { type = NavType.IntType },

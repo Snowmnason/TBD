@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composes
+package com.threegroup.tobedated._casual.composes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,27 +17,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
-import com.threegroup.tobedated.composeables.searching.AgeSlider
-import com.threegroup.tobedated.composeables.searching.ChangePreferenceScreen
-import com.threegroup.tobedated.composeables.searching.ChangeSeekingScreen
-import com.threegroup.tobedated.composeables.searching.DistanceSlider
+import com.threegroup.tobedated.composeables.searching.AgeSliderC
+import com.threegroup.tobedated.composeables.searching.ChangePreferenceScreenC
+import com.threegroup.tobedated.composeables.searching.ChangeSeekingScreenC
+import com.threegroup.tobedated.composeables.searching.DistanceSliderC
 import com.threegroup.tobedated.composeables.searching.OtherPreferences
 import com.threegroup.tobedated.composeables.searching.SeekingBox
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingViewModel) {
-    val currentUser = vmDating.getUser()
+fun SearchPreferenceScreenC(navController: NavHostController, vmCasual: CasualViewModel){
+    val currentUser = vmCasual.getUser()
     val searchPref by remember { mutableStateOf(currentUser.userPref) }
 
-    val userPref = listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti, searchPref.children, searchPref.familyPlans, searchPref.meetUp, searchPref.education,
-        searchPref.religion, searchPref.politicalViews, searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed
+    val userPref = listOf(searchPref.gender, searchPref.leaning, searchPref.lookingFor, searchPref.sexualOri, searchPref.meetUp,
+        searchPref.experience, searchPref.location, searchPref.comm, searchPref.sexHealth, searchPref.afterCare,
     )
 
-    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Meeting Up",
-        "Education", "Religion", "Political Views", "Relationship Type", "Intentions", "Drink", "Smokes", "Weed"
+    val pref = listOf("Gender", "Leaning", "Looking For","Sexual Orientation", "Meeting Up",
+        "Experience", "Location", "Communication", "Sex Health", "After Care",
     )
     val state = rememberScrollState(0)
     Column(
@@ -47,16 +47,16 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
             .padding(15.dp, 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AgeSlider(
+        AgeSliderC(
             preferredMin = currentUser.userPref.ageRange.min,
             preferredMax = currentUser.userPref.ageRange.max,
-            vmDating = vmDating,
+            vmDating = vmCasual,
             currentUser = currentUser
         )
         Spacer(modifier = Modifier.height(14.dp))
-        DistanceSlider(
+        DistanceSliderC(
             preferredMax = currentUser.userPref.maxDistance,
-            vmDating = vmDating,
+            vmDating = vmCasual,
             currentUser = currentUser
         )
         Spacer(modifier = Modifier.height(14.dp))
@@ -89,25 +89,21 @@ fun SearchPreferenceScreen(navController: NavHostController, vmDating: DatingVie
     }
 }
 
+
 @Composable
-fun ChangePreference(
-    navController: NavHostController,
-    title: String,
-    index: Int,
-    vmDating: DatingViewModel
-) {
+fun ChangePreferenceC(navController: NavHostController, title:String, index:Int, vmCasual: CasualViewModel){
     if (index == 69420) {
-        ChangeSeekingScreen(
+        ChangeSeekingScreenC(
             navController,
             title = title,
-            vmDating = vmDating,
+            vmDating = vmCasual,
             index = index,
         )
     } else {
-        ChangePreferenceScreen(
+        ChangePreferenceScreenC(
             navController,
             title = title,
-            vmDating = vmDating,
+            vmDating = vmCasual,
             index = index,
         )
     }

@@ -1,40 +1,32 @@
-package com.threegroup.tobedated
+package com.threegroup.tobedated.composeables.messages
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.database.ValueEventListener
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.models.Match
-import com.threegroup.tobedated.shareclasses.models.MessageModel
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MessageViewModel(private var repository: Repository) : ViewModel() {
 
-    private var _chatDataList = MutableStateFlow<List<MessageModel?>>(mutableListOf())
-    val chatDataList = _chatDataList.asStateFlow()
-
-    fun getChatData(chatId: String?) = chatId?.let {
-        repository.getChatData(it)
+    fun getChatData(chatId: String?, inOther:String ="") = chatId?.let {
+        repository.getChatData(it, inOther)
     } ?: flow{
         Log.d("CHAT_TAG", "Error: chatId is null")
     }
 
-    fun storeChatData(chatId: String, message: String) {
-        viewModelScope.launch(IO) {
-            repository.storeChatData(chatId, message)
-        }
-    }
 
-    fun displayChats() {
+    fun storeChatData(chatId: String, message: String, activity: String) {
         viewModelScope.launch(IO) {
-            repository.displayChats()
+            when(activity){
+                "dating"->repository.storeChatData(chatId, message)
+                "casual"->repository.storeChatData(chatId, message, "casual")
+            }
+
         }
     }
 

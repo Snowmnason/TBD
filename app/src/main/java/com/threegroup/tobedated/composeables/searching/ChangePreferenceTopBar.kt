@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.composeables.composables.TopBarText
+import com.threegroup.tobedated.composeables.composables.getTopColors
 import com.threegroup.tobedated.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +34,11 @@ fun ChangePreferenceTopBar(
     changeSettings: @Composable () -> Unit = {},
     save: @Composable RowScope.() -> Unit = {}
 ) {
+    val newTitle = when(title){
+        "Sexual Orientation" -> "Orientation"
+        "Relationship Type" -> "Relationship"
+        else-> title
+    }
     Surface(
         modifier = Modifier
             .fillMaxSize(),
@@ -44,14 +49,8 @@ fun ChangePreferenceTopBar(
             topBar = {
                 CenterAlignedTopAppBar(
                     modifier = Modifier.height(46.dp),
-                    colors = TopAppBarColors(
-                        containerColor = AppTheme.colorScheme.onTertiary,
-                        navigationIconContentColor = AppTheme.colorScheme.primary,
-                        titleContentColor = AppTheme.colorScheme.secondary,
-                        actionIconContentColor = AppTheme.colorScheme.primary,
-                        scrolledContainerColor = AppTheme.colorScheme.background
-                    ),
-                    title = { TopBarText(title = title, isPhoto = false, activity = "dating") },
+                    colors = getTopColors(),
+                    title = { TopBarText(title = newTitle, isPhoto = false, activity = "dating") },
                     navigationIcon = {
                         Button(
                             onClick = { nav.popBackStack() },

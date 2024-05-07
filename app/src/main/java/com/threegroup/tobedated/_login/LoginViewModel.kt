@@ -1,12 +1,8 @@
 package com.threegroup.tobedated._login
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -17,41 +13,30 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.threegroup.tobedated._dating.DatingActivity
-import com.threegroup.tobedated._signUp.SignUpActivity
-import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.formatPhoneNumber
-import com.threegroup.tobedated.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 
-class LoginActivity : ComponentActivity() {
+class LoginViewModel(private var repository: Repository) : ViewModel() {
     private var verificationId: String? = null
     private var userPhoneNumber: String = ""
     private val auth = FirebaseAuth.getInstance()
     private lateinit var location:String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        location = intent.getStringExtra("location").toString()
-        setContent {
-            AppTheme(
-                activity = "login"
-            ) {
-                PolkaDotCanvas()
-                LoginNav(this@LoginActivity)
-            }
-        }
+    fun setLocation(loc:String){
+        location = loc
     }
-    fun sendOtp(code:String, number: String) {
+    fun sendOtp(code:String, number: String, mainActivity:MainActivity, nav:NavHostController) {
         userPhoneNumber = formatPhoneNumber(code, number)
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                signInWithPhoneAuthCredential(credential)
+                signInWithPhoneAuthCredential(credential, mainActivity, nav)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -61,71 +46,71 @@ class LoginActivity : ComponentActivity() {
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken,
             ) {
-                this@LoginActivity.verificationId = verificationId
+                this@LoginViewModel.verificationId = verificationId
             }
         }
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(userPhoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(this) // Activity (for callback binding)
+            .setActivity(mainActivity) // Activity (for callback binding)
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     } // end sendOtp
 
-    fun verifyOtp(otp: String) {
+    fun verifyOtp(otp: String, mainActivity:MainActivity, nav:NavHostController) {
         try {
             if (verificationId != null) { //TODO small bug here, might not be a problem in the future ask dom idk
                 val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-                signInWithPhoneAuthCredential(credential)
+                signInWithPhoneAuthCredential(credential, mainActivity, nav)
             } else {
                 // Handle case where verificationId is null
-                showToast("Verification Code expired")
+                mainActivity.showToast("Verification Code expired")
             }
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             // Handle invalid credentials exception
-            showToast("Incorrect verification code")
+            mainActivity.showToast("Incorrect verification code")
         }
     }
 
 
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential, mainActivity:MainActivity, nav:NavHostController) {
         auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
+            .addOnCompleteListener(mainActivity) { task ->
                 if (task.isSuccessful) {
                     val user = FirebaseAuth.getInstance().currentUser
                     user?.getIdToken(true)
                         ?.addOnCompleteListener { task2 ->
                             if (task2.isSuccessful) {
-                                checkUserExist()
+                                checkUserExist(mainActivity, nav)
                             } else {
                                 // Handle error getting user token
                             }
                         }
                 } else {
-                    showToast("Incorrect code")
+                    mainActivity.showToast("Incorrect code")
                 }
             }
     }
 
-    private fun checkUserExist() {
+    private fun checkUserExist(mainActivity: MainActivity, nav:NavHostController) {
         FirebaseDatabase.getInstance().getReference("users").child(userPhoneNumber)
             .addValueEventListener(object :
                 ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {}
                 override fun onDataChange(p0: DataSnapshot) {
                     if (p0.exists()) {
-                        switchAct(1) //Goes to main
+                        switchAct(1, mainActivity, nav) //Goes to main
                     } else {
-                        switchAct(0) //Goes to sign up
+                        switchAct(0, mainActivity, nav) //Goes to sign up
                     }
                 }
             })
     }
-    fun resendOtp() {
+    fun resendOtp(mainActivity:MainActivity, nav:NavHostController) {
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                signInWithPhoneAuthCredential(credential)
+                signInWithPhoneAuthCredential(credential, mainActivity, nav)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -135,54 +120,36 @@ class LoginActivity : ComponentActivity() {
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken,
             ) {
-                this@LoginActivity.verificationId = verificationId
+                this@LoginViewModel.verificationId = verificationId
             }
         }
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(userPhoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(this) // Activity (for callback binding)
+            .setActivity(mainActivity) // Activity (for callback binding)
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-    private fun switchAct(exists: Int) {
+    private fun switchAct(exists: Int, mainActivity: MainActivity, nav:NavHostController) {
         if (exists == 1) {
-            lifecycleScope.launch {
+            viewModelScope.launch {
                 withContext(Dispatchers.Main) {
                     MyApp.x.setUserInfo(userPhoneNumber, location).collect { userInfo ->
                         MyApp._signedInUser.value = userInfo
                     }
-                    saveTokenToSharedPreferences(userPhoneNumber)
+                    mainActivity.saveTokenToSharedPreferences(userPhoneNumber)
+
+                    nav.navigate("Dating")
+                    //TODO BACKSTACK
 
                 }
             }
-            val intent = Intent(this, DatingActivity::class.java)
-            startActivity(intent)
-            finish()
         } else {
-            val i = Intent(this, SignUpActivity::class.java)
-            i.putExtra("userPhone", userPhoneNumber)
-            i.putExtra("location", location)
-            startActivity(i)
-            finish()
+            nav.navigate("SignUp/$location/$userPhoneNumber")
+            //TODO BACKSTACK
+
         }
     }
-    private fun saveTokenToSharedPreferences(token: String?) {
-        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("user_login", token)
-        editor.apply()
-    }
-    private fun showToast(message: String, ) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
 }
-
-
-enum class Login {
-    LoginMainScreen,
-    LoginScreen,
-}
-

@@ -56,22 +56,33 @@ fun MessageStart(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(Modifier.clickable(onClick = openChat).fillMaxWidth()) {
-            if (userPhoto == "feedback") {
-                Image(
-                    painterResource(id = R.drawable.feedback),
-                    contentDescription = "Feedback photo",
-                    modifier = Modifier.size(58.dp).clip(shape = CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(58.dp)
-                        .clip(shape = CircleShape),
-                    model = userPhoto,
-                    contentDescription = "UserPfp",
-                    contentScale = ContentScale.Crop,
-                )
+            when (userPhoto) {
+                "feedback" -> {
+                    Image(
+                        painterResource(id = R.drawable.feedback),
+                        contentDescription = "Feedback photo",
+                        modifier = Modifier.size(58.dp).clip(shape = CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                "blind" -> {
+                    Image(
+                        painterResource(id = R.drawable.blind_feedback),
+                        contentDescription = "Feedback photo",
+                        modifier = Modifier.size(58.dp).clip(shape = CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                else -> {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(58.dp)
+                            .clip(shape = CircleShape),
+                        model = userPhoto,
+                        contentDescription = "UserPfp",
+                        contentScale = ContentScale.Crop,
+                    )
+                }
             }
             Column(
                 modifier = Modifier.padding(15.dp, 6.dp),

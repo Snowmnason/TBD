@@ -3,17 +3,20 @@ package com.threegroup.tobedated._dating
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.MyApp
+import com.threegroup.tobedated._dating.composes.BlindScreen
 import com.threegroup.tobedated._dating.composes.ChangePreference
 import com.threegroup.tobedated._dating.composes.ChangeProfileScreen
 import com.threegroup.tobedated._dating.composes.ChatsScreen
@@ -32,17 +35,23 @@ import com.threegroup.tobedated.composeables.profiles.PromptEdit
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 
 @Composable
-fun DatingNav(dating: DatingActivity){
+fun DatingNav(
+    main: MainActivity,
+    vmApi: ApiViewModel,
+    mainNav:NavHostController,
+    navController:NavHostController,
+    insideWhat: (String) -> Unit,
+    ){
+    LaunchedEffect(Unit) {
+        //navController.popBackStack()
+    }
+
     val potentialUserDataLoaded = remember { mutableStateOf(false) }
-    val navController = rememberNavController()
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)
     viewModelDating.fetchPotentialUserData()
-    val vmApi = viewModel { ApiViewModel(MyApp.x) }
-    vmApi.fetchWordOfTheDay()
-    vmApi.fetchHoroscope(viewModelDating.getUser().star)
-    vmApi.fetchPoem()
+
 
     val userList by viewModelDating.potentialUserData.collectAsState()
     val isPotentialUserDataLoaded = userList.isNotEmpty()
@@ -58,34 +67,43 @@ fun DatingNav(dating: DatingActivity){
         popExitTransition = { ExitTransition.None }) {
         composable(route = Dating.SearchingScreen.name) {
             if (isPotentialUserDataLoaded) {
-                SearchingScreen(viewModelDating, dating, navController, vmApi)
+                SearchingScreen(viewModelDating, vmApi)
             }else{
-                ComeBackScreen(navController, dating, vmApi, viewModelDating)
+                ComeBackScreen(navController, vmApi, viewModelDating)
             }
+            insideWhat("Main")
         }
         composable(route = Dating.ProfileScreen.name) {
-            ProfileScreen(navController, viewModelDating, dating, vmApi)
+            ProfileScreen(navController, viewModelDating)
+            insideWhat("Main")
         }
         composable(route = Dating.EditProfileScreen.name) {
-            EditProfileScreen(navController, dating, viewModelDating)
+            EditProfileScreen(navController, main, viewModelDating, mainNav)
+            insideWhat("Settings")
         }
         composable(route = Dating.SearchPreferenceScreen.name) {
             SearchPreferenceScreen(navController, viewModelDating)
+            insideWhat("Settings")
         }
         composable(route = Dating.ChatsScreen.name) {
-            ChatsScreen(navController, viewModelDating, dating, vmApi)
+            ChatsScreen(navController, viewModelDating)
+            insideWhat("Main")
         }
-        composable(route = Dating.GroupsScreen.name) {
-            GroupsScreen(navController, dating, vmApi)
+        composable(route = Dating.BlindScreen.name) {
+            BlindScreen(navController)
+            insideWhat("Main")
         }
         composable(route = Dating.SomeScreen.name) {
-            SomeScreen(navController, dating, viewModelDating, vmApi)
+            SomeScreen(viewModelDating)
+            insideWhat("Main")
         }
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController, viewModelDating, vmApi)
+            insideWhat("Messages")
         }
         composable(route = Dating.FeedBackMessagerScreen.name) {
             FeedBackMessagerScreen(navController, viewModelDating)
+            insideWhat("Messages")
         }
         composable(
             route = "ChangePreference/{my_param}/{index}",
@@ -97,6 +115,7 @@ fun DatingNav(dating: DatingActivity){
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangePreference(navController, myParam, myIndex, viewModelDating)
+            insideWhat("")
         }
         composable(
             route = "ChangeProfileScreen/{my_param}/{index}",
@@ -108,9 +127,11 @@ fun DatingNav(dating: DatingActivity){
             val myParam = backStackEntry.arguments?.getString("my_param") ?: ""
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             ChangeProfileScreen(navController, myParam, myIndex, viewModelDating)
+            insideWhat("")
         }
         composable(route = "BioEdit") {
             BioEdit(nav = navController, vmDating = viewModelDating)
+            insideWhat("")
         }
         composable(
             route = "PromptEdit/{index}",
@@ -118,13 +139,26 @@ fun DatingNav(dating: DatingActivity){
         ) { backStackEntry ->
             val myIndex = backStackEntry.arguments?.getInt("index") ?: 0
             PromptEdit(navController, viewModelDating, myIndex)
+            insideWhat("")
         }
         composable(route = "ChangePhoto") {
-            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = dating)
+            ChangePhoto(nav = navController, vmDating = viewModelDating, dating = main)
+            insideWhat("")
         }
         composable(route = "MatchedUserProfile") {
             MatchedUserProfile(nav = navController, vmDating = viewModelDating)
+            insideWhat("Match")
         }
     }
-
+}
+enum class Dating {
+    SearchingScreen,
+    SearchPreferenceScreen,
+    ProfileScreen,
+    EditProfileScreen,
+    ChatsScreen,
+    BlindScreen,
+    SomeScreen,
+    MessagerScreen,
+    FeedBackMessagerScreen
 }

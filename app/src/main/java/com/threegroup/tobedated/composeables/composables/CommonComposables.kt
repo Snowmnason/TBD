@@ -33,7 +33,10 @@ fun SimpleBox(
     onClick: () -> Unit = {}
 ){
     val thickness = 1
-    val boardColor= Color(0xFFB39DB7)
+    var boardColor= Color(0xFFB39DB7)
+    if(verify){
+        boardColor = Color(0xFF17C5C5)
+    }
     Surface(
         modifier = Modifier
             .fillMaxWidth()

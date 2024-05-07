@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal
+package com.threegroup.tobedated._casual.signup
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.FirebaseDatabase
@@ -10,7 +10,7 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class CausalViewModel(private var repository: Repository) : ViewModel() {
+class CasualSignUpViewModel(private var repository: Repository) : ViewModel() {
     private val _signedInUser = MutableStateFlow<UserModel?>(null)
     private var signedInUser: StateFlow<UserModel?> = _signedInUser
 
@@ -23,7 +23,7 @@ class CausalViewModel(private var repository: Repository) : ViewModel() {
     }
 
     /**
-     *  FOR causal additions
+     *  FOR casual additions
      */
 
     private var newUserAdditionsIndex = AdditionsIndex()

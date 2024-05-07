@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composes
+package com.threegroup.tobedated._casual.composes
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,64 +27,50 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MainActivity
-import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated._signUp.composables.BigButton
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.AlertDialogBoxWTextField
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.composables.OutLinedButton
 import com.threegroup.tobedated.composeables.composables.SimpleBox
-import com.threegroup.tobedated.composeables.profiles.ChangeProfile
-import com.threegroup.tobedated.composeables.profiles.EditProfile
+import com.threegroup.tobedated.composeables.profiles.ChangeProfileC
+import com.threegroup.tobedated.composeables.profiles.EditProfileC
 
 @Composable
-fun EditProfileScreen(
-    navController: NavHostController,
-    dating: MainActivity,
-    vmDating: DatingViewModel,
-    mainNav:NavHostController,
-) {
-    val currentUser = vmDating.getUser()
+fun EditProfileScreenC(navController: NavHostController, main: MainActivity, vmCasual: CasualViewModel, mainNav: NavHostController){
+    val currentUser = vmCasual.getUser()
     var showDelete by rememberSaveable { mutableStateOf(false) }
     var showBlock by rememberSaveable { mutableStateOf(false) }
     var seen by remember { mutableStateOf(currentUser.seeMe) }
 //currentUser.mbti,
     val userSettings = listOf(
+        currentUser.casualAdditions.leaning,
         currentUser.ethnicity,
         currentUser.pronoun,
         currentUser.gender,
         currentUser.sexOrientation,
         currentUser.meetUp,
-        currentUser.relationship,
-        currentUser.intentions,
-        currentUser.star,
-        currentUser.children,
-        currentUser.family,
-        currentUser.drink,
-        currentUser.smoke,
-        currentUser.weed,
-        currentUser.politics,
-        currentUser.education,
-        currentUser.religion,
+        currentUser.casualAdditions.lookingFor,
+        currentUser.casualAdditions.experience,
+        currentUser.casualAdditions.location,
+        currentUser.casualAdditions.comm,
+        currentUser.casualAdditions.sexHealth,
+        currentUser.casualAdditions.afterCare,
     )
 
     val pref = listOf(
+        "Leaning",
         "Ethnicity",
         "Pronoun",
         "Gender",
         "Sexual Orientation",
         "Meeting Up",
-        "Relationship Type",
-        "Intentions",
-        "Zodiac Sign",
-        "Children",
-        "Family",
-        "Drink",
-        "Smokes",
-        "Weed",
-        "Political Views",
-        "Education",
-        "Religion"//"Mbti",
+        "Looking For",
+        "Experience",
+        "Communication",
+        "Sex Health",
+        "Aftercare"
     )
     val state = rememberScrollState(0)
     Column(
@@ -94,7 +80,7 @@ fun EditProfileScreen(
             .padding(15.dp, 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-    SimpleBox(
+        SimpleBox(
             whatsInsideTheBox = {
                 Row(
                     modifier = Modifier
@@ -103,7 +89,7 @@ fun EditProfileScreen(
                         .clickable {
                             seen = !seen
                             currentUser.seeMe = seen
-                            vmDating.updateUser(currentUser)
+                            vmCasual.updateUser(currentUser)
                         },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -113,7 +99,7 @@ fun EditProfileScreen(
                         onCheckedChange = {
                             seen = !seen
                             currentUser.seeMe = seen
-                            vmDating.updateUser(currentUser)
+                            vmCasual.updateUser(currentUser)
                         })
                 }
             }
@@ -121,7 +107,7 @@ fun EditProfileScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
         for (i in pref.indices) {
-            EditProfile(
+            EditProfileC(
                 title = pref[i],
                 navController = navController,
                 userSetting = userSettings[i],
@@ -133,7 +119,7 @@ fun EditProfileScreen(
         BigButton(
             text = "Log Out",
             onClick = {
-                vmDating.goToLogin(dating, mainNav)
+                vmCasual.goToLogin(main, mainNav)
             }, isUse = true
         )
         Column(
@@ -165,9 +151,9 @@ fun EditProfileScreen(
         AlertDialogBox(
             dialogTitle = "Are you sure?",
             onDismissRequest = { showDelete = false },
-            dialogText = "if you confirm your account and everything connected will be deleted",
+            dialogText = "if you confirm your casual account and everything connected will be deleted",
             onConfirmation = {
-                vmDating.deleteProfile(currentUser.number, dating, mainNav)
+                vmCasual.deleteProfile(currentUser.number, main, mainNav)
 
             }
         )
@@ -179,7 +165,7 @@ fun EditProfileScreen(
             onDismissRequest = { showBlock = false },
             dialogText = "Blocking someone prevents them seeing, this is not reversible",
             onConfirmation = {
-                vmDating.blockUser(number, currentUser.number)
+                vmCasual.blockUser(number, currentUser.number)
                 showBlock = false
             },
             number = number,
@@ -201,16 +187,11 @@ fun EditProfileScreen(
 }
 
 @Composable
-fun ChangeProfileScreen(
-    navController: NavHostController,
-    title: String,
-    index: Int,
-    vmDating: DatingViewModel
-) {
-    ChangeProfile(
+fun ChangeProfileScreenC(navController: NavHostController, title:String, index:Int, vmCasual: CasualViewModel){
+    ChangeProfileC(
         navController,
         title = title,
-        vmDating = vmDating,
+        vmCasual = vmCasual,
         index = index,
     )
 }

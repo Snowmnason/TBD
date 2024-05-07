@@ -1,19 +1,13 @@
 package com.threegroup.tobedated._friends
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MyApp
-import com.threegroup.tobedated._causal.CausalActivity
-import com.threegroup.tobedated._dating.DatingActivity
-import com.threegroup.tobedated._friends.composables.TopAndBotBarsFriends
-import com.threegroup.tobedated.composeables.composables.Comeback
 import com.threegroup.tobedated.composeables.composables.PolkaDotCanvas
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.theme.AppTheme
@@ -44,64 +38,14 @@ class FriendsActivity : ComponentActivity() {
             }
         }
     }
-    fun switchActivities(switchActivity:String){
-        val intent = when (switchActivity) {
-            "dating" -> {
-                Intent(this, DatingActivity::class.java)
-            }
-
-            "causal" -> {
-                Intent(this, CausalActivity::class.java)
-            }
-
-            "friends" -> {
-                Intent(this, FriendsActivity::class.java)
-            }
-            else -> {
-                Intent(this, DatingActivity::class.java)
-            }
-        }
-        startActivity(intent)
-        finish()
-    }
 }
 @Composable
 fun SearchingScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
-    val state = rememberScrollState()
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 2,
-        settingsButton = { },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            Comeback(text = "Simple text", todo = "wait", vmApi = vmApi)
-        }
-    )
+
 }
 @Composable
 fun ProfileScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
-    val state = rememberScrollState()
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 0,
-        settingsButton = { },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            PolkaDotCanvas()
-        }
-    )
+
 }
 @Composable
 fun EditProfileScreen(nav:NavHostController, friendsActivity: FriendsActivity, vmFriends:FriendViewModel){
@@ -113,60 +57,15 @@ fun SearchPreferenceScreen(nav:NavHostController, vmFriends:FriendViewModel){
 }
 @Composable
 fun ChatsScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
-    val state = rememberScrollState()
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 0,
-        settingsButton = { },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            PolkaDotCanvas()
-        }
-    )
+
 }
 @Composable
 fun GroupsScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
-    val state = rememberScrollState()
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 0,
-        settingsButton = { },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            PolkaDotCanvas()
-        }
-    )
+
 }
 @Composable
 fun SomeScreen(navController: NavHostController, friend:FriendsActivity, vmApi: ApiViewModel){
-    val state = rememberScrollState()
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = notifiChat,
-        notifiGroup = notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 0,
-        settingsButton = { },
-        state = state,
-        vmApi = vmApi,
-        currentScreen = {
-            PolkaDotCanvas()
-        }
-    )
+
 }
 @Composable
 fun MessagerScreen(nav:NavHostController, vmFriends:FriendViewModel){
@@ -182,20 +81,7 @@ fun ChangeProfileScreen(navController: NavHostController, title:String, index:In
 }
 @Composable
 fun ComeBackScreen(navController: NavHostController, friend: FriendsActivity, vmApi: ApiViewModel){
-    TopAndBotBarsFriends(
-        friend = friend,
-        notifiChat = com.threegroup.tobedated._dating.notifiChat,
-        notifiGroup = com.threegroup.tobedated._dating.notifiGroup,
-        titleText = "To Be Dated",
-        isPhoto = true,
-        nav = navController,
-        selectedItemIndex = 0,
-        settingsButton = { navController.navigate("SearchPreferenceScreen") },
-        vmApi = vmApi,
-        currentScreen = {
-            Comeback(text = "currently loading your future connection", todo = "wait", vmApi = vmApi)
-        }
-    )
+
 }
 
 enum class Friend {

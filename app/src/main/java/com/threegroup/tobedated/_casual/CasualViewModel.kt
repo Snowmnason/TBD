@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating
+package com.threegroup.tobedated._casual
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DatingViewModel(private var repository: Repository) : ViewModel() {
+class CasualViewModel(private var repository: Repository) : ViewModel() {
     private lateinit var signedInUser: StateFlow<UserModel?>
 
     /**
@@ -42,16 +42,16 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     fun fetchPotentialUserData() {
         viewModelScope.launch {
-            repository.getPotentialUserData().collect { userData ->
+            repository.getPotentialUserDataC().collect { userData ->
                 _potentialUserData.value = userData
             }
         }
     }
 
-    fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {
+    fun likeCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel): NewMatch {//TODO more work than expected
         viewModelScope.launch(IO) {
             val deferredResult = async {
-                repository.likeOrPass(currentUserId, currentProfile.number, true, "")?.let { model ->
+                repository.likeOrPass(currentUserId, currentProfile.number, true, "casual")?.let { model ->
                     NewMatch( // can use NewMatch to display the match splash screen
                         model.id,
                         currentProfile.number,
@@ -66,7 +66,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                 }
             }
             val queryResult = deferredResult.await()
-            withContext(Dispatchers.Main) { // TODO with context might be an issue
+            withContext(Dispatchers.Main) { //with context might be an issue
                 if (queryResult != null) {
                     _likedProfile.value = queryResult
                 }
@@ -75,35 +75,35 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         return likedProfile.value
     }
 
-    fun passCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel) {
+    fun passCurrentProfile(currentUserId: String, currentProfile: MatchedUserModel) {//TODO more work than expected
         viewModelScope.launch(IO) {
-            repository.likeOrPass(currentUserId, currentProfile.number, false, "")
+            repository.likeOrPass(currentUserId, currentProfile.number, false, "casual")
         }
     }
 
-    fun suggestCurrentProfile(currentPotential: String, suggestion: String) {
-        repository.suggest(currentPotential, suggestion)
+    fun suggestCurrentProfile(currentPotential: String, suggestion: String) {//TODO more work than expected
+        repository.suggest(currentPotential, suggestion, "casual")
     }
 
-    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit) {
-        repository.getSuggestion(currentUser, onComplete)
+    fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit) {//TODO more work than expected
+        repository.getSuggestion(currentUser, onComplete, "casual")
     }
 
     fun markMatchAsViewed(matchId: String, userId: String) {
         viewModelScope.launch(IO) {
-            repository.markMatchAsViewed(matchId, userId)
+            repository.markMatchAsViewed(matchId, userId, "casual")
         }
     }
 
     private var _matchList = MutableStateFlow(listOf<Match>())
-    val matchList = _matchList.asStateFlow()
+    val matchList = _matchList.asStateFlow()//TODO more work than expected
     // call this in the composable as val match list by viewModel.matchList.observeAsState()
 
     fun getMatchesFlow(userId: String) {
         viewModelScope.launch(IO) {
-            repository.getMatchesFlow(userId).collect { matches ->
+            repository.getMatchesFlow(userId, "casual").collect { matches ->
                 val convertedMatches = matches.map { match ->
-                    val updatedMatch = repository.getMatch(match, userId)
+                    val updatedMatch = repository.getMatch(match, userId, "casual")
                     observeLastMessage(match, updatedMatch)
                 }
                 _matchList.value = convertedMatches.filterIsInstance<Match>() // Filter out Unit
@@ -112,7 +112,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     }
 
 
-    private fun observeLastMessage(match: RealtimeDBMatch, updatedMatch: Match): Match {
+    private fun observeLastMessage(match: RealtimeDBMatch, updatedMatch: Match): Match {//TODO more work than expected
         val chatId = getChatId(match.usersMatched[0], match.usersMatched[1])
         val chatsRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
         val listener = object : ValueEventListener {
@@ -135,7 +135,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     }
 
 
-    fun getMatchSize(): Int {
+    fun getMatchSize(): Int {//TODO more work than expected
         return if (matchList.value.isEmpty()) {
             0
         } else {
@@ -148,13 +148,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      */
     fun reportUser(reportedUserId: String, reportingUserId: String) {
         viewModelScope.launch(IO) {
-            repository.reportUser(reportedUserId, reportingUserId)
+            repository.reportUser(reportedUserId, reportingUserId, "casual")
         }
     }
 
     fun blockUser(blockedUserId: String, blockingUserId: String) {
         viewModelScope.launch(IO) {
-            repository.blockUser(blockedUserId, blockingUserId)
+            repository.blockUser(blockedUserId, blockingUserId, "casual")
         }
     }
 
@@ -163,7 +163,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      *
      * This is for Chats
      */
-    private var _selectedUser = MutableStateFlow<MatchedUserModel?>(null)
+    private var _selectedUser = MutableStateFlow<MatchedUserModel?>(null)//TODO MAYBE more work than expected
     var selectedUser: StateFlow<MatchedUserModel?> = _selectedUser
 
     //Stuff for setting and getting matches
@@ -181,13 +181,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
 
     fun deleteMatch(matchedUser: String, userId: String) {
         viewModelScope.launch(IO) {
-            repository.deleteMatch(matchedUser, userId)
+            repository.deleteMatch(matchedUser, userId, "casual")
         }
     }
 
     fun openChat(chatId: String) {
         viewModelScope.launch(IO) {
-            repository.openChat(chatId)
+            repository.openChat(chatId, "casual")
         }
     }
     /**
@@ -215,7 +215,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
         signedInUser = MyApp.signedInUser
     }
 
-    fun deleteProfile(number: String, datingActivity: MainActivity, mainNav:NavHostController) {
+    fun deleteProfile(number: String, datingActivity: MainActivity, mainNav:NavHostController) { //TODO more work than expect
         viewModelScope.launch {
             repository.deleteProfile(number,
                 onSuccess = {
@@ -224,7 +224,7 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
                 },
                 onFailure = { exception ->
                     println(exception)
-                }
+                }, "casual"
             )
         }
     }
@@ -239,21 +239,21 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
      * This is for someScreen
      */
     fun getLikes(userId: String, onComplete: (Int) -> Unit) {
-        repository.getLikes(userId, onComplete)
+        repository.getLikes(userId, onComplete, "casual")//TODO more work than expected
     }
 
     fun getPasses(userId: String, onComplete: (Int) -> Unit) {
-        repository.getPasses(userId, onComplete)
+        repository.getPasses(userId, onComplete, "casual")//TODO more work than expected
     }
 
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
-        repository.getLikedAndPassedby(userId, onComplete)
+        repository.getLikedAndPassedby(userId, onComplete, "casual")//TODO more work than expected
     }
 
     /**
      * Notifications
      */
     fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
-        repository.updateNotificationCounts(callback)
+        repository.updateNotificationCounts(callback, "casual")
     }
 }

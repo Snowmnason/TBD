@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composes
+package com.threegroup.tobedated._casual.composes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,38 +26,36 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.threegroup.tobedated.R
-import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
-fun SomeScreen(
-    vmDating: DatingViewModel,
-) {
-    val userId = vmDating.getUser().number
+fun SomeScreenC(vmCasual: CasualViewModel){
+    val userId = vmCasual.getUser().number
     var passed by remember { mutableIntStateOf(0) }
     var liked by remember { mutableIntStateOf(0) }
     var seen by remember { mutableIntStateOf(0) }
     var suggestions by remember { mutableStateOf(listOf("")) }
-    vmDating.getPasses(
+    vmCasual.getPasses(
         userId,
         onComplete = {
-            total -> passed = total
+                total -> passed = total
         }
     )
-    vmDating.getLikes(
+    vmCasual.getLikes(
         userId,
         onComplete = {
                 total -> liked = total
         }
     )
-    vmDating.getLikedAndPassedby(
+    vmCasual.getLikedAndPassedby(
         userId,
         onComplete = {
                 total -> seen = total
         }
     )
-    vmDating.getSuggestion(
+    vmCasual.getSuggestion(
         userId,
         onComplete = { list ->
             suggestions = list

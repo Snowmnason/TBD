@@ -40,17 +40,16 @@ val smokeOptions = listOf("Yes", "Sometimes", "No", "Ask me")
 val weedOptions = listOf("Yes", "Sometimes", "No", "Ask me")
 val meetUpOptions = listOf("Right Away", "Talk first", "Take it slow", "Ask me")
 
-//Causal options
-val leaningOptions = listOf("Dominant", "Submissive", "Switch", "Vanilla", "Ask me")
+//Casual options
+//seekingOptions
 val lookingForOptions = listOf("ONS", "FWB", "Casual", "Ask me")
 val experienceOptions = listOf("Novice", "Intermediate", "Experienced", "Ask me")
-//sexOrientationOptions
 //ethnicityOptions
-//genderOptions
-//sexOptions
-//seekingOptions
 //pronounOptions
+//genderOptions
+//sexOrientationOptions
 //meetUpOptions
+val leaningOptions = listOf("Dominant", "Submissive", "Switch", "Vanilla", "Ask me")
 //intentionsOptions
 val locationOptions = listOf("Host", "Travel", "Both", "Ask me")
 val commOptions = listOf("Direct and explicit", "Flirty and playful", "Open and honest", "Ask me")
@@ -175,6 +174,14 @@ val drinkList = listOf("Yes", "Sometimes", "No", "Doesn't Matter")
 val smokeList = listOf("Yes", "Sometimes", "No", "Doesn't Matter")
 val weedList = listOf("Yes", "Sometimes", "No", "Doesn't Matter")
 val meetUpList = listOf("Right Away", "Talk first", "Take it slow", "Doesn't Matter")
+
+val lookingForList = listOf("ONS", "FWB", "Casual", "Doesn't Matter")//
+val leaningList = listOf("Dominant", "Submissive", "Switch", "Vanilla", "Doesn't Matter")//
+val experienceList = listOf("Novice", "Intermediate", "Experienced", "Doesn't Matter")
+val locationList = listOf("Host", "Travel", "Both", "Doesn't Matter")
+val commList = listOf("Direct and explicit", "Flirty and playful", "Open and honest", "Doesn't Matter")
+val sexHealthList = listOf("STI-Free", "Regularly Tested", "On Birth Control", "Vasectomy/Tubal Ligation", "Doesn't Matter",)
+val afterCareList = listOf("Cuddling", "Talking", "Snacking", "Quick Departure", "Doesn't Matter",)
 
 @Composable
 fun getStarSymbol(star:String):ImageVector{

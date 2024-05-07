@@ -41,6 +41,7 @@ data class UserModel(
     var verified        : Boolean = false,
     var seeMe           : Boolean = false,
     var hasThree        : Boolean = false,
+    var hasThreeCasual  : Boolean = false,
     var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel(),
     var hasCasual       : Boolean = false,
     var hasFriends      : Boolean = false,
@@ -80,7 +81,15 @@ data class UserSearchPreferenceModel(
     var drink               : List<String> = listOf("Doesn't Matter"),
     var smoke               : List<String> = listOf("Doesn't Matter"),
     var weed                : List<String> = listOf("Doesn't Matter"),
-    var meetUp                : List<String> = listOf("Doesn't Matter"),
+    var meetUp              : List<String> = listOf("Doesn't Matter"),
+    //CasualPreferences
+    var leaning             :List<String> = listOf("Doesn't Matter"),
+    var lookingFor          :List<String> = listOf("Doesn't Matter"),
+    var experience          :List<String> = listOf("Doesn't Matter"),
+    var location            :List<String> = listOf("Doesn't Matter"),
+    var comm                :List<String> = listOf("Doesn't Matter"),
+    var sexHealth           :List<String> = listOf("Doesn't Matter"),
+    var afterCare           :List<String> = listOf("Doesn't Matter"),
 )
 
 data class PreferenceIndexModel(

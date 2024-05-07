@@ -6,9 +6,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
-suspend fun removeLikeOrPassData(database: FirebaseDatabase, userId: String) {
+suspend fun removeLikeOrPassData(database: FirebaseDatabase, userId: String, inOther: String) {
     try {
-        val likeOrPassRef = database.getReference("likeorpass")
+        val likeOrPassRef = database.getReference("likeorpass$inOther")
         val likeOrPassSnapshot = likeOrPassRef.get().await()
 
         // Delete instances of the user in other user's likeorpass children
@@ -31,9 +31,9 @@ suspend fun removeLikeOrPassData(database: FirebaseDatabase, userId: String) {
     }
 }
 
-suspend fun deleteMatches(database: FirebaseDatabase, userId: String) {
+suspend fun deleteMatches(database: FirebaseDatabase, userId: String, inOther: String) {
     try {
-        val matchesRef = database.getReference("matches")
+        val matchesRef = database.getReference("matches$inOther")
         val matchesSnapshot = matchesRef.get().await()
 
         matchesSnapshot.children.forEach { matchSnapshot ->
@@ -49,8 +49,8 @@ suspend fun deleteMatches(database: FirebaseDatabase, userId: String) {
     }
 }
 
-suspend fun deleteChats(database: FirebaseDatabase, userId: String) {
-    val chatsRef = database.getReference("chats")
+suspend fun deleteChats(database: FirebaseDatabase, userId: String, inOther: String) {
+    val chatsRef = database.getReference("chats$inOther")
     val chatsSnapshot = chatsRef.get().await()
 
     chatsSnapshot.children.forEach { chatSnapshot ->

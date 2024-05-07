@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._dating.composes
+package com.threegroup.tobedated._casual.composes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,20 +9,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.threegroup.tobedated._dating.DatingViewModel
+import com.threegroup.tobedated._casual.CasualViewModel
 import com.threegroup.tobedated.composeables.messages.MessageStart
 import com.threegroup.tobedated.shareclasses.getChatId
 import com.threegroup.tobedated.shareclasses.getMatchId
 
-/*
-Start of Message Screens
- */
 @Composable
-fun ChatsScreen(
-    navController: NavHostController,
-    vmDating: DatingViewModel,
-) {
-    val matchedUsers by vmDating.matchList.collectAsState() //TODO this has to be changed to be matches user
+fun ChatsScreenC(navController: NavHostController, vmCasual: CasualViewModel){
+    val matchedUsers by vmCasual.matchList.collectAsState()
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState(0)
@@ -41,15 +35,12 @@ fun ChatsScreen(
                 userLast = matchUser.lastMessage, //TODO Last message goes here message.message (some how last)
                 openChat = {
                     navController.navigate("MessagerScreen")
-                    vmDating.setTalkedUser(matchUser.userId)
-                    vmDating.openChat(getChatId(vmDating.getUser().number,matchUser.userId))
-                    vmDating.markMatchAsViewed(getMatchId(vmDating.getUser().number,matchUser.userId), vmDating.getUser().number)
+                    vmCasual.setTalkedUser(matchUser.userId)
+                    vmCasual.openChat(getChatId(vmCasual.getUser().number,matchUser.userId))
+                    vmCasual.markMatchAsViewed(getMatchId(vmCasual.getUser().number,matchUser.userId), vmCasual.getUser().number)
                 }
             )
         }
-
-
-
         //This is for the feed back system
         MessageStart(
             userPhoto = "feedback",

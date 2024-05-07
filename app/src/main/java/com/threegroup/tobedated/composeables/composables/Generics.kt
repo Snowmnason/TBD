@@ -24,9 +24,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -150,14 +152,14 @@ fun TopBarText(
             id = when(activity){
                 "dating" -> R.drawable.tbd_dark
                 "friends" -> R.drawable.tbf_dark
-                "causal" -> R.drawable.tbc_dark
+                "casual" -> R.drawable.tbc_dark
                 else -> R.drawable.tbd_dark
             }
         ) else painterResource(
             id = when(activity){
                 "dating" -> R.drawable.tbd_light
                 "friends" -> R.drawable.tbf_light
-                "causal" -> R.drawable.tbc_light
+                "casual" -> R.drawable.tbc_light
                 else -> R.drawable.tbd_light
             }
         )
@@ -648,8 +650,10 @@ fun Comeback(
     todo:String,
     vmApi:ApiViewModel
 ){
+    val state = rememberScrollState(0)
     Column(
-        Modifier
+        modifier = Modifier
+            .verticalScroll(state)
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ){
@@ -716,16 +720,12 @@ fun Comeback(
 }
 @Composable
 fun NavDraw(
-    colorDating:Color = AppTheme.colorScheme.onBackground,
-    colorFriends:Color = AppTheme.colorScheme.onBackground,
-    colorCausal:Color = AppTheme.colorScheme.onBackground,
     datingClickable: () -> Unit = {},
-    causalClickable: () -> Unit = {},
+    casualClickable: () -> Unit = {},
     friendsClickable: () -> Unit = {},
-    vmApi:ApiViewModel
-    
+    vmApi:ApiViewModel,
+    currentActivity: String = "dating"
 ){
-
     Column(
         modifier = Modifier.padding(25.dp)
     ) {
@@ -735,8 +735,9 @@ fun NavDraw(
             .fillMaxWidth()
             .clickable { datingClickable() }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating", tint = colorDating, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating",
+                tint = if(currentActivity == "dating"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Dating", style = AppTheme.typography.titleLarge)
         }
@@ -745,8 +746,9 @@ fun NavDraw(
             .fillMaxWidth()
             .clickable { friendsClickable() }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends", tint = colorFriends, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends",
+                tint = if(currentActivity == "friend"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Friends", style = AppTheme.typography.titleLarge)
         }
@@ -754,13 +756,14 @@ fun NavDraw(
         Row(modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                causalClickable()
+                casualClickable()
             }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.causalsce), contentDescription = "causal", tint = colorCausal, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.casualsce), contentDescription = "casual",
+                tint = if(currentActivity == "casual"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
-            GenericTitleText(text = "Causal", style = AppTheme.typography.titleLarge)
+            GenericTitleText(text = "Casual", style = AppTheme.typography.titleLarge)
         }
         var description by remember { mutableStateOf("") }
         var luckyTime by remember { mutableStateOf("") }

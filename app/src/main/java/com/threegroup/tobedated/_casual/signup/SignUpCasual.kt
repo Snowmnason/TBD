@@ -1,4 +1,4 @@
-package com.threegroup.tobedated._causal
+package com.threegroup.tobedated._casual.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,10 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.threegroup.tobedated._signUp.composables.questions.BioQuestion
-import com.threegroup.tobedated._signUp.composables.questions.PromptAnswer
 import com.threegroup.tobedated._signUp.composables.SignUpFormat
 import com.threegroup.tobedated._signUp.composables.getCustomButtonStyle
+import com.threegroup.tobedated._signUp.composables.questions.BioQuestion
+import com.threegroup.tobedated._signUp.composables.questions.PromptAnswer
 import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.GenTextOnlyButton
 import com.threegroup.tobedated.composeables.composables.GenericBodyText
@@ -66,9 +66,9 @@ fun welcomeScreenC():Boolean {
     return true
 }
 @Composable
-fun leaningScreen(causalVM: CausalViewModel): Boolean {
-    var leaning by rememberSaveable { mutableStateOf(causalVM.getAdditions().leaning) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().leaning) }
+fun leaningScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var leaning by rememberSaveable { mutableStateOf(casualVM.getAdditions().leaning) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().leaning) }
 
     SignUpFormat(
         title = "What Role do you play",
@@ -79,8 +79,8 @@ fun leaningScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     leaning = leaningOptions[selectedOptionIndex]
-                    causalVM.setAdditions("leaning", leaning)
-                    causalVM.setUserIndex("leaning", newIndex)
+                    casualVM.setAdditions("leaning", leaning)
+                    casualVM.setUserIndex("leaning", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -89,9 +89,9 @@ fun leaningScreen(causalVM: CausalViewModel): Boolean {
     return leaning.isNotEmpty()
 }
 @Composable
-fun lookingForScreen(causalVM: CausalViewModel): Boolean {
-    var lookingFor by rememberSaveable { mutableStateOf(causalVM.getAdditions().lookingFor) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().lookingFor) }
+fun lookingForScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var lookingFor by rememberSaveable { mutableStateOf(casualVM.getAdditions().lookingFor) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().lookingFor) }
 
     SignUpFormat(
         title = "What are you looking for?",
@@ -102,8 +102,8 @@ fun lookingForScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     lookingFor = lookingForOptions[selectedOptionIndex]
-                    causalVM.setAdditions("lookingFor", lookingFor)
-                    causalVM.setUserIndex("lookingFor", newIndex)
+                    casualVM.setAdditions("lookingFor", lookingFor)
+                    casualVM.setUserIndex("lookingFor", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -112,9 +112,9 @@ fun lookingForScreen(causalVM: CausalViewModel): Boolean {
     return lookingFor.isNotEmpty()
 }
 @Composable
-fun experienceScreen(causalVM: CausalViewModel): Boolean {
-    var experience by rememberSaveable { mutableStateOf(causalVM.getAdditions().experience) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().experience) }
+fun experienceScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var experience by rememberSaveable { mutableStateOf(casualVM.getAdditions().experience) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().experience) }
 
     SignUpFormat(
         title = "Your experience",
@@ -125,8 +125,8 @@ fun experienceScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     experience = experienceOptions[selectedOptionIndex]
-                    causalVM.setAdditions("experience", experience)
-                    causalVM.setUserIndex("experience", newIndex)
+                    casualVM.setAdditions("experience", experience)
+                    casualVM.setUserIndex("experience", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -135,9 +135,9 @@ fun experienceScreen(causalVM: CausalViewModel): Boolean {
     return experience.isNotEmpty()
 }
 @Composable
-fun locationScreen(causalVM: CausalViewModel): Boolean {
-    var location by rememberSaveable { mutableStateOf(causalVM.getAdditions().location) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().location) }
+fun locationScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var location by rememberSaveable { mutableStateOf(casualVM.getAdditions().location) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().location) }
 
     SignUpFormat(
         title = "Where can you meet?",
@@ -148,8 +148,8 @@ fun locationScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     location = locationOptions[selectedOptionIndex]
-                    causalVM.setAdditions("location", location)
-                    causalVM.setUserIndex("location", newIndex)
+                    casualVM.setAdditions("location", location)
+                    casualVM.setUserIndex("location", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -158,9 +158,9 @@ fun locationScreen(causalVM: CausalViewModel): Boolean {
     return location.isNotEmpty()
 }
 @Composable
-fun commScreen(causalVM: CausalViewModel): Boolean {
-    var comm by rememberSaveable { mutableStateOf(causalVM.getAdditions().comm) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().comm) }
+fun commScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var comm by rememberSaveable { mutableStateOf(casualVM.getAdditions().comm) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().comm) }
 
     SignUpFormat(
         title = "How do you talk?",
@@ -171,8 +171,8 @@ fun commScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     comm = commOptions[selectedOptionIndex]
-                    causalVM.setAdditions("comm", comm)
-                    causalVM.setUserIndex("comm", newIndex)
+                    casualVM.setAdditions("comm", comm)
+                    casualVM.setUserIndex("comm", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -181,9 +181,9 @@ fun commScreen(causalVM: CausalViewModel): Boolean {
     return comm.isNotEmpty()
 }
 @Composable
-fun sexHealthScreen(causalVM: CausalViewModel): Boolean {
-    var sexHealth by rememberSaveable { mutableStateOf(causalVM.getAdditions().sexHealth) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().sexHealth) }
+fun sexHealthScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var sexHealth by rememberSaveable { mutableStateOf(casualVM.getAdditions().sexHealth) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().sexHealth) }
 
     SignUpFormat(
         title = "Your Sexual Health",
@@ -194,8 +194,8 @@ fun sexHealthScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     sexHealth = sexHealthOptions[selectedOptionIndex]
-                    causalVM.setAdditions("sexHealth", sexHealth)
-                    causalVM.setUserIndex("sexHealth", newIndex)
+                    casualVM.setAdditions("sexHealth", sexHealth)
+                    casualVM.setUserIndex("sexHealth", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -204,9 +204,9 @@ fun sexHealthScreen(causalVM: CausalViewModel): Boolean {
     return sexHealth.isNotEmpty()
 }
 @Composable
-fun afterCareScreen(causalVM: CausalViewModel): Boolean {
-    var afterCare by rememberSaveable { mutableStateOf(causalVM.getAdditions().afterCare) }
-    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(causalVM.getUserIndex().afterCare) }
+fun afterCareScreen(casualVM: CasualSignUpViewModel): Boolean {
+    var afterCare by rememberSaveable { mutableStateOf(casualVM.getAdditions().afterCare) }
+    var selectedOptionIndex by rememberSaveable { mutableIntStateOf(casualVM.getUserIndex().afterCare) }
 
     SignUpFormat(
         title = "Your After Care?",
@@ -217,8 +217,8 @@ fun afterCareScreen(causalVM: CausalViewModel): Boolean {
                 selectedIndex = selectedOptionIndex,
                 onSelectionChange = { newIndex -> selectedOptionIndex = newIndex
                     afterCare = afterCareOptions[selectedOptionIndex]
-                    causalVM.setAdditions("afterCare", afterCare)
-                    causalVM.setUserIndex("afterCare", newIndex)
+                    casualVM.setAdditions("afterCare", afterCare)
+                    casualVM.setUserIndex("afterCare", newIndex)
                 },
                 style = getCustomButtonStyle(),
             )
@@ -228,10 +228,10 @@ fun afterCareScreen(causalVM: CausalViewModel): Boolean {
 }
 
 @Composable
-fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolean{
-    var promptA1 by rememberSaveable { mutableStateOf(causalVM.getAdditions().promptA1) }
-    var promptA2 by rememberSaveable { mutableStateOf(causalVM.getAdditions().promptA2) }
-    var promptA3 by rememberSaveable { mutableStateOf(causalVM.getAdditions().promptA3) }
+fun promptQuestionsScreenC(nav: NavController, casualVM: CasualSignUpViewModel):Boolean{
+    var promptA1 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA1) }
+    var promptA2 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA2) }
+    var promptA3 by rememberSaveable { mutableStateOf(casualVM.getAdditions().promptA3) }
     var isEnable1 by rememberSaveable { mutableStateOf(false) }
     var isEnable2 by rememberSaveable { mutableStateOf(false) }
     var isEnable3 by rememberSaveable { mutableStateOf(false) }
@@ -242,9 +242,9 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
     var question2 by rememberSaveable { mutableStateOf("Question 2") }
     var question3 by rememberSaveable { mutableStateOf("Question 3") }
     LaunchedEffect(Unit, question1, question2, question3) {
-        if(isEnable1){ question1 = causalVM.getAdditions().promptQ1}
-        if(isEnable2){ question2 =causalVM.getAdditions().promptQ2}
-        if(isEnable3){ question3 =causalVM.getAdditions().promptQ3}
+        if(isEnable1){ question1 = casualVM.getAdditions().promptQ1}
+        if(isEnable2){ question2 =casualVM.getAdditions().promptQ2}
+        if(isEnable3){ question3 =casualVM.getAdditions().promptQ3}
     }
     SignUpFormat(
         title = "Some Ice breakers!",
@@ -263,7 +263,7 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
                 isEnables = isEnable1,
                 input = promptA1,
                 onInputChanged = { input  ->  promptA1 = input
-                    causalVM.setAdditions("promptA1", input)
+                    casualVM.setAdditions("promptA1", input)
                     isAnswered1 = promptA1.length <= 200
                 },
             )
@@ -281,7 +281,7 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
                 isEnables = isEnable2,
                 input = promptA2,
                 onInputChanged = { input  ->  promptA2 = input
-                    causalVM.setAdditions("promptA2", input)
+                    casualVM.setAdditions("promptA2", input)
                     isAnswered2 = promptA2.length <= 200
                 },
             )
@@ -298,7 +298,7 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
                 isEnables = isEnable3,
                 input = promptA3,
                 onInputChanged = { input  ->  promptA3 = input
-                    causalVM.setAdditions("promptA3", input)
+                    casualVM.setAdditions("promptA3", input)
                     isAnswered3 = promptA3.length <= 200
                 },
             )
@@ -308,9 +308,9 @@ fun promptQuestionsScreenC(nav: NavController, causalVM: CausalViewModel):Boolea
 }
 
 @Composable
-fun newBioScreen(causalVM: CausalViewModel, onNavigate: () -> Unit): Boolean{
+fun newBioScreen(casualVM: CasualSignUpViewModel, onNavigate: () -> Unit): Boolean{
     var isSkip by rememberSaveable { mutableStateOf(false) }
-    var bio by rememberSaveable { mutableStateOf(causalVM.getAdditions().casualBio) }
+    var bio by rememberSaveable { mutableStateOf(casualVM.getAdditions().casualBio) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -324,13 +324,13 @@ fun newBioScreen(causalVM: CausalViewModel, onNavigate: () -> Unit): Boolean{
         )
     }
     SignUpFormat(
-        title = "Bio for your causal profile?",
+        title = "Bio for your casual profile?",
         label = "",
         enterField = {
             BioQuestion(
                 input = bio,
                 onInputChanged = { input  ->  bio = input
-                    causalVM.setAdditions("bio", input)
+                    casualVM.setAdditions("bio", input)
                 },
             )
         },

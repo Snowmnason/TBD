@@ -16,6 +16,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.MyApp
@@ -53,8 +54,8 @@ import com.threegroup.tobedated.composeables.composables.AlertDialogBox
 import com.threegroup.tobedated.composeables.composables.ProgressBar
 
 @Composable
-fun SignUpNav(mainActivity: MainActivity, location: String, number: String, navController: NavHostController) {
-    //val navController = rememberNavController()
+fun SignUpNav(mainActivity: MainActivity, location: String, number: String, mainNav: NavHostController) {
+    val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
@@ -110,7 +111,7 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, navC
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { navController.navigate("Login") },
+            onConfirmation = { mainNav.navigate("Login") },
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )
@@ -246,7 +247,7 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, navC
                 if(buttonText == "Finish"){
                     isButtonEnabled = false
                     buttonText = "Loading..."
-                    signUpVM.finishingUp(signUpVM, mainActivity, location, navController)
+                    signUpVM.finishingUp(signUpVM, mainActivity, location, mainNav)
                 }
                 //println(userInfoArray.joinToString(separator = ", "))
                 //println("$newUser in fun")

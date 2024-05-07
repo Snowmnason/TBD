@@ -41,6 +41,7 @@ data class UserModel(
     var verified        : Boolean = false,
     var seeMe           : Boolean = false,
     var hasThree        : Boolean = false,
+    var hasThreeCasual  : Boolean = false,
     var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel(),
     var hasCasual       : Boolean = false,
     var hasFriends      : Boolean = false,

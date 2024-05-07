@@ -65,6 +65,7 @@ fun setUserProperties(
         hasCasual = userDataMap["hasCasual"] as? Boolean ?: false
         hasFriends = userDataMap["hasFriends"] as? Boolean ?: false
         hasThree = userDataMap["hasThree"] as? Boolean ?: false
+        hasThreeCasual = userDataMap["hasThree"] as? Boolean ?: false
         casualAdditions = (userDataMap["casualAdditions"] as? Map<*, *>)?.let { map ->
             getCasualAdditions(map)
         } ?: CasualAdditions()

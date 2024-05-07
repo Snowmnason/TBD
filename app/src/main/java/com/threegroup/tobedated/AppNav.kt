@@ -83,8 +83,10 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
             }
         }
         composable(route = "CasualSignup"){
-            PolkaDotCanvas()
-            SignUpCasualNav(mainNav = navMain)
+            AppTheme(activity = "casual") {
+                PolkaDotCanvas()
+                SignUpCasualNav(mainNav = navMain)
+            }
         }
         composable(route = "Friends") {
 //            inMainActivities = true

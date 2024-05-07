@@ -171,7 +171,7 @@ class FirebaseDataSource {
         val distance = calcDistance(potentialLocation, userLocation).toInt()
         val isLocationWithinDistance = distance <= maxDistance
 
-        return isAgeInRange && isLocationWithinDistance && isSexMatch
+        return isAgeInRange && isSexMatch && isLocationWithinDistance
     }
 
     /**

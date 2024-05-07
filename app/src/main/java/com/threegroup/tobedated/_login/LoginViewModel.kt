@@ -18,6 +18,7 @@ import com.threegroup.tobedated.MyApp
 import com.threegroup.tobedated.shareclasses.Repository
 import com.threegroup.tobedated.shareclasses.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
@@ -131,7 +132,13 @@ class LoginViewModel(private var repository: Repository) : ViewModel() {
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
-
+    private var existing = false
+    fun getFinished(callBack:(Boolean, String, String)->Unit){
+        viewModelScope.launch {
+            delay(2000)
+            callBack(existing, location ,userPhoneNumber)
+        }
+    }
     private fun switchAct(exists: Int, mainActivity: MainActivity, nav:NavHostController) {
         if (exists == 1) {
             viewModelScope.launch {

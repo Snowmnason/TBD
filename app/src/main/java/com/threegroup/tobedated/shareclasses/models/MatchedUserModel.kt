@@ -42,10 +42,13 @@ data class MatchedUserModel(
 
     var hasThreeCasual  : Boolean = false,
     var hasFriends      : Boolean = false,
-    var casualAdditions: CasualAdditions = CasualAdditions(),
+    var casualAdditions : CasualAdditions = CasualAdditions(),
     var hasCasual       : Boolean = false,
     var seeking         : String = "",
     var testResultTbd   : Long = 10,
-    var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel()
+    var userPref        : UserSearchPreferenceModel = UserSearchPreferenceModel(),
+
+//    var blocked           :String = "",
+//    var suggestion      :String = "",
 
 )

@@ -181,5 +181,11 @@ fun setMatchedProperties(
         user.hasThree = userDataMap["hasThree"] as? Boolean ?: false
         user.verified = userDataMap["verified"] as? Boolean ?: false
         user.seeMe = userDataMap["Seen"] as? Boolean ?: false
+
+        user.hasCasual = userDataMap["hasCasual"] as? Boolean ?: false
+        user.hasThreeCasual = userDataMap["hasThree"] as? Boolean ?: false
+        user.casualAdditions = (userDataMap["casualAdditions"] as? Map<*, *>)?.let { map ->
+            getCasualAdditions(map)
+        } ?: CasualAdditions()
     }
 }

@@ -1,6 +1,5 @@
 package com.threegroup.tobedated._login.composables
 
-import android.os.CountDownTimer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -46,7 +45,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MainActivity
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated._login.LoginViewModel
@@ -222,10 +220,11 @@ fun VerifyField(
 fun ResendCode(
     mainActivity: MainActivity,
     vmLogin: LoginViewModel,
-    nav:NavHostController
+    onClick: () -> Unit,
+    retryBtnState:Boolean,
+    retryBtnText:String,
 ) {
-    var retryBtnState by remember { mutableStateOf(true) }
-    var retryBtnText by remember { mutableStateOf("Resend Code") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -239,20 +238,7 @@ fun ResendCode(
             //modifier = modifier,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             contentPadding = PaddingValues(),
-            onClick = { vmLogin.resendOtp(mainActivity, nav)
-                var secondsLeft = 30
-                val countDownTimer = object : CountDownTimer(30000, 1000) { // 30 seconds with 1 second interval
-                    override fun onTick(millisUntilFinished: Long) {
-                        retryBtnState = false
-                        retryBtnText = (secondsLeft--).toString() + "'s"
-                    }
-                    override fun onFinish() {
-                        retryBtnState = true
-                        retryBtnText = "Resend Code"
-                    }
-                }
-                countDownTimer.start()
-            },
+            onClick = onClick,
             enabled = retryBtnState,
         ) {
             Box(

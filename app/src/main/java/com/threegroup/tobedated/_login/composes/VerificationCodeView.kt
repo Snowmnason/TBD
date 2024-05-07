@@ -1,5 +1,6 @@
 package com.threegroup.tobedated._login.composes
 
+import android.os.CountDownTimer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,8 @@ fun VerificationCodeView(navController: NavHostController, number: String, mainA
 
     val controller = LocalSoftwareKeyboardController.current
     var codeList by remember { mutableStateOf(List(6) { "" }) }
+    var runVerification  by remember { mutableStateOf(false) }
+    var enable by remember{ mutableStateOf(true) }
     BackButton(onClick = { navController.popBackStack() })
     Box(
         modifier = Modifier
@@ -88,6 +91,8 @@ fun VerificationCodeView(navController: NavHostController, number: String, mainA
                     )
                 }
             }
+            var retryBtnState by remember { mutableStateOf(true) }
+            var retryBtnText by remember { mutableStateOf("Resend Code") }
             Spacer(modifier = Modifier.height(20.dp))
             Row {
                 Text(
@@ -95,18 +100,51 @@ fun VerificationCodeView(navController: NavHostController, number: String, mainA
                     style = getAddShadow(style = AppTheme.typography.bodyMedium, "body"),
                     color = AppTheme.colorScheme.onBackground
                 )
-                ResendCode(mainActivity, vmLogin, navController)
+                ResendCode(
+                    mainActivity = mainActivity,
+                    vmLogin = vmLogin,
+                    retryBtnState = retryBtnState,
+                    retryBtnText = retryBtnText,
+                    onClick = {
+                        vmLogin.resendOtp(mainActivity, navController)
+                        var secondsLeft = 30
+                        val countDownTimer = object : CountDownTimer(30000, 1000) { // 30 seconds with 1 second interval
+                            override fun onTick(millisUntilFinished: Long) {
+                                retryBtnState = false
+                                retryBtnText = (secondsLeft--).toString() + "'s"
+                            }
+                            override fun onFinish() {
+                                retryBtnState = true
+                                enable = true
+                                retryBtnText = "Resend Code"
+                            }
+                        }
+                        countDownTimer.start()
+                    },
+                )
             }
 
         }
     }
     val codeString = codeList.joinToString(separator = "")
+
     BigButton(
         text = "Enter",
         onClick = {
             controller?.hide()
             vmLogin.verifyOtp(codeString, mainActivity, mainNav)
+            runVerification = true
+            enable = false
         },
-        isUse = codeString.length == 6
+        isUse = codeString.length == 6 && enable
     )
+//    if(runVerification){
+//        vmLogin.getFinished{exists, location, userPhoneNumber->
+//            if(exists){
+//                mainNav.navigate("Dating")
+//            }else{
+//                mainNav.navigate("SignUp/$location/$userPhoneNumber")
+//            }
+//        }
+//    }
 }

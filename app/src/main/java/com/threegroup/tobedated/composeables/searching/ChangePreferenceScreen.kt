@@ -222,6 +222,7 @@ fun ChangePreferenceScreenC(
     val currentUser = vmDating.getUser()
     //val currPref = currentUser.userPref
     val (opts, userSet) = when (title) {
+        "Gender" -> genderList to currentUser.userPref.gender
         "Leaning" -> leaningList to currentUser.userPref.leaning
         "Looking For" -> lookingForList to currentUser.userPref.lookingFor
         "Experience" -> experienceList to currentUser.userPref.experience
@@ -333,15 +334,16 @@ fun ChangePreferenceScreenC(
                 onClick = {
                     nav.popBackStack()
                     when (title) {
-                        "Leaning"           -> currentUser.userPref.leaning = userPrefList.sorted()
-                        "Looking For"       -> currentUser.userPref.lookingFor = userPrefList.sorted()
-                        "Experience"        -> currentUser.userPref.experience = userPrefList.sorted()
-                        "Location"          -> currentUser.userPref.location = userPrefList.sorted()
-                        "Communication"     -> currentUser.userPref.comm = userPrefList.sorted()
-                        "Sex Health"        -> currentUser.userPref.sexHealth = userPrefList.sorted()
-                        "After Care"        -> currentUser.userPref.afterCare = userPrefList.sorted()
-                        "Sexual Orientation"-> currentUser.userPref.sexualOri = userPrefList.sorted()
-                        "Meeting Up"        -> currentUser.userPref.meetUp = userPrefList.sorted()
+                        "Gender"            -> currentUser.userPref.gender      = userPrefList.sorted()
+                        "Leaning"           -> currentUser.userPref.leaning     = userPrefList.sorted()
+                        "Looking For"       -> currentUser.userPref.lookingFor  = userPrefList.sorted()
+                        "Experience"        -> currentUser.userPref.experience  = userPrefList.sorted()
+                        "Location"          -> currentUser.userPref.location    = userPrefList.sorted()
+                        "Communication"     -> currentUser.userPref.comm        = userPrefList.sorted()
+                        "Sex Health"        -> currentUser.userPref.sexHealth   = userPrefList.sorted()
+                        "After Care"        -> currentUser.userPref.afterCare   = userPrefList.sorted()
+                        "Sexual Orientation"-> currentUser.userPref.sexualOri   = userPrefList.sorted()
+                        "Meeting Up"        -> currentUser.userPref.meetUp      = userPrefList.sorted()
                     }
                     vmDating.updateUser(currentUser)
                     checkedItems.clear()

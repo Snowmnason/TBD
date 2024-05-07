@@ -13,7 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class Repository(
-    private var firebaseDataSource: FirebaseDataSource
+    private var firebaseDataSource: FirebaseDataSource,
 ) {
     fun getCurrentUserSenderId(): String {
         return firebaseDataSource.getCurrentUserSenderId()
@@ -29,6 +29,9 @@ class Repository(
     }
     suspend fun getPotentialUserData(): Flow<List<MatchedUserModel>> {
         return firebaseDataSource.getPotentialUserData()
+    }
+    suspend fun getPotentialUserDataC(): Flow<List<MatchedUserModel>> {
+        return firebaseDataSource.getPotentialUserDataC()
     }
 
     fun getChatData(chatId: String?): Flow<List<MessageModel>> =

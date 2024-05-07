@@ -40,6 +40,7 @@ data class MatchedUserModel(
     var status          : Long = 0,
     var verified        : Boolean = false,
 
+    var hasThreeCasual  : Boolean = false,
     var hasFriends      : Boolean = false,
     var casualAdditions: CasualAdditions = CasualAdditions(),
     var hasCasual       : Boolean = false,

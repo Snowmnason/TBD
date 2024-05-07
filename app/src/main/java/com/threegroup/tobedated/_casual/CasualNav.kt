@@ -4,6 +4,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -37,12 +39,16 @@ fun CasualNav(
     navController: NavHostController,
     insideWhat: (String) -> Unit,
 ){
-    //val navController = rememberNavController()
     val viewModelCasual = viewModel { CasualViewModel(MyApp.x) }
+    viewModelCasual.setLoggedInUser()
+    viewModelCasual.getMatchesFlow(viewModelCasual.getUser().number)
+    viewModelCasual.fetchPotentialUserData()
 
-//    val vmApi = viewModel { ApiViewModel(MyApp.x) }
-//    val notifiGroup = Random.nextBoolean()
-//    val notifiChat = Random.nextInt(0, 41) // Generates a random integer between 0 and 40
+
+    val userList by viewModelCasual.potentialUserData.collectAsState()
+    val isPotentialUserDataLoaded = userList.isNotEmpty()
+
+
     LaunchedEffect(Unit) {
 
     }
@@ -53,7 +59,7 @@ fun CasualNav(
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }) {
         composable(route = Casual.SearchingScreen.name) {
-            if (false) {//potentialUserDataLoaded.value
+            if (isPotentialUserDataLoaded) {
                 SearchingScreenC(viewModelCasual, vmApi)//TODO needs more work than expect
             } else {
                 ComeBackScreenC(navController, vmApi, viewModelCasual) //TODO needs more work than expect

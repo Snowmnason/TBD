@@ -46,10 +46,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-
+typealias NotificationCountCallback = (totalNotificationCount: Int) -> Unit
 class FirebaseDataSource {
 
-    fun getCurrentUserId(): String {
+    private fun getCurrentUserId(): String {
         return FirebaseAuth.getInstance().currentUser?.phoneNumber
             ?: throw Exception("User not logged in")
     }
@@ -523,7 +523,7 @@ class FirebaseDataSource {
                     try {
                         val messageModel = data.getValue(MessageModel::class.java)
                         messageModel?.let { list.add(it) }
-                        Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
+                        //Log.d("CHAT_TAG", "Succeeded parsing MessageModel")
                     } catch (e: Exception) {
                         Log.d("CHAT_TAG", "Error parsing MessageModel", e)
                     }
@@ -1007,6 +1007,105 @@ class FirebaseDataSource {
         }
         userChatsRef.addValueEventListener(chatsListener)
     }
+
+    /**
+     *FOR CASUAL
+     *
+     */
+    fun getPotentialUserDataC(): Flow<List<MatchedUserModel>> = callbackFlow {
+        val user = MyApp.signedInUser.value!!
+        val db = FirebaseDatabase.getInstance()
+        val dbRef: DatabaseReference = db.getReference("users")
+        val likePassNodeRef = db.getReference("likeorpasscasual").child(user.number)
+
+        val likePassListener = object : ValueEventListener {
+            override fun onDataChange(likePassSnapshot: DataSnapshot) {
+                val query = dbRef.orderByChild("status").limitToLast(10)
+                val usersListener = object : ValueEventListener {
+                    override fun onDataChange(usersSnapshot: DataSnapshot) {
+                        val list = mutableListOf<MatchedUserModel>()
+                        usersSnapshot.children.forEach { userSnapshot ->
+                            try {
+                                val potential = userSnapshot.getValue(MatchedUserModel::class.java)
+                                potential?.let {
+                                    if (it.number != FirebaseAuth.getInstance().currentUser?.phoneNumber
+                                        && passBlocked(dbRef, user.number, it.number)//KEEP
+                                        && passSeeMe(it, likePassSnapshot)//KEEP
+                                        && isProfileInteractedByUserC(it.number, likePassSnapshot)//KEEP
+                                        && passBasicPreferences(user, it)//Keep
+                                        && !passMatchC(it)//KEEP
+                                        && passPremiumPrefC(user, it)//KEEP
+                                        && it.hasCasual
+                                    ) {
+                                        list.add(it)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                println("Error parsing UserModel: $e")
+                            }
+                        }
+                        val sortedList = list.sortedByDescending { it.status }
+                        trySend(sortedList).isSuccess
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        println("Database error: ${error.message}")
+                    }
+                }
+                query.addValueEventListener(usersListener)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Database error: ${error.message}")
+            }
+        }
+
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                likePassNodeRef.addValueEventListener(likePassListener)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("USER_TAG", "Database error: ${error.message}")
+            }
+        }
+        dbRef.addValueEventListener(valueEventListener)
+        awaitClose {
+            dbRef.removeEventListener(valueEventListener)
+            likePassNodeRef.removeEventListener(likePassListener)
+        }
+    }.flowOn(Dispatchers.IO)
+
+    private fun isProfileInteractedByUserC(potentialUser: String, snapshot: DataSnapshot): Boolean {
+        val likedSnapshot = snapshot.child("liked").child(potentialUser)
+        val passedSnapshot = snapshot.child("passed").child(potentialUser)
+
+        return !(likedSnapshot.exists() || passedSnapshot.exists())
+    }
+    private fun passMatchC(potentialUser: MatchedUserModel): Boolean {
+
+        return potentialUser.hasThreeCasual
+    }
+
+    private fun passPremiumPrefC(user: UserModel, potentialUser: MatchedUserModel): Boolean {
+        val userPref: UserSearchPreferenceModel = user.userPref
+        val preferences = listOf(
+            userPref.gender to potentialUser.gender,
+            userPref.meetUp to potentialUser.meetUp,
+            userPref.sexualOri to potentialUser.sexOrientation,
+            userPref.leaning to potentialUser.casualAdditions.leaning,
+            userPref.lookingFor to potentialUser.casualAdditions.lookingFor,
+            userPref.experience to potentialUser.casualAdditions.experience,
+            userPref.location to potentialUser.casualAdditions.location,
+            userPref.comm to potentialUser.casualAdditions.comm,
+            userPref.sexHealth to potentialUser.casualAdditions.sexHealth,
+            userPref.afterCare to potentialUser.casualAdditions.afterCare,
+        )
+
+        return preferences.all { (userPrefList, userValue) ->
+            userPrefList[0] == "Doesn't Matter" || userPrefList.contains(userValue)
+        }
+    }
+
 }
 
-typealias NotificationCountCallback = (totalNotificationCount: Int) -> Unit

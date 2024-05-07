@@ -42,7 +42,7 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
 
     fun fetchPotentialUserData() {
         viewModelScope.launch {
-            repository.getPotentialUserData().collect { userData ->
+            repository.getPotentialUserDataC().collect { userData ->
                 _potentialUserData.value = userData
             }
         }

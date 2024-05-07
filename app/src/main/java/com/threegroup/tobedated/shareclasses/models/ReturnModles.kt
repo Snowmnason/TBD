@@ -175,6 +175,14 @@ val smokeList = listOf("Yes", "Sometimes", "No", "Doesn't Matter")
 val weedList = listOf("Yes", "Sometimes", "No", "Doesn't Matter")
 val meetUpList = listOf("Right Away", "Talk first", "Take it slow", "Doesn't Matter")
 
+val lookingForList = listOf("ONS", "FWB", "Casual", "Doesn't Matter")//
+val leaningList = listOf("Dominant", "Submissive", "Switch", "Vanilla", "Doesn't Matter")//
+val experienceList = listOf("Novice", "Intermediate", "Experienced", "Doesn't Matter")
+val locationList = listOf("Host", "Travel", "Both", "Doesn't Matter")
+val commList = listOf("Direct and explicit", "Flirty and playful", "Open and honest", "Doesn't Matter")
+val sexHealthList = listOf("STI-Free", "Regularly Tested", "On Birth Control", "Vasectomy/Tubal Ligation", "Doesn't Matter",)
+val afterCareList = listOf("Cuddling", "Talking", "Snacking", "Quick Departure", "Doesn't Matter",)
+
 @Composable
 fun getStarSymbol(star:String):ImageVector{
     val zodiacToLetterMap = mapOf(

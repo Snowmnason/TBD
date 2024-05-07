@@ -127,7 +127,6 @@ fun TopAndBotBars(
                 ) {
                     NavDraw(
                         vmApi = vmApi,
-                        colorDating = AppTheme.colorScheme.primary,
                         datingClickable = {
                             if(currentActivity != "dating"){
                                 mainNav.navigate("Dating")
@@ -145,7 +144,8 @@ fun TopAndBotBars(
                         friendsClickable = {
                             if(currentActivity != "friend") {
                                 //mainNav.navigate("Friends"){popUpToRoute}
-                            }}
+                            }},
+                        currentActivity = currentActivity
                     )
                 }
             },

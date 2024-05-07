@@ -720,16 +720,12 @@ fun Comeback(
 }
 @Composable
 fun NavDraw(
-    colorDating:Color = AppTheme.colorScheme.onBackground,
-    colorFriends:Color = AppTheme.colorScheme.onBackground,
-    colorCasual:Color = AppTheme.colorScheme.onBackground,
     datingClickable: () -> Unit = {},
     casualClickable: () -> Unit = {},
     friendsClickable: () -> Unit = {},
-    vmApi:ApiViewModel
-    
+    vmApi:ApiViewModel,
+    currentActivity: String = "dating"
 ){
-
     Column(
         modifier = Modifier.padding(25.dp)
     ) {
@@ -739,8 +735,9 @@ fun NavDraw(
             .fillMaxWidth()
             .clickable { datingClickable() }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating", tint = colorDating, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.datingsec), contentDescription = "dating",
+                tint = if(currentActivity == "dating"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Dating", style = AppTheme.typography.titleLarge)
         }
@@ -749,8 +746,9 @@ fun NavDraw(
             .fillMaxWidth()
             .clickable { friendsClickable() }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends", tint = colorFriends, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.friendsce), contentDescription = "friends",
+                tint = if(currentActivity == "friend"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Friends", style = AppTheme.typography.titleLarge)
         }
@@ -761,8 +759,9 @@ fun NavDraw(
                 casualClickable()
             }
         ){
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.casualsce), contentDescription = "casual", tint = colorCasual, modifier = Modifier
-                .offset(y = (-4).dp))
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.casualsce), contentDescription = "casual",
+                tint = if(currentActivity == "casual"){AppTheme.colorScheme.primary}else{AppTheme.colorScheme.onBackground},
+                modifier = Modifier.offset(y = (-4).dp))
             Spacer(modifier = Modifier.width(8.dp))
             GenericTitleText(text = "Casual", style = AppTheme.typography.titleLarge)
         }

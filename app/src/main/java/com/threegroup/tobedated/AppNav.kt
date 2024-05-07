@@ -74,7 +74,7 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
                     mainNav = navMain,
                     mainActivity = mainActivity,
                     navScreen = { nav, callback ->
-                        DatingNav(mainActivity, vmApi, navMain, nav) { inside ->
+                        CasualNav(mainActivity, vmApi, navMain, nav) { inside ->
                             callback(inside)
                         }
                     },
@@ -87,21 +87,21 @@ fun AppNav(mainActivity: MainActivity, activityToken:String) {
             SignUpCasualNav(mainNav = navMain)
         }
         composable(route = "Friends") {
-            inMainActivities = true
-            mainActivity.setLastActivity("friend")
-            AppTheme(activity = "friend") {
-                TopAndBotBars(
-                    vmApi = vmApi,
-                    mainNav = navMain,
-                    mainActivity = mainActivity,
-                    navScreen = { nav, callback ->
-                        CasualNav(mainActivity, vmApi, navMain, nav) { inside ->
-                            callback(inside)
-                        }
-                    },
-                    currentActivity = "friend"
-                )
-            }
+//            inMainActivities = true
+//            mainActivity.setLastActivity("friend")
+//            AppTheme(activity = "friend") {
+//                TopAndBotBars(
+//                    vmApi = vmApi,
+//                    mainNav = navMain,
+//                    mainActivity = mainActivity,
+//                    navScreen = { nav, callback ->
+//                        FriendsNav(mainActivity, vmApi, navMain, nav) { inside ->
+//                            callback(inside)
+//                        }
+//                    },
+//                    currentActivity = "friend"
+//                )
+//            }
         }
         composable(route = "SignUp/{location}/{userPhone}",
             arguments = listOf(

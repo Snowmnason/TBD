@@ -175,7 +175,6 @@ fun ChangeProfileC(
         "Sexual Orientation"    -> sexOrientationOptions to currentUser.sexOrientation
         "Leaning"               -> leaningOptions to currentUser.casualAdditions.leaning
         "Looking For"           -> lookingForOptions to currentUser.casualAdditions.lookingFor
-        "Intentions"            -> intentionsOptions to currentUser.intentions
         "Experience"            -> experienceOptions to currentUser.casualAdditions.experience
         "Communication"         -> commOptions to currentUser.casualAdditions.experience
         "Sex Health"            -> sexHealthOptions to currentUser.casualAdditions.sexHealth
@@ -242,7 +241,6 @@ fun ChangeProfileC(
                         "Sexual Orientation"    -> currentUser.sexOrientation = userSettings
                         "Leaning"               -> currentUser.casualAdditions.leaning = userSettings
                         "Looking For"           -> currentUser.casualAdditions.lookingFor = userSettings
-                        "Intentions"            -> currentUser.intentions = userSettings
                         "Experience"            -> currentUser.casualAdditions.experience = userSettings
                         "Communication"         -> currentUser.casualAdditions.comm = userSettings
                         "Sex Health"            -> currentUser.casualAdditions.sexHealth = userSettings

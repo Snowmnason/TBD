@@ -32,12 +32,12 @@ fun SearchPreferenceScreenC(navController: NavHostController, vmCasual: CasualVi
     val currentUser = vmCasual.getUser()
     val searchPref by remember { mutableStateOf(currentUser.userPref) }
 
-    val userPref = listOf(searchPref.gender, searchPref.zodiac, searchPref.sexualOri, searchPref.mbti, searchPref.children, searchPref.familyPlans, searchPref.meetUp, searchPref.education,
-        searchPref.religion, searchPref.politicalViews, searchPref.relationshipType, searchPref.intentions, searchPref.drink, searchPref.smoke, searchPref.weed
+    val userPref = listOf(searchPref.leaning, searchPref.lookingFor, searchPref.sexualOri, searchPref.meetUp,
+        searchPref.experience, searchPref.location, searchPref.comm, searchPref.sexHealth, searchPref.afterCare,
     )
 
-    val pref = listOf("Gender", "Zodiac Sign", "Sexual Orientation", "Mbti", "Children", "Family Plans", "Meeting Up",
-        "Education", "Religion", "Political Views", "Relationship Type", "Intentions", "Drink", "Smokes", "Weed"
+    val pref = listOf("Leaning", "Looking For","Sexual Orientation", "Meeting Up",
+        "Experience", "Location", "Communication", "Sex Health", "After Care",
     )
     val state = rememberScrollState(0)
     Column(

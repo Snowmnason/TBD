@@ -105,7 +105,15 @@ fun setUserProperties(
         drink = (map["drink"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
         smoke = (map["smoke"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
         weed = (map["weed"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
-    )
+            //Casual addons
+        leaning = (map["leaning"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        lookingFor = (map["lookingFor"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        experience = (map["experience"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        location = (map["location"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        comm = (map["comm"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        sexHealth = (map["sexHealth"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        afterCare = (map["afterCare"] as? List<*>)?.filterIsInstance<String>() ?: listOf("Doesn't Matter"),
+        )
 }
 
 private fun getCasualAdditions(map: Map<*, *>): CasualAdditions {

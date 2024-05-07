@@ -85,6 +85,7 @@ import androidx.compose.ui.window.Dialog
 import com.threegroup.tobedated.R
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.models.getStarSymbol
+import com.threegroup.tobedated.shareclasses.models.starOptions
 import com.threegroup.tobedated.theme.AppTheme
 import com.threegroup.tobedated.theme.JoseFinSans
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -783,7 +784,7 @@ fun NavDraw(
         luckyNumber = vmApi.getLuckyNumber()
         mood = vmApi.getMood()
         date = vmApi.getDate()
-
+        val star =if(!starOptions.contains(vmApi.getStar())){"Ask me"}else{vmApi.getStar()}
         Spacer(modifier = Modifier.height(24.dp))
         Column {
             Column {
@@ -816,7 +817,7 @@ fun NavDraw(
                         .fillMaxWidth()
                         .padding(end = 20.dp)){
                     GenericTitleText(text = "Horoscope", style = getAddShadow(AppTheme.typography.titleMedium, "med"))
-                    Icon(imageVector = getStarSymbol(vmApi.getStar()), contentDescription = vmApi.getStar(), tint = AppTheme.colorScheme.onBackground)
+                    Icon(imageVector = getStarSymbol(star), contentDescription = star, tint = AppTheme.colorScheme.onBackground)
                 }
 
                 Spacer(modifier = Modifier.height(2.dp))

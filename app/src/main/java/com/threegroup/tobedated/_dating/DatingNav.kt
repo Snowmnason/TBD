@@ -74,7 +74,7 @@ fun DatingNav(
             insideWhat("Main")
         }
         composable(route = Dating.ProfileScreen.name) {
-            ProfileScreen(navController, viewModelDating)
+            ProfileScreen(navController, viewModelDating, vmApi)
             insideWhat("Main")
         }
         composable(route = Dating.EditProfileScreen.name) {

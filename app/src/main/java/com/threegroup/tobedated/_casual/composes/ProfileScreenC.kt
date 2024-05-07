@@ -26,5 +26,4 @@ fun ProfileScreenC(navController: NavHostController, vmCasual: CasualViewModel){
         photoClick = { /*navController.navigate("ChangePhoto") */},
         doesEdit = true
     )
-
 }

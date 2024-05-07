@@ -13,6 +13,7 @@ import com.threegroup.tobedated.shareclasses.models.UserModel
 import com.threegroup.tobedated.shareclasses.models.ourTestQuestions
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(private var repository: Repository) : ViewModel() {
@@ -127,6 +128,7 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
     fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location: String, nav: NavHostController) {
         viewModelScope.launch {
             val ioJob = launch(Dispatchers.IO) {
+                println(newUser)
                 newUser.image1 = storeImageAttempt(newUser.image1, mainActivity.contentResolver, 1, newUser.number)
                 newUser.image2 = storeImageAttempt(newUser.image2, mainActivity.contentResolver, 2, newUser.number)
                 newUser.image3 = storeImageAttempt(newUser.image3, mainActivity.contentResolver, 3, newUser.number)
@@ -138,9 +140,12 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
 
             val ioJob2 = launch(Dispatchers.IO) {
                 mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
-                MyApp._signedInUser.value = newUser
+                MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
+                    MyApp._signedInUser.value = userInfo
+                }
             }
             ioJob2.join()
+            delay(2000)
             nav.navigate("Dating")
             //TODO BACKSTACK
         }

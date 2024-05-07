@@ -89,7 +89,7 @@ class FirebaseDataSource {
                                     }
                                 }
                             } catch (e: Exception) {
-                                println("Error parsing UserModel: $e")
+                                Log.d("Searching","Error parsing UserModel: $e")
                             }
                         }
                         val sortedList = list.sortedByDescending { it.status }
@@ -97,14 +97,14 @@ class FirebaseDataSource {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        println("Database error: ${error.message}")
+                        Log.d("Searching","Database error: ${error.message}")
                     }
                 }
                 query.addValueEventListener(usersListener)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Database error: ${error.message}")
+                Log.d("Searching","Database error: ${error.message}")
             }
         }
 

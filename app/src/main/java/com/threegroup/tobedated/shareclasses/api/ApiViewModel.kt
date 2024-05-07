@@ -82,7 +82,7 @@ class ApiViewModel(private val repository: Repository) : ViewModel() {
             star = sign
             try {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val starSign = if (sign == "Ask me") { starOptions.random() } else { sign.lowercase() }
+                    val starSign = if ((sign == "Ask me") && !starOptions.contains(star)) { starOptions.random() } else { sign.lowercase() }
                     val jsonObject = repository.getHoroscope(starSign)
                     try {
                         val horoscopeObject = jsonObject?.optJSONObject("data")

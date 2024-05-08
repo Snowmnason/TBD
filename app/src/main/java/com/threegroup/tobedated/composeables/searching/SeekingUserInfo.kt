@@ -397,10 +397,8 @@ fun SeekingUserInfoC(
     if (photos[3] == "") {
         subtract = 1
     }
-    //val state = rememberScrollState()
     Column(
         modifier = Modifier
-            //.verticalScroll(state)
             .fillMaxSize()
             .padding(15.dp, 0.dp)
     ) {

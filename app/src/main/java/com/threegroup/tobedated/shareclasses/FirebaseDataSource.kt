@@ -725,7 +725,7 @@ class FirebaseDataSource {
      * Set info for the logged in user
      */
 
-    suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> = flow {
+    suspend fun setUserInfo(number: String, location: String, inLogin:Boolean): Flow<UserModel?> = flow {
         val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(number)
 
         val userDataMap = withContext(Dispatchers.IO) {
@@ -746,7 +746,9 @@ class FirebaseDataSource {
             val user = setUserProperties(UserModel(), map, location)
             emit(user)
         }
-        databaseReference.child("status").setValue(System.currentTimeMillis())
+        if(!inLogin){
+            databaseReference.child("status").setValue(System.currentTimeMillis())
+        }
         databaseReference.child("location").setValue(location)
     }
 

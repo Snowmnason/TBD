@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.threegroup.tobedated.shareclasses.storeImageAttempt
@@ -34,15 +35,27 @@ class MainActivity : ComponentActivity() {
         }
         //requestLocationPermission()
     }
+    lateinit var navMain:NavHostController
+    fun setNav(navHostController: NavHostController){
+        navMain = navHostController
+    }
     val requestLocationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         if (permissions.values.all { it }) {
-             // All permissions granted, proceed
-            //checkUserTokenAndNavigate()
+            checkUserTokenAndNavigate { whereTo, location, no ->
+                if (no == "no") {
+                    when (whereTo) {
+                        "dating" -> navMain.navigate("Dating")
+                        "casual" -> navMain.navigate("Casual")
+                        "friend" -> navMain.navigate("Friends")
+                        else -> navMain.navigate("Login/$location")
+                    }
+                } else {
+                    navMain.navigate("Login/$location")
+                }
+            }
+        }else{
+            //Nothing for now
         }
-//        else {
-//            // Permission not granted
-//            // Handle the case where location permission is not granted
-//        }
     }
     private fun requestLocationPermission() {
         val permissionsToRequest = arrayOf(
@@ -79,7 +92,8 @@ class MainActivity : ComponentActivity() {
                     latitude = "error"
                     longitude = ""
                 }
-                callback("$latitude/$longitude")
+                //callback("$latitude/$longitude")
+                callback("40.7140319/-73.3573476")
             }
             .addOnFailureListener { _ ->
                 // Handle failure to retrieve location
@@ -93,7 +107,7 @@ class MainActivity : ComponentActivity() {
         return (coarsePermission || finePermission)
     }
 
-    fun checkUserTokenAndNavigate(callback: (String, String) -> Unit) {
+    fun checkUserTokenAndNavigate(callback: (String, String, String) -> Unit) {
         lifecycleScope.launch {
             val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
             val userToken = sharedPreferences.getString("user_login", null)
@@ -112,10 +126,10 @@ class MainActivity : ComponentActivity() {
                             "friend" -> "friend"
                             else -> "dating"
                         }
-                            callback(whichActivity, "no")
+                            callback(whichActivity,location, "no")
                     }
                 } else {
-                    callback("login", location)
+                    callback("login", location, "yes")
                 }
             }
         }

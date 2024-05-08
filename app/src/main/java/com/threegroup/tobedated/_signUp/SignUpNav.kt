@@ -60,6 +60,7 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, main
     val isFirstScreen = currentBackStackEntry?.destination?.route == SignUp.WelcomeScreen.name
     val isLastScreen = currentBackStackEntry?.destination?.route == SignUp.PhotoScreen.name
     var showDialog by remember { mutableStateOf(false) }
+    var showFinish by remember { mutableStateOf(false) }
     var questionIndex by rememberSaveable { mutableIntStateOf(0) }
     var isButtonEnabled by rememberSaveable { mutableStateOf(false) }
     var noShow by rememberSaveable { mutableStateOf(true) }
@@ -247,12 +248,22 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, main
                 if(buttonText == "Finish"){
                     isButtonEnabled = false
                     buttonText = "Loading..."
-                    signUpVM.finishingUp(signUpVM, mainActivity, location, mainNav)
+                    signUpVM.finishingUp(signUpVM, mainActivity, location, mainNav){
+                        value -> showFinish = value
+                    }
                 }
                 //println(userInfoArray.joinToString(separator = ", "))
                 //println("$newUser in fun")
             },
             isUse = isButtonEnabled
+        )
+    }
+    if (showFinish) {
+        AlertDialogBox(
+            onDismissRequest = { showFinish = false },
+            onConfirmation = { mainNav.navigate("Dating") },
+            dialogTitle = "You're all done!",
+            dialogText = "Finish up to start your new connection"
         )
     }
 

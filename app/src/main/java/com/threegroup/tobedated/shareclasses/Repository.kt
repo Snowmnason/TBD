@@ -64,8 +64,8 @@ class Repository(
         firebaseDataSource.checkRead(chatId, inOther, callback)
     }
 
-    suspend fun setUserInfo(number: String, location: String): Flow<UserModel?> {
-        return firebaseDataSource.setUserInfo(number, location)
+    suspend fun setUserInfo(number: String, location: String, inLogin:Boolean = false): Flow<UserModel?> {
+        return firebaseDataSource.setUserInfo(number, location, inLogin)
     }
     suspend fun getMatch(match: RealtimeDBMatch, userId: String, inOther:String=""): Match{
         return firebaseDataSource.getMatch(match, userId, inOther)

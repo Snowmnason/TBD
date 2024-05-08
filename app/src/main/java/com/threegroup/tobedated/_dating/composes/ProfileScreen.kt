@@ -23,7 +23,7 @@ fun ProfileScreen(
         }
     }
     if(currentUser.name == ""){
-        ComeBackScreen(navController = navController, vmApi = vmApi, vmDating = vmDating)
+        ComeBackScreen(navController = navController, vmApi = vmApi, vmDating = vmDating, inProfile = true)
     }else {
         UserInfo(
             currentUser,

@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.threegroup.tobedated._dating.DatingViewModel
 import com.threegroup.tobedated.composeables.composables.NavDraw
 import com.threegroup.tobedated.composeables.composables.TopBarText
 import com.threegroup.tobedated.composeables.composables.getBottomColors
@@ -69,14 +66,15 @@ fun TopAndBotBars(
 
     var inMain by remember { mutableStateOf(true) }
     var insideWhat by remember { mutableStateOf("Main") }
-    val vmDating = viewModel { DatingViewModel(MyApp.x) } // Could pass as a parameter
-    var notificationCount by remember { mutableIntStateOf(0) }
+    //val vmDating = viewModel { DatingViewModel(MyApp.x) } // Could pass as a parameter
+
     // Initialize the notification count when the composable is first composed
-    LaunchedEffect(Unit) {
-        vmDating.updateNotificationCounts { count ->
-            notificationCount = count
-        }
-    }
+    var notificationCount by remember { mutableIntStateOf(0) }
+//    LaunchedEffect(Unit) {
+//        vmDating.updateNotificationCounts { count ->
+//            notificationCount = count
+//        }
+//    }
     val items = listOf(
         BotNavItem(
             title = "SomeScreen",

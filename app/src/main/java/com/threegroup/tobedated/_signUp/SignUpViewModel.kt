@@ -125,7 +125,7 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
             }
     }
 
-    fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location: String, nav: NavHostController) {
+    fun finishingUp(signUpVM: SignUpViewModel, mainActivity: MainActivity, location: String, nav: NavHostController, callBack:(Boolean)->Unit) {
         viewModelScope.launch {
             val ioJob = launch(Dispatchers.IO) {
                 println(newUser)
@@ -140,14 +140,13 @@ class SignUpViewModel(private var repository: Repository) : ViewModel() {
 
             val ioJob2 = launch(Dispatchers.IO) {
                 mainActivity.saveTokenToSharedPreferences(signUpVM.getUser().number)
-                MyApp.x.setUserInfo(signUpVM.getUser().number, location).collect { userInfo ->
+                MyApp.x.setUserInfo(signUpVM.getUser().number, location, true).collect { userInfo ->
                     MyApp._signedInUser.value = userInfo
                 }
             }
             ioJob2.join()
             delay(2000)
-            nav.navigate("Dating")
-            //TODO BACKSTACK
+            callBack(true)
         }
     }
 

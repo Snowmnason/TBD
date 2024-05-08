@@ -153,20 +153,24 @@ fun SlashScreen(activityToken:String, mainActivity: MainActivity, navMain: NavHo
             SplashScreen(activity = activityToken, text1 = "To Be Friended")
         }
     }
-    if(passedLocation){
-        mainActivity.checkUserTokenAndNavigate{ whereTo, location ->
-            if(location == "no"){
-                when(whereTo){
-                    "dating" -> navMain.navigate("Dating")
-                    "casual" -> navMain.navigate("Casual")
-                    "friend" -> navMain.navigate("Friends")
-                    else -> navMain.navigate("Login/$location")
+
+    LaunchedEffect(Unit) {
+        if (!passedLocation) {
+            mainActivity.setNav(navMain)
+            mainActivity.requestLocationPermissionLauncher.launch(permissionsToRequest)
+        } else {
+            mainActivity.checkUserTokenAndNavigate { whereTo, location, no ->
+                if (no == "no") {
+                    when (whereTo) {
+                        "dating" -> navMain.navigate("Dating")
+                        "casual" -> navMain.navigate("Casual")
+                        "friend" -> navMain.navigate("Friends")
+                        else -> navMain.navigate("Login/$location")
+                    }
+                } else {
+                    navMain.navigate("Login/$location")
                 }
-            }else{
-                navMain.navigate("Login/$location")
             }
         }
-    }else{
-        mainActivity.requestLocationPermissionLauncher.launch(permissionsToRequest)
     }
 }

@@ -143,7 +143,7 @@ class LoginViewModel(private var repository: Repository) : ViewModel() {
         if (exists == 1) {
             viewModelScope.launch {
                 withContext(Dispatchers.Main) {
-                    MyApp.x.setUserInfo(userPhoneNumber, location).collect { userInfo ->
+                    MyApp.x.setUserInfo(userPhoneNumber, location, true).collect { userInfo ->
                         MyApp._signedInUser.value = userInfo
                     }
                     mainActivity.saveTokenToSharedPreferences(userPhoneNumber)

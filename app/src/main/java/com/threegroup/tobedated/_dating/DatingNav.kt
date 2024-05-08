@@ -6,8 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -46,7 +44,6 @@ fun DatingNav(
         //navController.popBackStack()
     }
 
-    val potentialUserDataLoaded = remember { mutableStateOf(false) }
     val viewModelDating = viewModel { DatingViewModel(MyApp.x) }
     viewModelDating.setLoggedInUser()
     viewModelDating.getMatchesFlow(viewModelDating.getUser().number)

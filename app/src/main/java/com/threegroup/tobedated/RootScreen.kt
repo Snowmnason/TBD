@@ -78,8 +78,10 @@ fun TopAndBotBars(
     }
     // Initialize the notification count when the composable is first composed
     val notificationCount by vmRoot.totalNotificationCountStateFlow.collectAsState(0)
+    val notificationCountBlind by vmRoot.totalNotificationCountStateFlowBlind.collectAsState(0)
     LaunchedEffect(Unit) {
-      vmRoot.updateNotificationCounts()
+        vmRoot.updateNotificationCounts(inOther)
+        vmRoot.updateNotificationCountsBlind(inOther)
     }
     val items = listOf(
         BotNavItem(
@@ -105,7 +107,7 @@ fun TopAndBotBars(
             title = "BlindScreen",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.mask_filled),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.mask_outline),
-            badgeCount = notificationCount
+            badgeCount = notificationCountBlind
         ),
         BotNavItem(
             title = "ProfileScreen",

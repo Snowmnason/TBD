@@ -262,4 +262,16 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikedAndPassedby(userId, onComplete, "casual")//TODO more work than expected
     }
+    /**
+     * Notifications
+     */
+    private val _chatAlert = MutableStateFlow(false)
+    val chatAlert: StateFlow<Boolean> = _chatAlert
+    fun updateNewChatsCount(inOther: String) {
+        viewModelScope.launch(IO) {
+            repository.updateNewChatsCount(inOther).collect { value ->
+                _chatAlert.value = value != 0
+            }
+        }
+    }
 }

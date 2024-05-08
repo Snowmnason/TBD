@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,20 +23,22 @@ fun ChatsScreen(
     navController: NavHostController,
     vmDating: DatingViewModel,
 ) {
-    val matchedUsers by vmDating.matchList.collectAsState() //TODO this has to be changed to be matches user
+    val matchedUsers by vmDating.matchList.collectAsState()
     //TODO ORDER MATCHED USERS HERE
     //val inChat by rememberSaveable { mutableStateOf(false)}
     val state = rememberScrollState(0)
-
+    val chatAlert by vmDating.chatAlert.collectAsState(false)
+    LaunchedEffect(Unit) {
+        vmDating.updateNewChatsCount("")
+    }
     Column(
         Modifier
-            //.padding(paddingValues)
             .verticalScroll(state)
             .fillMaxSize()
     ) {
         matchedUsers.forEach { matchUser ->
             MessageStart(
-                notification = true, //TODO set this passed on if they have a new message
+                notification = chatAlert,
                 userPhoto = matchUser.userPicture,
                 userName = matchUser.userName,
                 userLast = matchUser.lastMessage, //TODO Last message goes here message.message (some how last)

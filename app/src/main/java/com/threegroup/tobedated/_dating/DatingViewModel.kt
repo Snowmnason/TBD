@@ -269,4 +269,13 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     /**
      * Notifications
      */
+    private val _chatAlert = MutableStateFlow(false)
+    val chatAlert: StateFlow<Boolean> = _chatAlert
+    fun updateNewChatsCount(inOther: String) {
+        viewModelScope.launch(IO) {
+            repository.updateNewChatsCount(inOther).collect { value ->
+                _chatAlert.value = value != 0
+            }
+        }
+    }
 }

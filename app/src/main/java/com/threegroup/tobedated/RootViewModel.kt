@@ -11,10 +11,19 @@ import kotlinx.coroutines.launch
 class RootViewModel(private var repository: Repository) : ViewModel() {
     private val _totalNotificationCountStateFlow = MutableStateFlow(0)
     val totalNotificationCountStateFlow: StateFlow<Int> = _totalNotificationCountStateFlow
-    fun updateNotificationCounts() {
+    fun updateNotificationCounts(inOther:String) {
         viewModelScope.launch(IO) {
-            repository.updateNotificationCounts().collect { totalNotificationCount ->
+            repository.updateNotificationCounts(inOther).collect { totalNotificationCount ->
                 _totalNotificationCountStateFlow.value = totalNotificationCount
+            }
+        }
+    }
+    private val _totalNotificationCountStateFlowBlind = MutableStateFlow(0)
+    val totalNotificationCountStateFlowBlind: StateFlow<Int> = _totalNotificationCountStateFlowBlind
+    fun updateNotificationCountsBlind(inOther:String) {
+        viewModelScope.launch(IO) {
+            repository.updateNotificationCounts("${inOther}b").collect { totalNotificationCount ->
+                _totalNotificationCountStateFlowBlind.value = totalNotificationCount
             }
         }
     }

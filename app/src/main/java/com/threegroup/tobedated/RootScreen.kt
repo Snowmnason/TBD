@@ -115,6 +115,7 @@ fun TopAndBotBars(
             .fillMaxSize(),
         color = Color.Transparent,
     ) {
+        val upperCasedFirstLetter = currentActivity.take(1).uppercase() + currentActivity.drop(1)
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         ModalNavigationDrawer(
@@ -127,21 +128,41 @@ fun TopAndBotBars(
                         vmApi = vmApi,
                         datingClickable = {
                             if(currentActivity != "dating"){
-                                mainNav.navigate("Dating")
-                                //TODO BACKSTACK
+                                mainNav.navigate("Dating"){
+                                    popUpTo(upperCasedFirstLetter) {
+                                        inclusive = true
+                                        saveState = false
+                                    }
+                                }
                             }},
                         casualClickable = {
                             if(currentActivity != "casual"){
                                 if(MyApp.signedInUser.value!!.hasCasual){
-                                    mainNav.navigate("Casual")
+                                    mainNav.navigate("Casual"){
+                                        popUpTo(upperCasedFirstLetter) {
+                                            inclusive = true
+                                            saveState = false
+                                        }
+                                    }
                                 }else{
-                                    mainNav.navigate("CasualSignup")
+                                    mainNav.navigate("CasualSignup"){
+                                        popUpTo(upperCasedFirstLetter) {
+                                            inclusive = true
+                                            saveState = false
+                                        }
+                                    }
                                 }
                                 //TODO BACKSTACK
                             }},
                         friendsClickable = {
                             if(currentActivity != "friend") {
-                                //mainNav.navigate("Friends"){popUpToRoute}
+                                //mainNav.navigate("Friends"){
+//                                        popUpTo(upperCasedFirstLetter) {
+//                                            inclusive = true
+//                                            saveState = false
+//                                        }
+//                                    }
+//                                }
                             }},
                         currentActivity = currentActivity
                     )

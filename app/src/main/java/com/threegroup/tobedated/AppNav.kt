@@ -162,13 +162,38 @@ fun SlashScreen(activityToken:String, mainActivity: MainActivity, navMain: NavHo
             mainActivity.checkUserTokenAndNavigate { whereTo, location, no ->
                 if (no == "no") {
                     when (whereTo) {
-                        "dating" -> navMain.navigate("Dating")
-                        "casual" -> navMain.navigate("Casual")
-                        "friend" -> navMain.navigate("Friends")
-                        else -> navMain.navigate("Login/$location")
+                        "dating" -> {navMain.navigate("Dating"){
+                            popUpTo("SlashScreen") {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }}
+                        "casual" -> {navMain.navigate("Casual"){
+                            popUpTo("SlashScreen") {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }}
+                        "friend" -> {navMain.navigate("Friends"){
+                            popUpTo("SlashScreen") {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }}
+                        else -> {navMain.navigate("Login/$location"){
+                            popUpTo("SlashScreen") {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }}
                     }
                 } else {
-                    navMain.navigate("Login/$location")
+                    navMain.navigate("Login/$location") {
+                        popUpTo("SlashScreen") {
+                            inclusive = true
+                            saveState = false
+                        }
+                    }
                 }
             }
         }

@@ -112,7 +112,12 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, main
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { mainNav.navigate("Login") },
+            onConfirmation = { mainNav.navigate("Login"){
+                popUpTo("SignUp/$location/$number") {
+                    inclusive = true
+                    saveState = false
+                }
+            } },
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )
@@ -261,7 +266,12 @@ fun SignUpNav(mainActivity: MainActivity, location: String, number: String, main
     if (showFinish) {
         AlertDialogBox(
             onDismissRequest = { showFinish = false },
-            onConfirmation = { mainNav.navigate("Dating") },
+            onConfirmation = { mainNav.navigate("Dating") {
+                popUpTo("SignUp/$location/$number") {
+                    inclusive = true
+                    saveState = false
+                }
+            } },
             dialogTitle = "You're all done!",
             dialogText = "Finish up to start your new connection"
         )

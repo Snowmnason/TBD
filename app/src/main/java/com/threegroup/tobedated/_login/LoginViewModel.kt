@@ -148,14 +148,21 @@ class LoginViewModel(private var repository: Repository) : ViewModel() {
                     }
                     mainActivity.saveTokenToSharedPreferences(userPhoneNumber)
 
-                    nav.navigate("Dating")
-                    //TODO BACKSTACK
-
+                    nav.navigate("Dating") {
+                        popUpTo("Login/${location}") {
+                            inclusive = true
+                            saveState = false
+                        }
+                    }
                 }
             }
         } else {
-            nav.navigate("SignUp/$location/$userPhoneNumber")
-            //TODO BACKSTACK
+            nav.navigate("SignUp/$location/$userPhoneNumber"){
+                popUpTo("Login/${location}") {
+                    inclusive = true
+                    saveState = false
+                }
+            }
 
         }
     }

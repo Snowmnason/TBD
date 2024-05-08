@@ -243,8 +243,12 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     fun goToLogin(dating: MainActivity, mainNav: NavHostController) {
         dating.clearUserToken()
 
-        mainNav.navigate("Login/${getUser().location}")
-        //TODO BACKSTACK
+        mainNav.navigate("Login/${getUser().location}") {
+            popUpTo("Dating") {
+                inclusive = true
+                saveState = false
+            }
+        }
     }
 
     /**

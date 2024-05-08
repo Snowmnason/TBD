@@ -68,7 +68,12 @@ fun SignUpCasualNav(mainNav: NavHostController){
     if (showDialog) {
         AlertDialogBox(
             onDismissRequest = { showDialog = false },
-            onConfirmation = { mainNav.navigate("Dating")},//casual.switchActivities("dating")
+            onConfirmation = { mainNav.navigate("Dating"){
+                popUpTo("CasualSignup") {
+                    inclusive = true
+                    saveState = false
+                }
+            }},//casual.switchActivities("dating")
             dialogTitle = "Leave Signup",
             dialogText = "Are you sure, all your progress will be loss"
         )
@@ -172,8 +177,12 @@ fun SignUpCasualNav(mainNav: NavHostController){
                     buttonText = "Loading..."
                     runBlocking {
                         vmCasual.storeDataC()
-                        mainNav.navigate("Casual")
-                        //TODO BACKSTACK
+                        mainNav.navigate("Casual") {
+                            popUpTo("CasualSignup") {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }
                     }
                 }
                 //println(userInfoArray.joinToString(separator = ", "))

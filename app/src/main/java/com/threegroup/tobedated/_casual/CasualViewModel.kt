@@ -240,8 +240,12 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
     fun goToLogin(dating: MainActivity, mainNav:NavHostController){
         dating.clearUserToken()
 
-        mainNav.navigate("Login/${getUser().location}")
-        //TODO BACKSTACK
+        mainNav.navigate("Login/${getUser().location}") {
+            popUpTo("Casual") {
+                inclusive = true
+                saveState = false
+            }
+        }
     }
 
     /**

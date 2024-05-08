@@ -269,7 +269,4 @@ class DatingViewModel(private var repository: Repository) : ViewModel() {
     /**
      * Notifications
      */
-    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
-        repository.updateNotificationCounts(callback)
-    }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,12 +70,16 @@ fun TopAndBotBars(
     var inMain by remember { mutableStateOf(true) }
     var insideWhat by remember { mutableStateOf("Main") }
 
+    val inOther = when(currentActivity){
+        "dating" -> ""
+        "casual" -> "casual"
+        "friend" -> "friend"
+        else -> ""
+    }
     // Initialize the notification count when the composable is first composed
-    var notificationCount by remember { mutableIntStateOf(0) }
+    val notificationCount by vmRoot.totalNotificationCountStateFlow.collectAsState(0)
     LaunchedEffect(Unit) {
-        vmRoot.updateNotificationCounts { count ->
-            notificationCount = count
-        }
+      vmRoot.updateNotificationCounts()
     }
     val items = listOf(
         BotNavItem(

@@ -262,11 +262,4 @@ class CasualViewModel(private var repository: Repository) : ViewModel() {
     fun getLikedAndPassedby(userId: String, onComplete: (Int) -> Unit) {
         repository.getLikedAndPassedby(userId, onComplete, "casual")//TODO more work than expected
     }
-
-    /**
-     * Notifications
-     */
-    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit) {
-        repository.updateNotificationCounts(callback, "casual")
-    }
 }

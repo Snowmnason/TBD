@@ -8,7 +8,10 @@ import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
 import com.threegroup.tobedated.shareclasses.models.MessageModel
 import com.threegroup.tobedated.shareclasses.models.UserModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -111,39 +114,22 @@ class Repository(
     fun getSuggestion(currentUser: String, onComplete: (List<String>) -> Unit, inOther:String=""){
         firebaseDataSource.getSuggestions(currentUser, onComplete, inOther)
     }
-    fun updateNotificationCounts(callback: (totalNotificationCount: Int) -> Unit, inOther:String="") {
-        var totalNotificationCount = 0
-        var countUpdated = 0
+    suspend fun updateNotificationCounts(inOther: String = ""): Flow<Int> = flow {
+        val newMatchesCountFlow = updateNewMatchesCount(inOther)
+        val newChatsCountFlow = updateNewChatsCount(inOther)
 
-        updateNewMatchesCount( { newMatchesCount ->
-            totalNotificationCount += newMatchesCount
-            countUpdated++
-            checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
-        }, inOther)
-
-        updateNewChatsCount( { newChatsCount ->
-            totalNotificationCount += newChatsCount
-            countUpdated++
-            checkCountsAndUpdate(totalNotificationCount, countUpdated, callback)
-        }, inOther)
-    }
-    private fun updateNewMatchesCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
-        firebaseDataSource.updateNewMatchesCount(callback, inOther)
-    }
-    private fun updateNewChatsCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
-        firebaseDataSource.updateNewChatsCount(callback, inOther)
-    }
-
-    // Function to check if all counts have been updated and then call the callback
-    private fun checkCountsAndUpdate(
-        totalNotificationCount: Int,
-        countUpdated: Int,
-        callback: (totalNotificationCount: Int) -> Unit
-    ) {
-        // If both counts have been updated, call the callback
-        if (countUpdated == 2) {
-            callback(totalNotificationCount)
-            Log.d("UPDATE_TAG", "Total notification count = $totalNotificationCount")
+        // Combine the Flows and emit the total notification count
+        newMatchesCountFlow.combine(newChatsCountFlow) { newMatchesCount, newChatsCount ->
+            newMatchesCount + newChatsCount
+        }.collect { totalNotificationCount ->
+            emit(totalNotificationCount)
         }
+    }.onStart { emit(0) } // Emit an initial value of 0
+    fun updateNewMatchesCount(inOther: String): Flow<Int> {
+        return firebaseDataSource.updateNewMatchesCount(inOther)
+    }
+
+    fun updateNewChatsCount(inOther: String): Flow<Int> {
+        return firebaseDataSource.updateNewChatsCount(inOther)
     }
 }

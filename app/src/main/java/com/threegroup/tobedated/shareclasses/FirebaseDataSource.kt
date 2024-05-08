@@ -918,7 +918,7 @@ class FirebaseDataSource {
     /**
      * Functions for notifications
      */
-    fun updateNewMatchesCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
+    fun updateNewMatchesCount(inOther: String): Flow<Int> = callbackFlow {
         val userId = getCurrentUserId()
         val database = FirebaseDatabase.getInstance()
         val userMatchesRef = database.getReference("matches$inOther")
@@ -933,22 +933,21 @@ class FirebaseDataSource {
                             .getValue(Boolean::class.java)
                         if (isNewMatch == true) {
                             newMatchesCount++
-                            Log.d("UPDATE_TAG", "New matches count = $newMatchesCount")
                         }
                     }
                 }
-                callback(newMatchesCount)
+                trySend(newMatchesCount)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("UPDATE_TAG", "Error in getting new matches count: ${error.message}")
+                close(error.toException())
             }
         }
-
         userMatchesRef.addValueEventListener(matchesListener)
+        awaitClose { userMatchesRef.removeEventListener(matchesListener) }
     }
 
-    fun updateNewChatsCount(callback: (totalNotificationCount: Int) -> Unit, inOther: String) {
+    fun updateNewChatsCount(inOther: String): Flow<Int> = callbackFlow {
         val userId = getCurrentUserId()
         val database = FirebaseDatabase.getInstance()
         val userChatsRef = database.getReference("chats$inOther")
@@ -965,14 +964,15 @@ class FirebaseDataSource {
                         newChatsCount += notificationsCount
                     }
                 }
-                callback(newChatsCount)
+                trySend(newChatsCount)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("UPDATE_TAG", "Error in getting unread chats count: ${error.message}")
+                close(error.toException())
             }
         }
         userChatsRef.addValueEventListener(chatsListener)
+        awaitClose { userChatsRef.removeEventListener(chatsListener) }
     }
 
     /**

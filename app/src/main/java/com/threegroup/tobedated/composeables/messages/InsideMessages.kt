@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -23,7 +24,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -42,6 +42,7 @@ import com.threegroup.tobedated.composeables.composables.GenericBodyText
 import com.threegroup.tobedated.composeables.composables.GenericTitleText
 import com.threegroup.tobedated.composeables.composables.OutLinedButton
 import com.threegroup.tobedated.composeables.composables.getAddShadow
+import com.threegroup.tobedated.composeables.composables.getTopColors
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.calcAge
 import com.threegroup.tobedated.shareclasses.models.MatchedUserModel
@@ -69,13 +70,10 @@ fun InsideMessages(
     ) {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-
-
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
-
                         ModalDrawerSheet(
                             drawerContainerColor = AppTheme.colorScheme.background
                         ) {
@@ -83,22 +81,16 @@ fun InsideMessages(
                                 chatSettings()
                             }
                         }
-
                 },
             ) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
                     Scaffold(
+                        modifier = Modifier,//.imePadding()
                         containerColor = Color.Transparent,
                         topBar = {
                             CenterAlignedTopAppBar(
-                                modifier = Modifier.height(46.dp),
-                                colors = TopAppBarColors(
-                                    containerColor = AppTheme.colorScheme.onTertiary,
-                                    navigationIconContentColor = AppTheme.colorScheme.primary,
-                                    titleContentColor = AppTheme.colorScheme.secondary,
-                                    actionIconContentColor = AppTheme.colorScheme.primary,
-                                    scrolledContainerColor = AppTheme.colorScheme.background
-                                ),
+                                modifier = Modifier.height(46.dp).imePadding(),
+                                colors = getTopColors(),
                                 title = {
                                     Button(
                                         onClick = goToProfile,
@@ -166,7 +158,6 @@ fun InsideMessages(
                                 .fillMaxSize()
                         ) {
                             messages()
-
                         }
                     }
                 }
@@ -214,7 +205,9 @@ fun MessagerDraw(
                 Spacer(modifier = Modifier.height(16.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().padding(end = 20.dp)){
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 20.dp)){
                         GenericTitleText(text = "Chat Suggestion", style = getAddShadow(AppTheme.typography.titleMedium, "med"))
                     }
 

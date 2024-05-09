@@ -1,6 +1,10 @@
 package com.threegroup.tobedated._dating.composes
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.threegroup.tobedated.MyApp
@@ -23,6 +28,7 @@ import com.threegroup.tobedated.composeables.messages.MessagerDraw
 import com.threegroup.tobedated.composeables.messages.TextSection
 import com.threegroup.tobedated.shareclasses.api.ApiViewModel
 import com.threegroup.tobedated.shareclasses.getChatId
+import com.threegroup.tobedated.theme.AppTheme
 
 @Composable
 fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, vmApi: ApiViewModel) {
@@ -77,7 +83,11 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, 
             startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/ },
             messageBar = {
                 KeyBoard(
-                    modifier = Modifier.imePadding(),
+                    modifier = Modifier
+                        .imePadding()
+                        .background(AppTheme.colorScheme.onTertiary)
+                        .fillMaxWidth()
+                        .padding(0.dp, 12.dp),
                     message = message,
                     messageChange = { message = it },
                     sendMessage = {
@@ -92,13 +102,15 @@ fun MessagerScreen(navController: NavHostController, vmDating: DatingViewModel, 
             },
             messages = {
                 TextSection(
+                    modifier = Modifier
+                        .imePadding(),
                     lazyListState = lazyListState,
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
                     match = talkedUser!!,
                     isRead = false
                 )
-            },
+           },
         )
     }
 }
@@ -122,9 +134,7 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
         nav = navController,
         hideCallButtons = false,
         titleText = "Feedback",
-        chatSettings = {
-
-        },
+        chatSettings = {},
         messageBar = {
             KeyBoard(
                 modifier = Modifier.imePadding(),
@@ -142,6 +152,9 @@ fun FeedBackMessagerScreen(navController: NavHostController, vmDating: DatingVie
         },
         messages = {
             TextSection(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
                 lazyListState = lazyListState,
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),

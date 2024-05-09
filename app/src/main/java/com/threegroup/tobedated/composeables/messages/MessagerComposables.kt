@@ -1,16 +1,13 @@
 package com.threegroup.tobedated.composeables.messages
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -54,28 +51,21 @@ fun TextSection(
     currentUserSenderId:String,
     match:MatchedUserModel = MatchedUserModel(),
     feedBack:Boolean = false,
-    isRead:Boolean
+    isRead:Boolean,
+    modifier: Modifier,
 ){
-    Column(
-        Modifier.fillMaxSize()
+    LazyColumn(
+        modifier = modifier,
+        state = lazyListState
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-//                .statusBarsPadding()
-//                .weight(1f)
-                .imePadding(),
-            state = lazyListState
-        ) {
-            itemsIndexed(messageList) { index, message ->
-                val last = index == (messageList.size -1)
-                val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
-                val time = message.currentTime
-                if(feedBack){
-                    MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
-                }else{
-                    MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last, isRead)
-                }
+        itemsIndexed(messageList) { index, message ->
+            val last = index == (messageList.size -1)
+            val isCurrentUser = message.senderId.contains(currentUserSenderId.replaceFirstChar { "" })
+            val time = message.currentTime
+            if(feedBack){
+                MessageItemFeedBack(message = message, isCurrentUser = isCurrentUser, timeStamp = time, last)
+            }else{
+                MessageItem(match = match ,message = message, isCurrentUser = isCurrentUser, timeStamp = time, last, isRead)
             }
         }
     }
@@ -89,10 +79,7 @@ fun KeyBoard(
     sendAttachment: () -> Unit
 ){
     Row(modifier = modifier
-        .background(AppTheme.colorScheme.onTertiary)
-        .fillMaxWidth()
-        //.weight(1f)
-        .padding(0.dp, 12.dp)){
+    ){
         Row (
             modifier = Modifier.fillMaxWidth(),
             //horizontalArrangement = Arrangement.SpaceEvenly

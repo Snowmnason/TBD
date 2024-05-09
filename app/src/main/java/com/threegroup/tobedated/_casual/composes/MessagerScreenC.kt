@@ -1,5 +1,6 @@
 package com.threegroup.tobedated._casual.composes
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -75,8 +76,8 @@ fun MessagerScreenC(navController: NavHostController, vmCasual: CasualViewModel,
             startVideoCall = {/* TODO Start Video Call (Need to make a screen for it)*/ },
             messageBar = {
                 KeyBoard(
-                    modifier = Modifier.imePadding(),
-                    message = message,
+                    modifier = Modifier.imePadding()
+                    ,message = message,
                     messageChange = { message = it },
                     sendMessage = {
                         if (message != "") {
@@ -90,7 +91,9 @@ fun MessagerScreenC(navController: NavHostController, vmCasual: CasualViewModel,
             },
             messages = {
                 TextSection(
-                    lazyListState = lazyListState,
+                    modifier = Modifier.fillMaxSize()
+                        .imePadding()
+                    ,lazyListState = lazyListState,
                     messageList = messageList,
                     currentUserSenderId = messageModel.getCurrentUserSenderId(),
                     match = talkedUser!!,
@@ -120,9 +123,7 @@ fun FeedBackMessagerScreenC(navController: NavHostController, vmCasual: CasualVi
         nav = navController,
         hideCallButtons = false,
         titleText = "Feedback",
-        chatSettings = {
-
-        },
+        chatSettings = {},
         messageBar = {
             KeyBoard(
                 modifier = Modifier.imePadding(),
@@ -140,6 +141,8 @@ fun FeedBackMessagerScreenC(navController: NavHostController, vmCasual: CasualVi
         },
         messages = {
             TextSection(
+                modifier = Modifier.fillMaxSize()
+                    .imePadding(),
                 lazyListState = lazyListState,
                 messageList = messageList,
                 currentUserSenderId = messageModel.getCurrentUserSenderId(),

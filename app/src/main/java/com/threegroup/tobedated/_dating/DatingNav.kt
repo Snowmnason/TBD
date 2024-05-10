@@ -68,11 +68,11 @@ fun DatingNav(
             }else{
                 ComeBackScreen(navController, vmApi, viewModelDating)
             }
-            insideWhat("Main")
+            insideWhat("SearchingScreen")
         }
         composable(route = Dating.ProfileScreen.name) {
             ProfileScreen(navController, viewModelDating, vmApi)
-            insideWhat("Main")
+            insideWhat("ProfileScreen")
         }
         composable(route = Dating.EditProfileScreen.name) {
             EditProfileScreen(navController, main, viewModelDating, mainNav)
@@ -84,15 +84,15 @@ fun DatingNav(
         }
         composable(route = Dating.ChatsScreen.name) {
             ChatsScreen(navController, viewModelDating)
-            insideWhat("Main")
+            insideWhat("ChatsScreen")
         }
         composable(route = Dating.BlindScreen.name) {
             BlindScreen(navController)
-            insideWhat("Main")
+            insideWhat("BlindScreen")
         }
         composable(route = Dating.SomeScreen.name) {
             SomeScreen(viewModelDating)
-            insideWhat("Main")
+            insideWhat("SomeScreen")
         }
         composable(route = Dating.MessagerScreen.name) {
             MessagerScreen(navController, viewModelDating, vmApi)

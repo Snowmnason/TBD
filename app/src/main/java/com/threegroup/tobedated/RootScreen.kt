@@ -69,7 +69,6 @@ fun TopAndBotBars(
     val vmRoot = viewModel { RootViewModel(MyApp.x) }
     var inMain by remember { mutableStateOf(true) }
     var insideWhat by remember { mutableStateOf("Main") }
-
     val inOther = when(currentActivity){
         "dating" -> ""
         "casual" -> "casual"
@@ -82,7 +81,10 @@ fun TopAndBotBars(
     LaunchedEffect(Unit) {
         vmRoot.updateNotificationCounts(inOther)
         vmRoot.updateNotificationCountsBlind(inOther)
+
     }
+
+
     val items = listOf(
         BotNavItem(
             title = "SomeScreen",
@@ -246,12 +248,23 @@ fun TopAndBotBars(
                         //.verticalScroll(state)
                         .fillMaxSize()
                 ) {
-                    if(insideWhat == "Main" || insideWhat == "Match" || insideWhat == "Settings"){
+                    val mainScreens = listOf("SomeScreen", "ChatsScreen", "SearchingScreen", "BlindScreen", "ProfileScreen",)
+                    if(mainScreens.contains(insideWhat) || insideWhat == "Match" || insideWhat == "Settings"){
                         Spacer(modifier = Modifier.height(24.dp))
                     }
                     navScreen(nav){ inside -> insideWhat = inside
-                        inMain = inside == "Main"}
+                        inMain = mainScreens.contains(inside)}
                      //All 5 screens go here
+                    val currentScreen = nav.currentDestination?.route
+                    LaunchedEffect(insideWhat){
+                        when(insideWhat){
+                            "SomeScreen" -> selectedItemIndex = 0
+                            "ChatsScreen" -> selectedItemIndex = 1
+                            "SearchingScreen" -> selectedItemIndex = 2
+                            "BlindScreen" -> selectedItemIndex = 3
+                            "ProfileScreen" -> selectedItemIndex = 4
+                        }
+                    }
                 }
             }
         }

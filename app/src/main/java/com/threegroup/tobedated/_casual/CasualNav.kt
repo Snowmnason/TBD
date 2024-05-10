@@ -64,11 +64,11 @@ fun CasualNav(
             } else {
                 ComeBackScreenC(navController, vmApi, viewModelCasual) //TODO needs more work than expect
             }
-            insideWhat("Main")
+            insideWhat("SearchingScreen")
         }
         composable(route = Casual.ProfileScreen.name) {
             ProfileScreenC(navController, viewModelCasual)
-            insideWhat("Main")
+            insideWhat("ProfileScreen")
         }
         composable(route = Casual.EditProfileScreen.name) {
             EditProfileScreenC(navController, main, viewModelCasual, mainNav)
@@ -80,15 +80,15 @@ fun CasualNav(
         }
         composable(route = Casual.ChatsScreen.name) {
             ChatsScreenC(navController, viewModelCasual)
-            insideWhat("Main")
+            insideWhat("ChatsScreen")
         }
         composable(route = Casual.BlindScreen.name) {
             BlindScreenC(navController)
-            insideWhat("Main")
+            insideWhat("BlindScreen")
         }
         composable(route = Casual.SomeScreen.name) {
             SomeScreenC(viewModelCasual)
-            insideWhat("Main")
+            insideWhat("SomeScreen")
         }
         composable(route = Casual.MessagerScreen.name) {
             MessagerScreenC(navController, viewModelCasual, vmApi)

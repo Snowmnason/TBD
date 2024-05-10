@@ -92,8 +92,8 @@ class MainActivity : ComponentActivity() {
                     latitude = "error"
                     longitude = ""
                 }
-                //callback("$latitude/$longitude")
-                callback("40.7140319/-73.3573476")
+                callback("$latitude/$longitude")
+                //callback("40.7140319/-73.3573476")
             }
             .addOnFailureListener { _ ->
                 // Handle failure to retrieve location
